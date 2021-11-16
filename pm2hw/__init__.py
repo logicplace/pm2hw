@@ -1,8 +1,10 @@
 from typing import List
+
+import usb
 import ftd2xx
 
 from . import pokecard, dittomini
-from .base import BaseLinker, BaseCard, linkers
+from .base import BaseLinker, BaseCard, linkers, UsbDevice
 from .exceptions import *
 
 def get_connected_linkers(**kwargs):
@@ -18,5 +20,17 @@ def get_connected_linkers(**kwargs):
 			devices.append(linker_cls(dev, **kwargs))
 		else:
 			dev.close()
+
+	# Get other linkers
+	for dev in usb.core.find(find_all=True):
+		linker_id = (dev.idVendor, dev.idProduct)
+		if linker_id in linkers:
+			linker_cls = linkers[linker_id]
+			try:
+				linker = linker_cls.from_usb(UsbDevice(dev), **kwargs)
+			except DeviceError:
+				# TODO: store error for later, in case nothing is found
+				continue
+			devices.append(linker)
 
 	return devices

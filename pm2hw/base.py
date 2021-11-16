@@ -1,8 +1,10 @@
 from io import BufferedIOBase, BytesIO
 from os import SEEK_SET, SEEK_END
+import sys
 from time import sleep, time
 from typing import Any, BinaryIO, Callable, ClassVar, Dict, Iterable, Optional, Protocol, Sequence, Tuple, Type, Union, cast
 
+import usb
 from ftd2xx import FTD2XX
 
 from .logger import verbose, warn, protocol, protocol_data
@@ -34,6 +36,61 @@ class Handle(Protocol):
 
 	def close(self):
 		...
+
+class UsbDevice:
+	def __init__(self, device: usb.core.Device):
+		self.device = device
+
+	def setup(self, *, configuration=None, interface=None, endpoint=None):
+		try:
+			self.device.set_configuration(configuration)
+		except usb.core.USBError as err:
+			if err.errno == 2:
+				how = " with Zadig" if sys.platform.startswith("win") else ""
+				raise DeviceError(
+					"Could not connect to device, you may need"
+					f" to install the libusbK driver{how}."
+				)
+			raise DeviceError(str(err))
+
+		config = cast(usb.core.Configuration, self.device.get_active_configuration())
+
+		if interface is not None:
+			intf = config[interface]
+			if endpoint is not None:
+				self.endpoint = intf[endpoint]
+			else:
+				# Pick only endpoint
+				eps = intf.endpoints()
+				if len(eps) == 1:
+					self.endpoint = eps[0]
+				else:
+					raise DeviceError("More than one endpoint found, must specify")
+		else:
+			for intf in config:
+				ep = usb.util.find_descriptor(intf, bEndpointAddress=self.endpoint)
+				if ep is not None:
+					self.endpoint = cast(usb.core.Endpoint, ep)
+				else:
+					raise DeviceError("Endpoint address not found")
+
+	def read(self, size: int):
+		return self.endpoint.read(size)
+
+	def write(self, data: bytes):
+		return self.endpoint.write(data)
+
+	def close(self):
+		self.device.finalize()
+
+	# Pass-throughs
+	@property
+	def manufacturer(self):
+		return self.device.manufacturer
+
+	@property
+	def product(self):
+		return self.device.product
 
 LinkerID = Union[str, Tuple[int, int]]
 linkers: Dict[LinkerID, type] = {}
@@ -120,10 +177,14 @@ class BaseLinker(BaseFlashable):
 	def __init__(self, handle: Handle, **kwargs):
 		self.handle = handle
 
+	@classmethod
+	def from_usb(cls, device: UsbDevice) -> "BaseLinker":
+		raise NotImplementedError
+
 	def __del__(self):
 		""" Clean up and close """
 		self.cleanup()
-		self.handle.close()
+		self.handle.close()	
 
 	def init(self) -> BaseFlashable:
 		""" Inititalize the connection to the linker """
