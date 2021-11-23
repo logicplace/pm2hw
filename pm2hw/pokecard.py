@@ -3,21 +3,21 @@ from time import sleep, time
 from typing import Optional, Tuple
 from functools import lru_cache
 
-from .base import BaseFtdiFlasher, BaseLinker, BaseSstCard, BytesOrSequence, BytesOrTransformer, Transform, linkers
+from .base import BaseFtdiLinker, BaseLinker, BaseSstCard, BytesOrSequence, BytesOrTransformer, Transform, linkers
 from .logger import protocol_data
 from .exceptions import DeviceError, DeviceNotSupportedError
 
 DEV_DESC = b"Dual RS232-HS B"  # "FT2232H MiniModule A"
 
-class PokeFlash(BaseFtdiFlasher):
+class PokeFlash(BaseFtdiLinker):
 	name = "PokeFlash"
 	clock_divisor = 0
 
-	PWR = BaseFtdiFlasher.GPIOL1
-	PWR_READ = BaseFtdiFlasher.GPIOL3
+	PWR = BaseFtdiLinker.GPIOL1
+	PWR_READ = BaseFtdiLinker.GPIOL3
 
-	ftdi_port_state = PWR | BaseFtdiFlasher.TMS_CS
-	ftdi_port_direction = PWR | BaseFtdiFlasher.ftdi_port_direction
+	ftdi_port_state = PWR | BaseFtdiLinker.TMS_CS
+	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
 
 	def init(self):
 		super().init()
@@ -34,6 +34,8 @@ class PokeFlash(BaseFtdiFlasher):
 		sleep(0.010)
 		# Set CS to low, start programming operation
 		self.port_state(0)
+
+		return self.detect_card()
 
 	def detect_card(self):
 		""" Detect which card is connected """
@@ -132,7 +134,7 @@ class PokeCard512(BaseSstCard):
 
 	def read_data(self, addr: int, size: int):
 		assert size <= self.block_size
-		return self.linker.read(
+		return self.linker.read_data(
 			b"".join(
 				self.prepare_read_packet(a)
 				for a in range(addr, addr + size)
@@ -146,7 +148,7 @@ class PokeCard512(BaseSstCard):
 	T_SCE = 0.100  # ms
 
 	def sst_sector_erase(self, addr: int):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x80)
 			+ self.prepare_sdp_prefixed(0x30, addr),
 			wait=0.025

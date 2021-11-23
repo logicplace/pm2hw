@@ -25,42 +25,42 @@ parser.add_argument("-p", "--profile", action="store_true", help=argparse.SUPPRE
 
 def main(args):
 	if args.flash or args.dump:
-		# TODO: discover card type
 		log("Searching for device...")
 		enable("verbose")
 		linkers = get_connected_linkers()
 		if not linkers:
 			raise DeviceError("No linkers connected!")
 		linker = linkers[0]
-		linker.init()
-		card = linker.detect_card()
-		# card = PokeCard()
-		log("Connected! Discovered a {chip} {size} KiB card", chip=card.chip, size=card.memory // 1024)
+		flashable = linker.init()
+		try:
+			log("Connected! Discovered a {chip} {size} KiB card", chip=flashable.chip, size=flashable.memory // 1024)
+		except AttributeError:
+			log("Connected!")
 
 	start = time()
 	if args.flash:
 		log("Flashing...")
 		if args.flash == "-":
-			card.flash(sys.stdin.buffer)
+			flashable.flash(sys.stdin.buffer)
 		else:
 			with open(args.flash, "rb") as f:
-				card.flash(f)
+				flashable.flash(f)
 				log("Verifying write...")
-				if card.verify(f):
+				if flashable.verify(f):
 					log("...write ok")
 				else:
 					log("...write failed")
 		log("Flashing complete! Completed in {:.3f}", time() - start)
-		return card
+		return flashable
 	elif args.dump:
 		log("Dumping...")
 		if args.dump == "-":
-			card.dump(sys.stdout.buffer)
+			flashable.dump(sys.stdout.buffer)
 		else:
 			with open(args.dump, "wb") as f:
-				card.dump(f)
+				flashable.dump(f)
 		log("Dump complete! Completed in {:.3f}", time() - start)
-		return card
+		return flashable
 	else:
 		parser.print_help()
 
@@ -68,9 +68,9 @@ try:
 	args = parser.parse_args()
 	if args.profile:
 		with cProfile.Profile() as pr:
-			card = main(args)
-		if card:
-			name = card.__class__.__name__ + ("-flash" if args.flash else "-dump")
+			flashable = main(args)
+		if flashable:
+			name = flashable.__class__.__name__ + ("-flash" if args.flash else "-dump")
 		else:
 			name = "main"
 		stats = Stats(pr)

@@ -1,7 +1,7 @@
 import struct
 from typing import NamedTuple, Optional
 
-from .base import BaseFtdiFlasher, BaseLinker, BaseReader, BaseSstCard, BytesOrTransformer, Transform, linkers
+from .base import BaseFtdiLinker, BaseLinker, BaseReader, BaseSstCard, BytesOrTransformer, Transform, linkers
 from .logger import verbose
 from .exceptions import DeviceNotSupportedError
 
@@ -55,21 +55,23 @@ class CFIQueryStruct(NamedTuple):
 	def get_size(self):
 		return 1 << self.device_size
 
-class DittoFlash(BaseFtdiFlasher):
+class DittoFlash(BaseFtdiLinker):
 	name = "DittoFlash"
 	clock_divisor = 1
 
-	PWR = BaseFtdiFlasher.GPIOL0
-	PWR_READ = BaseFtdiFlasher.GPIOL3
+	PWR = BaseFtdiLinker.GPIOL0
+	PWR_READ = BaseFtdiLinker.GPIOL3
 
-	ftdi_port_state = BaseFtdiFlasher.TMS_CS
-	ftdi_port_direction = PWR | BaseFtdiFlasher.ftdi_port_direction
+	ftdi_port_state = BaseFtdiLinker.TMS_CS
+	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
 
 	def init(self):
 		super().init()
 
 		# Set CS to low, start programming operation
 		self.port_state(0)
+
+		return self.detect_card()
 
 	def cleanup(self):
 		self.port_state(on=self.PWR)
@@ -82,7 +84,7 @@ class DittoFlash(BaseFtdiFlasher):
 
 	# def read(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None):
 	# 	""" Write commands to the card and read the response """
-	# 	self.write(data, wait=wait)
+	# 	self.send(data, wait=wait)
 	# 	buf, do_transform = self.prepare_read(size, transform)
 	# 	if self._buffering:
 	# 		self._buffer += buf
@@ -216,7 +218,7 @@ class DittoMiniRev3(BaseSstCard):
 		read_size = 512
 		end = addr + size
 		return b"".join(
-			self.linker.read(
+			self.linker.read_data(
 				b"".join(
 					self.prepare_read_packet(a)
 					for a in range(a, a + s)
@@ -233,7 +235,7 @@ class DittoMiniRev3(BaseSstCard):
 	# def write_data(self, addr: int, data: bytes):
 	# 	size = len(data)
 	# 	assert size <= self.block_size
-	# 	return self.linker.write(
+	# 	return self.linker.send(
 	# 		(
 	# 			lambda tr: self.prepare_write_packet(a, tr(d))
 	# 			for a, d in zip(range(addr, addr + size), data)
@@ -250,39 +252,39 @@ class DittoMiniRev3(BaseSstCard):
 		super().sst_byte_program(addr, self.linker.lsb_first(data))
 
 	def sst_sector_erase(self, addr: int):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x80),
 			+ self.prepare_sdp_prefixed(0x50, addr),
 			wait=0.025  # ms
 		)
 
 	def sst_block_erase(self, addr: int):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x80),
 			+ self.prepare_sdp_prefixed(0x30, addr),
 			wait=0.025  # ms
 		)
 
 	def sst_erase_suspend(self):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_write_packet(0, 0xb0),
 			wait=20e-6  # μs
 		)
 
 	def sst_erase_resume(self):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_write_packet(0, 0x30)
 		)
 
 	def sst_query_sec_id(self):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x88),
 			wait=self.T_IDA
 		)
 
 	def sst_user_security_id_byte_program(self, addr: int, data: int):
 		assert 0x00 <= addr <= 0x0f or 0x20 <= addr <= 0x2f
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0xa5),
 			self.prepare_write_packet(addr, data),
 			wait=self.T_BP
@@ -290,14 +292,14 @@ class DittoMiniRev3(BaseSstCard):
 
 	def sst_user_security_id_program_lock_out(self):
 		""" Warning: this is PERMANENT (probably?) """
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x85),
 			self.prepare_write_packet(0, 0),
 			wait=self.T_BP
 		)
 
 	def sst_cfi_query_entry(self):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x98),
 			wait=self.T_IDA
 		)

@@ -5,7 +5,7 @@ from . import pokecard, dittomini
 from .base import BaseLinker, BaseCard, linkers
 from .exceptions import *
 
-def get_connected_linkers(*args, **kwargs):
+def get_connected_linkers(**kwargs):
 	# Get D2xx linkers
 	num_devices = ftd2xx.createDeviceInfoList()
 	devices: List[BaseLinker] = []
@@ -13,9 +13,9 @@ def get_connected_linkers(*args, **kwargs):
 		# getDeviceInfoDetail returns null data for PokeCard
 		with clarify("Failed opening the device!"):
 			dev = ftd2xx.open(i)
-		flasher_cls = linkers.get(dev.description)
-		if flasher_cls:
-			devices.append(flasher_cls(dev, *args, **kwargs))
+		linker_cls = linkers.get(dev.description)
+		if linker_cls:
+			devices.append(linker_cls(dev, **kwargs))
 		else:
 			dev.close()
 

@@ -1,4 +1,4 @@
-from io import BufferedIOBase
+from io import BufferedIOBase, BytesIO
 from os import SEEK_SET, SEEK_END
 from time import sleep, time
 from typing import Any, BinaryIO, Callable, ClassVar, Dict, Iterable, Optional, Protocol, Sequence, Tuple, Type, Union, cast
@@ -32,54 +32,11 @@ class Handle(Protocol):
 	def write(self, data: bytes) -> Any:
 		...
 
-linkers: Dict[str, type] = {}
+	def close(self):
+		...
 
-class BaseOriginal:
-	def flash(self, stream: BinaryIO):
-		""" Flash a ROM to the card """
-		# Get file size
-		stream.seek(0, SEEK_END)
-		size = stream.tell()
-		if (size > self.memory * 1024):
-			raise DeviceError("The input file is too large! Max. size is {} KiB!".format(self.memory))
-		stream.seek(0, SEEK_SET)
-
-		# Chip erase or sector erase
-		self.erase(size)
-
-		# Programming
-		self.program(stream, size)
-
-	def verify(self, stream: BinaryIO) -> bool:
-		""" Verify the ROM on the card is correct """
-		stream.seek(0, SEEK_SET)
-		block_size = self.block_size
-		read = block_size
-		while read == block_size:
-			addr = stream.tell()
-			orig = stream.read(block_size)
-			read = len(orig)
-			dump = self.read_in(addr, read)
-			if orig != dump:
-				return False
-
-		return True
-
-	def dump(self, stream: BinaryIO, size: int = 0):
-		""" Dump a ROM from the card """
-		memory = self.memory
-		block_size = self.block_size
-
-		if not size:
-			size = memory * 1024
-		elif size > memory * 1024:
-			warn("Requested to dump more than the available size, truncating request.")
-			size = memory * 1024
-		sizes = [block_size] * (size // block_size)
-		sizes.append(size % block_size)
-
-		for addr, s in zip(range(0, size, block_size), sizes):
-			stream.write(self.read_in(addr, s))
+LinkerID = Union[str, Tuple[int, int]]
+linkers: Dict[LinkerID, type] = {}
 
 
 class BaseReader(BufferedIOBase):
@@ -120,8 +77,39 @@ def chunked(size, source):
         yield source[i:i+size]
 
 
-class BaseLinker:
+class BaseFlashable:
+	def flash(self, stream: BinaryIO):
+		""" Flash a ROM to the card """
+		raise NotImplementedError
+
+	def verify(self, stream: BinaryIO) -> bool:
+		""" Verify the ROM on the card is correct """
+		stream.seek(0, SEEK_SET)
+		buff1 = stream.read()
+		buff2 = BytesIO("\x00" * len(buff1))
+		self.dump(buff2)
+		return buff1 == buff2
+
+	def dump(self, stream: BinaryIO, size: int = 0):
+		""" Dump a ROM from the card """
+		raise NotImplementedError
+
+	def read(self, size: int) -> bytes:
+		""" Read from the cursor location """
+		raise NotImplementedError
+
+	def write(self, data: bytes):
+		""" Write to the cursor location """
+		raise NotImplementedError
+
+	def seek(self, offset: int, whence: int):
+		""" Adjust cursor position """
+		raise NotImplementedError
+
+
+class BaseLinker(BaseFlashable):
 	name: ClassVar[str]
+	serial: str
 	card: Optional["BaseCard"] = None
 	clock_speed: int  # MHz
 
@@ -129,7 +117,7 @@ class BaseLinker:
 
 	_buffering = False
 
-	def __init__(self, handle: Handle):
+	def __init__(self, handle: Handle, **kwargs):
 		self.handle = handle
 
 	def __del__(self):
@@ -137,17 +125,13 @@ class BaseLinker:
 		self.cleanup()
 		self.handle.close()
 
-	def init(self):
+	def init(self) -> BaseFlashable:
 		""" Inititalize the connection to the linker """
 		raise NotImplementedError
 
 	def cleanup(self):
 		""" Run any cleanup """
 		pass
-
-	def detect_card(self) -> "BaseCard":
-		""" Detect which card is connected """
-		raise NotImplementedError
 
 	def read_in(self, size: int) -> bytes:
 		""" Read bytes from the queue """
@@ -193,10 +177,10 @@ class BaseLinker:
 
 		return write_and_wait
 
-	def read(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None) -> BaseReader:
+	def read_data(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None) -> BaseReader:
 		raise NotImplementedError
 
-	def write(self, data: BytesishOrSequence, *, wait: int = 0, transform: Optional[Transform] = None):
+	def send(self, data: BytesishOrSequence, *, wait: int = 0, transform: Optional[Transform] = None):
 		""" Write commands to the card """
 		write_and_wait = self._get_wait(wait)
 		if isinstance(data, bytes) or callable(data):
@@ -221,7 +205,7 @@ class BaseLinker:
 		return (x * 0x0202020202 & 0x010884422010) % 1023
 
 
-class BaseCard:
+class BaseCard(BaseFlashable):
 	chip: str
 	memory: int  # Size available in bytes
 	block_size: int
@@ -311,7 +295,7 @@ class BaseCard:
 		raise NotImplementedError
 
 
-class BaseFtdiFlasher(BaseLinker):
+class BaseFtdiLinker(BaseLinker):
 	handle: FTD2XX
 
 	clock_divisor: int
@@ -330,8 +314,9 @@ class BaseFtdiFlasher(BaseLinker):
 	ftdi_port_state: int
 	ftdi_port_direction: ClassVar[int] = TSK_SK | TDI_DO | TMS_CS
 
-	def __init__(self, handle: FTD2XX, clock_divisor: Optional[int] = None):
+	def __init__(self, handle: FTD2XX, clock_divisor: Optional[int] = None, **kwargs):
 		super().__init__(handle)
+		self.serial = handle.getDeviceInfo()["serial"]
 		if clock_divisor is not None:
 			self.clock_divisor = clock_divisor
 
@@ -461,7 +446,7 @@ class BaseFtdiFlasher(BaseLinker):
 			for p in chunked(packet_size, data)
 		)
 
-	def read(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None) -> BaseReader:
+	def read_data(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None) -> BaseReader:
 		""" Write commands to the card and read the response """
 		if not data:
 			return self.reader(self, 0)
@@ -601,7 +586,7 @@ class BaseSstCard(BaseCard):
 		# and 10 μs on SST39VF1681
 		if data == 0xff and self.erased[0] < addr < self.erased[1]:
 			return  # Nothing to do
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0xa0)
 			+ self.prepare_write_packet(addr, data),
 			wait=self.T_BP,
@@ -609,21 +594,21 @@ class BaseSstCard(BaseCard):
 		)
 
 	def sst_chip_erase(self):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x80)
 			+ self.prepare_sdp_prefixed(0x10),
 			wait=self.T_SCE
 		)
 
 	def sst_software_id_entry(self):
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0x90),
 			wait=self.T_IDA
 		)
 
 	def sst_exit(self):
 		""" Exit query modes, back to read mode """
-		self.linker.write(
+		self.linker.send(
 			self.prepare_sdp_prefixed(0xf0),
 			wait=self.T_IDA
 		)
