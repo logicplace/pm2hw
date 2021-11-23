@@ -184,7 +184,7 @@ class BaseLinker(BaseFlashable):
 	def __del__(self):
 		""" Clean up and close """
 		self.cleanup()
-		self.handle.close()	
+		self.handle.close()
 
 	def init(self) -> BaseFlashable:
 		""" Inititalize the connection to the linker """
