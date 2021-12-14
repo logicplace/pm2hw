@@ -1,68 +1,185 @@
-# TODO: import logging
 import sys
+import logging
+from typing import Sequence, Set
+from logging import NOTSET, DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL, LogRecord
 
-WARN_ENABLED = False
-DEBUG_ENABLED = False
-VERBOSE_ENABLED = False
-PROTOCOL_ENABLED = False
+from . import __name__ as logger_name
 
-def localizer(fun):
-	def handler(msg, *args, **kwargs):
-		# TODO: localize
-		formatted = msg.format(*args, **kwargs)
-		fun(formatted)
-	
+PROTOCOL = 5
+VERBOSE = INFO - 1
+
+LOG = "INFO.LOG"
+PROGRESS = "INFO.PROGRESS"
+EXCEPTION = "ERROR.EXCEPTION"
+FATAL = "CRITICAL.FATAL"
+
+_levelToName = {
+	PROTOCOL: "PROTOCOL",
+	VERBOSE: "VERBOSE",
+	**logging._levelToName
+}
+
+logger = logging.getLogger(logger_name)
+
+class SubtypedMessage:
+	def __init__(self, msg: str, subtype: str):
+		self._msg = msg
+		self._subtype = subtype.upper()
+
+	@property
+	def subtype(self):
+		return self._subtype
+
+	def __str__(self):
+		return str(self._msg)
+
+class Formatter(logging.Formatter):
+	default_time_format = "%H:%M:%S"
+	default_msec_format = "%s.%03d"
+	default_shortlevelname = {
+		f"{INFO}.LOG": "   ",
+		f"{INFO}.PROGRESS": "   ",
+	}
+	default_shortlevelname_format = "{0[0]}: "
+
+	def __init__(self, fmt=None, datefmt=None, style="{", validate=True) -> None:
+		super().__init__(fmt, datefmt, style, validate)
+
+	def format(self, record: LogRecord):
+		if isinstance(record.msg, SubtypedMessage):
+			levelname = record.msg.subtype
+			lookup = f"{record.levelno}.{levelname}"
+		else:
+			levelname = record.levelname
+			lookup = str(record.levelno)
+		record.shortlevelname = self.default_shortlevelname.get(
+			lookup,
+			self.default_shortlevelname_format.format(levelname)
+		)
+		return super().format(record)
+
+class Handler(logging.Handler):
+	def __init__(self, level, *, handler=None, raw_handler=None) -> None:
+		super().__init__(level)
+		self._handler = raw_handler or handler or (lambda r: None)
+		self._raw = bool(raw_handler)
+
+	def set_handler(self, handler):
+		self._handler = handler
+
+	def emit(self, record):
+		self._handler(record if self._raw else self.format(record))
+
+	def add_subtype_filter(self, level: int, allow: Sequence[str] = (), reject: Sequence[str] = ()):
+		def filterer(record: LogRecord):
+			if record.levelno == level:
+				subtype = record.msg.subtype if isinstance(record.msg, SubtypedMessage) else ""
+				if allow:
+					return subtype in allow
+				if reject:
+					return subtype not in reject
+			return True
+		self.addFilter(filterer)
+
+class PiecewiseFilter(logging.Filter):
+	def __init__(self, name):
+		super().__init__(name)
+		self.enabled: Set[str] = set()
+		self.all_enabled = True
+
+	def filter(self, record: LogRecord):
+		if not super().filter(record):
+			# Name check failed
+			return False
+		return self.all_enabled or (
+			f"{record.levelname}.{record.msg.subtype}"
+			if isinstance(record.msg, SubtypedMessage) else
+			record.levelname
+		) in self.enabled
+
+	def enable(self, *args):
+		what = {_levelToName.get(a, str(a)).upper() for a in args}
+		if "ALL" in what:
+			self.all_enabled = False
+			what.remove("ALL")
+		self.enabled.update(what)
+
+	def disable(self, *args: str):
+		for a in args:
+			x = _levelToName.get(a, str(a)).upper()
+			if x == "ALL":
+				self.enabled.clear()
+				return
+			self.enabled.remove(x)
+
+logger_filter = PiecewiseFilter(logger_name)
+logger.addFilter(logger_filter)
+enable = logger_filter.enable
+disable = logger_filter.disable
+
+nice_formatter = Formatter("[{asctime}] {shortlevelname}{message}")
+
+def add_log_only_handler():
+	handler = Handler(logging.INFO)
+	handler.setFormatter(nice_formatter)
+	handler.addFilter(lambda record: record.levelno == logging.INFO)
+	logger.addHandler(handler)
 	return handler
 
-@localizer
-def log(msg):
-	print(msg)
+def protocol(msg, data=None, **kwargs):
+	if data:
+		msg = " ".join(msg, *(f"{b:02x}" for b in data))
+	else:
+		msg = msg.format(**kwargs)
+	logger.log(PROTOCOL, msg)
 
-@localizer
-def protocol(msg):
-	if PROTOCOL_ENABLED:
-		print(msg)
+def debug(msg, **kwargs):
+	logger.debug(msg.format(**kwargs))
 
-def protocol_data(direction, data):
-	if PROTOCOL_ENABLED:
-		if data:
-			print(direction, *("{:02x}".format(b) for b in data))
+def verbose(msg, **kwargs):
+	logger.log(VERBOSE, msg.format(**kwargs))
 
-@localizer
-def verbose(msg):
-	if VERBOSE_ENABLED:
-		print(msg)
+def info(msg, **kwargs):
+	logger.info(msg.format(**kwargs))
 
-@localizer
-def warn(msg):
-	if WARN_ENABLED:
-		print(msg)
+def log(msg, **kwargs):
+	logger.info(SubtypedMessage(msg.format(**kwargs), "LOG"))
 
-@localizer
-def debug(msg):
-	if DEBUG_ENABLED:
-		print(msg)
+class progress(SubtypedMessage):
+	def __init__(self, msg: str, end: int, **kwargs):
+		super().__init__(msg, "PROGRESS")
+		self.msg = msg
+		self.current = 0
+		self.percent = 0
+		self.end = end
+		self.kwargs = kwargs
+		logger.info(self)
 
-@localizer
-def error(msg):
-	print(msg, file=sys.stderr)
+	def update(self, value: int):
+		self.current = value
+		self.percent = value / self.end
+		logger.info(self)
 
+	def __str__(self):
+		return self.msg.format(**{
+			"cur": self.current,
+			"%": self.percent,
+			"end": self.end,
+		}, **self.kwargs)
 
-def set(*args: str, enabled: bool):
-	global WARN_ENABLED, DEBUG_ENABLED, VERBOSE_ENABLED, PROTOCOL_ENABLED
-	what = {str(a).lower() for a in args}
+def warn(msg, **kwargs):
+	logger.warn(msg.format(**kwargs))
 
-	if "warn" in what:
-		WARN_ENABLED = enabled
-	if "debug" in what:
-		DEBUG_ENABLED = enabled
-	if "verbose" in what:
-		VERBOSE_ENABLED = enabled
-	if "protocol" in what:
-		PROTOCOL_ENABLED = enabled
+warning = warn
 
-def enable(*args):
-	set(*args, enabled=True)
+def error(msg, **kwargs):
+	logger.error(msg.format(**kwargs))
 
-def disable(*args):
-	set(*args, enabled=False)
+def critical(msg, **kwargs):
+	logger.critical(msg.format(**kwargs))
+
+def fatal(msg, **kwargs):
+	logger.fatal(SubtypedMessage(msg.format(**kwargs), "FATAL"))
+
+def exception(msg, exc_info=True, **kwargs):
+	logger.exception(SubtypedMessage(msg.format(**kwargs), "EXCEPTION"), exc_info=exc_info)

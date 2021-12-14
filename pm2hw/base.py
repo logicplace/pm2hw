@@ -1,11 +1,11 @@
 from io import BufferedIOBase, BytesIO
-from os import SEEK_SET, SEEK_END
+from os import SEEK_SET, SEEK_CUR, SEEK_END
 from time import sleep, time
 from typing import Any, BinaryIO, Callable, ClassVar, Dict, Iterable, Optional, Protocol, Sequence, Tuple, Type, Union, cast
 
 from ftd2xx import FTD2XX
 
-from .logger import verbose, warn, protocol, protocol_data
+from .logger import verbose, warn, protocol
 from .exceptions import clarify, DeviceError
 
 Transform = Callable[[int], int]
@@ -78,6 +78,10 @@ def chunked(size, source):
 
 
 class BaseFlashable:
+	can_flash = True
+	can_erase = True
+	name: ClassVar[str]
+
 	def flash(self, stream: BinaryIO):
 		""" Flash a ROM to the card """
 		raise NotImplementedError
@@ -86,12 +90,16 @@ class BaseFlashable:
 		""" Verify the ROM on the card is correct """
 		stream.seek(0, SEEK_SET)
 		buff1 = stream.read()
-		buff2 = BytesIO("\x00" * len(buff1))
+		buff2 = BytesIO(b"\x00" * len(buff1))
 		self.dump(buff2)
 		return buff1 == buff2
 
 	def dump(self, stream: BinaryIO, size: int = 0):
 		""" Dump a ROM from the card """
+		raise NotImplementedError
+
+	def erase(self):
+		""" Erase the contents of the card """
 		raise NotImplementedError
 
 	def read(self, size: int) -> bytes:
@@ -102,7 +110,7 @@ class BaseFlashable:
 		""" Write to the cursor location """
 		raise NotImplementedError
 
-	def seek(self, offset: int, whence: int):
+	def seek(self, offset: int, whence: int) -> int:
 		""" Adjust cursor position """
 		raise NotImplementedError
 
@@ -136,12 +144,12 @@ class BaseLinker(BaseFlashable):
 	def read_in(self, size: int) -> bytes:
 		""" Read bytes from the queue """
 		ret = self.handle.read(size)
-		protocol_data("<", ret)
+		protocol("<", ret)
 		return ret
 
 	def write_out(self, data: bytes):
 		""" Write bytes over the wire """
-		protocol_data(">", data)
+		protocol(">", data)
 		self.handle.write(data)
 
 	def start_buffering(self):
@@ -210,6 +218,7 @@ class BaseCard(BaseFlashable):
 	memory: int  # Size available in bytes
 	block_size: int
 	packet_size: ClassVar[int]
+	_cursor = 0
 
 	def __init__(self, linker: BaseLinker):
 		self.linker = linker
@@ -236,7 +245,7 @@ class BaseCard(BaseFlashable):
 		stream.seek(0, SEEK_END)
 		size = stream.tell()
 		if (size > self.memory):
-			raise DeviceError("The input file is too large! Max. size is {} KiB!".format(self.memory))
+			raise DeviceError(f"The input file is too large! Max. size is {self.memory} KiB!")
 		stream.seek(0, SEEK_SET)
 
 		# Chip erase or sector erase
@@ -273,6 +282,9 @@ class BaseCard(BaseFlashable):
 		for addr, s in self.blocks(0, size):
 			stream.write(self.read_data(addr, s))
 
+	def erase(self):
+		self.erase_data(0, self.memory)
+
 	# Methods you must implement
 	def get_device_info(self) -> Tuple[int, int, Optional[int]]:
 		""" Return the device manufacture, code, and possibly extended code """
@@ -293,6 +305,33 @@ class BaseCard(BaseFlashable):
 	def erase_data(self, addr: int, size: int):
 		""" Prepare erase command(s) for some section """
 		raise NotImplementedError
+
+	def read(self, size: int):
+		addr = self._cursor
+		data = self.read_data(addr, size)
+		self._cursor += len(data)
+		return data
+
+	def write(self, data: bytes):
+		addr = self._cursor
+		self.write_data(addr, data)
+		size = len(data)
+		self._cursor += size
+		return size
+
+	def seek(self, offset: int, whence: int = SEEK_SET):
+		if whence == SEEK_SET:
+			self._cursor = offset
+		elif whence == SEEK_CUR:
+			self._cursor += offset
+		elif whence == SEEK_END:
+			self._cursor = self.memory + offset
+		else:
+			raise ValueError("whence must be one of: SEEK_SET, SEEK_CUR, or SEEK_END")
+		if self._cursor < 0:
+			self._cursor = 0
+		elif self._cursor > self.memory:
+			self._cursor = self.memory
 
 
 class BaseFtdiLinker(BaseLinker):
@@ -339,16 +378,16 @@ class BaseFtdiLinker(BaseLinker):
 		# Set USB request transfer size to 64KiB
 		with clarify("Unable to set request transfer size"):
 			handle.setUSBParameters(65536, 65536)
-			protocol("* set RequestTransferSize In={} Out={} (bytes)", 65536, 65536)
+			protocol("* set RequestTransferSize In={in} Out={out} (bytes)", **{"in": 65536, "out": 65536})
 
 		# Sets the read and write timeouts in 10 sec
 		handle.setTimeouts(10000, 10000)
-		protocol("* set TransferTimeout Read={} Write={} (ms)", 10000, 10000)
+		protocol("* set TransferTimeout Read={read} Write={write} (ms)", read=10000, write=10000)
 
 		# Setup latency
 		with clarify("Set USB Device Latency Timer failed!"):
 			handle.setLatencyTimer(255)
-			protocol("* set LatencyTimer {} (ms)", 255)
+			protocol("* set LatencyTimer {ms} (ms)", ms=255)
 
 		# Reset controller
 		with clarify("Device reset failed!"):
@@ -440,7 +479,7 @@ class BaseFtdiLinker(BaseLinker):
 	def read_in(self, size: int) -> bytes:
 		packet_size = self.card.packet_size
 		data = self.wait_read(packet_size * size, exact=False)
-		protocol_data("<", data)
+		protocol("<", data)
 		return bytes(
 			self.card.deconstruct_packet(p)[1]
 			for p in chunked(packet_size, data)
@@ -474,7 +513,7 @@ class BaseFtdiLinker(BaseLinker):
 		size = self.handle.getQueueStatus()
 		if size:
 			ret = cast(bytes, self.handle.read(size))
-			protocol_data("<", ret)
+			protocol("<", ret)
 			return ret
 		return b""
 
@@ -487,15 +526,15 @@ class BaseFtdiLinker(BaseLinker):
 		if exact and queued > size:
 			raise DeviceError(
 				"Device queued an unexpected amount of data."
-				" Wanted {} but queued {}".format(size, queued))
+				f" Wanted {size} but queued {queued}")
 		if queued < size:
 			raise DeviceError(
 				"Device took too long to queue data."
-				" Wanted {} but queued {}".format(size, queued))
+				" Wanted {size} but queued {queued}")
 		
 		if queued:
 			ret = cast(bytes, handle.read(size))
-			protocol_data("<", ret)
+			protocol("<", ret)
 			return ret
 		return b""
 

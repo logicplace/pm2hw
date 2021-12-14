@@ -3,6 +3,7 @@ from typing import NamedTuple, Optional
 
 from .base import BaseFtdiLinker, BaseLinker, BaseReader, BaseSstCard, BytesOrTransformer, Transform, linkers
 from .logger import verbose
+from .locales import natural_size
 from .exceptions import DeviceNotSupportedError
 
 DEV_DESC = b"Dual RS232 A"
@@ -168,14 +169,16 @@ class DittoMiniRev3(BaseSstCard):
 		self.block_regions = block_regions
 
 		# TODO: Dump the rest of the fields
-		verbose("Flash CFI Magic Header: {}", cfiqs.magic_qry.decode())
-		verbose("Flash CFI Reported device size: {:d} bytes ({:d} MiB)", size_bytes, size_bytes // 1024 ** 2)
-		verbose("Number of block regions: {:d}", cfiqs.number_of_erase_block_regions)
+		verbose("Flash CFI Magic Header: {header}", header=cfiqs.magic_qry.decode())
+		verbose(
+			"Flash CFI Reported device size: {bytes:d} bytes ({size:d})",
+			bytes=size_bytes, size=natural_size(size_bytes))
+		verbose("Number of block regions: {br:d}", br=cfiqs.number_of_erase_block_regions)
 		for i, block_region in enumerate(block_regions):
-			verbose("  Block region #{:d}", i+1)
-			verbose("    Block size: {:d} bytes", block_region.get_size())
-			verbose("    Blocks in region: {:d}", block_region.n_blocks + 1)
-		verbose("Using block size: {:d} bytes", self.block_size)
+			verbose("  Block region #{i:d}", i=i+1)
+			verbose("    Block size: {bytes:d} bytes", bytes=block_region.get_size())
+			verbose("    Blocks in region: {blocks:d}", blocks=block_region.n_blocks + 1)
+		verbose("Using block size: {bytes:d} bytes", bytes=self.block_size)
 
 	def prepare_sdp_prefixed(self, data: int, addr: int = 0xAAA):
 		return super().prepare_sdp_prefixed(data, addr)

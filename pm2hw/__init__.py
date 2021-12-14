@@ -2,7 +2,7 @@ from typing import List
 import ftd2xx
 
 from . import pokecard, dittomini
-from .base import BaseLinker, BaseCard, linkers
+from .base import BaseFlashable, BaseLinker, BaseCard, linkers
 from .exceptions import *
 
 def get_connected_linkers(**kwargs):

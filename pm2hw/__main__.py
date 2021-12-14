@@ -6,9 +6,13 @@ import cProfile
 from pstats import Stats
 
 from . import get_connected_linkers
-from .logger import log, error, enable
+from .logger import log, error, exception, enable, logger, nice_formatter, Handler, INFO
 from .exceptions import DeviceError
 
+# add_log_only_handler().set_handler(print)
+handler = Handler(INFO, handler=lambda m: sys.stderr.write(f"{m}\n"))
+handler.setFormatter(nice_formatter)
+logger.addHandler(handler)
 
 parser = argparse.ArgumentParser(
 	"pm2hw",
@@ -80,5 +84,8 @@ try:
 	else:
 		main(args)
 except DeviceError as err:
-	error("An error occurred: {}", str(err))
+	error("A device error occurred: {errmsg}", errmsg=str(err))
 	sys.exit(1)
+except Exception as err:
+	exception("An error occurred", err)
+	sys.exit(2)

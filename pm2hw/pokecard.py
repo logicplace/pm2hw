@@ -1,10 +1,9 @@
 from math import ceil
-from time import sleep, time
+from time import sleep
 from typing import Optional, Tuple
 from functools import lru_cache
 
-from .base import BaseFtdiLinker, BaseLinker, BaseSstCard, BytesOrSequence, BytesOrTransformer, Transform, linkers
-from .logger import protocol_data
+from .base import BaseFtdiLinker, BaseLinker, BaseSstCard, BytesOrTransformer, Transform, linkers
 from .exceptions import DeviceError, DeviceNotSupportedError
 
 DEV_DESC = b"Dual RS232-HS B"  # "FT2232H MiniModule A"
@@ -61,7 +60,8 @@ class PokeFlash(BaseFtdiLinker):
 		# The 2b here is ftdi_port_direction
 		return b"\x80\x00\x2b\x8f" + wait_cycles.to_bytes(2, "little")
 
-# TODO: Would be good to separate v1 and v2 ?
+# TODO: Would be good to separate v1 (this might be PokeUSB's) and v2 ?
+# Seems 2.0 and 2.1 had different linkers, too...
 class PokeCard512(BaseSstCard):
 	memory = 512 * 1024
 	block_size = 8 * 1024
@@ -102,6 +102,7 @@ class PokeCard512(BaseSstCard):
 			# https://ww1.microchip.com/downloads/en/DeviceDoc/20005023B.pdf
 			self.chip = "SST39VF040"
 			self.memory = 512 * 1024
+			self.name = "PokeCard512 (Rev 2.1)"
 			# wait time for byte_program: 14~20 μs
 		else:
 			raise DeviceNotSupportedError(manuf, devc, devcex)

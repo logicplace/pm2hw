@@ -1,3 +1,4 @@
+appdirs
 ftd2xx
 pyusb
 # Optional: asciimatics

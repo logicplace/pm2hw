@@ -12,30 +12,26 @@ class DeviceNotSupportedError(DeviceError):
 		self.extended = extended
 
 	def __str__(self):
-		return """\
+		return f"""\
 			Device not supported:
-			Manufacturer code: {:02X}
-			Device code: {:02X}
-			Extended code: {:02X}
-		""".format(
-			self.manufacturer,
-			self.device,
-			self.extended
-		).replace("\t", "")
+			Manufacturer code: {self.manufacturer:02X}
+			Device code: {self.device:02X}
+			Extended code: {self.extended:02X}
+		""".replace("\t", "")
 
 	def __repr__(self):
 		name = type(self).__name__
 		args = ", ".join(
-			"{}=0x{:02x}".format(x, getattr(self, x))
+			f"{x}=0x{getattr(self, x):02x}"
 			for x in ["manufacturer", "device", "extended"]
 		)
-		return "{}({})".format(name, args)
+		return f"{name}({args})"
 
 @contextmanager
 def clarify(error_msg):
 	try:
 		yield
 	except ftd2xx.DeviceError as err:
-		raise DeviceError("{}: {}".format(error_msg, str(err))) from None
+		raise DeviceError(f"{error_msg}: {err}") from None
 	except DeviceError:
 		raise DeviceError(error_msg) from None
