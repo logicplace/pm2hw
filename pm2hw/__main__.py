@@ -5,14 +5,29 @@ from time import time
 import cProfile
 from pstats import Stats
 
-from . import get_connected_linkers
-from .logger import log, error, exception, enable, logger, nice_formatter, Handler, INFO
+from . import get_connected_linkers, logger
+from .logger import log, error, exception, progress
+from .locales import natural_size
 from .exceptions import DeviceError
 
-# add_log_only_handler().set_handler(print)
-handler = Handler(INFO, handler=lambda m: sys.stderr.write(f"{m}\n"))
-handler.setFormatter(nice_formatter)
-logger.addHandler(handler)
+def completed_progess_only(record):
+	if isinstance(record.msg, progress):
+		if record.msg.is_complete():
+			record.msg.final_form = "{1}"
+			return True
+		return False
+	return True
+
+logger.set_level(logger.INFO)
+handler = logger.Handler(logger.INFO, handler=lambda m: sys.stderr.write(f"{m}\n"))
+handler.add_filter(completed_progess_only)
+logger.nice_formatter.default_shortlevelname = {
+	f"{logger.INFO}.LOG": "",
+	f"{logger.INFO}.PROGRESS": "",
+}
+default_shortlevelname_format = "{}: "
+handler.set_formatter(logger.nice_formatter)
+logger.add_handler(handler)
 
 parser = argparse.ArgumentParser(
 	"pm2hw",
@@ -30,14 +45,14 @@ parser.add_argument("-p", "--profile", action="store_true", help=argparse.SUPPRE
 def main(args):
 	if args.flash or args.dump:
 		log("Searching for device...")
-		enable("verbose")
+		logger.enable("verbose", update_logger=True)
 		linkers = get_connected_linkers()
 		if not linkers:
 			raise DeviceError("No linkers connected!")
 		linker = linkers[0]
 		flashable = linker.init()
 		try:
-			log("Connected! Discovered a {chip} {size} KiB card", chip=flashable.chip, size=flashable.memory // 1024)
+			log("Connected! Discovered a {chip} {size} card", chip=flashable.chip, size=natural_size(flashable.memory))
 		except AttributeError:
 			log("Connected!")
 
@@ -54,7 +69,7 @@ def main(args):
 					log("...write ok")
 				else:
 					log("...write failed")
-		log("Flashing complete! Completed in {:.3f}", time() - start)
+		log("Flashing complete! Completed in {secs:.3f}", secs=time() - start)
 		return flashable
 	elif args.dump:
 		log("Dumping...")
@@ -63,7 +78,7 @@ def main(args):
 		else:
 			with open(args.dump, "wb") as f:
 				flashable.dump(f)
-		log("Dump complete! Completed in {:.3f}", time() - start)
+		log("Dump complete! Completed in {secs:.3f}", secs=time() - start)
 		return flashable
 	else:
 		parser.print_help()

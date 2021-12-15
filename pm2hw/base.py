@@ -5,7 +5,7 @@ from typing import Any, BinaryIO, Callable, ClassVar, Dict, Iterable, Optional, 
 
 from ftd2xx import FTD2XX
 
-from .logger import verbose, warn, protocol
+from .logger import log, progress, verbose, warn, protocol
 from .exceptions import clarify, DeviceError
 
 Transform = Callable[[int], int]
@@ -251,13 +251,36 @@ class BaseCard(BaseFlashable):
 		# Chip erase or sector erase
 		self.erase_data(0, size)
 
+		prog = progress(
+			progress.basic("Flashing to {card.name}"),
+			size,
+			card=self
+		)
+
 		# Programming
 		for addr, s in self.blocks(0, size):
 			self.write_data(addr, stream.read(s))
+			prog.update(addr + s)
+		verbose("Flashing complete")
 
 	def verify(self, stream: BinaryIO) -> bool:
 		""" Verify the ROM on the card is correct """
-		stream.seek(0, SEEK_SET)
+		if stream.seekable():
+			stream.seek(0, SEEK_END)
+			prog = progress(
+				progress.basic("Verifying contents of {card.name}"),
+				stream.tell(),
+				card=self
+			)
+
+			stream.seek(0, SEEK_SET)
+		else:
+			prog = progress(
+				("Verifying contents of {card.name}: {cur}", "  Completed in {secs:.3f}s"),
+				float("+inf"),
+				card=self
+			)
+
 		block_size = self.block_size
 		read = block_size
 		bads = []
@@ -269,18 +292,30 @@ class BaseCard(BaseFlashable):
 			if orig != dump:
 				count = len([i for i, (o, d) in enumerate(zip(orig, dump)) if o != d])
 				bads.append(count)
+			prog.add(read)
+		prog.done()
 
 		if any(bads):
-			verbose("Verification failed with bad bytes in the following blocks:")
+			warn("Verification failed")
+			verbose("...with bad bytes in the following blocks:")
 			for i, c in enumerate(bads):
 				verbose("  Block {block}: {count}", block=i, count=c)
 			return False
+		else:
+			log("Verification successful")
 		return True
 
 	def dump(self, stream: BinaryIO, size: int = 0):
 		""" Dump a ROM from the card """
+		prog = progress(
+			progress.basic("Dumping from {card.name}"),
+			size or self.memory,
+			card=self
+		)
 		for addr, s in self.blocks(0, size):
 			stream.write(self.read_data(addr, s))
+			prog.update(addr + s)
+		verbose("Dumping complete")
 
 	def erase(self):
 		self.erase_data(0, self.memory)
@@ -561,15 +596,25 @@ class BaseSstCard(BaseCard):
 	def erase_data(self, addr: int = 0, size: int = 0):
 		if not size:
 			size = self.memory
+
+		prog = progress(
+			progress.basic("Erasing data on {card.name}"),
+			size,
+			card=self
+		)
+
 		if addr == 0 and size == self.memory:
 			# Do a full chip erase.
 			self.sst_chip_erase()
 			self._wait_for_erased(0, 20)
-		# elif addr % 0x04000 == 0 and size % 0x04000 == 0:
-		# 	# Sector erase
-		# 	for a in range(addr, addr + size, 0x04000):
-		# 		self.sst_sector_erase(a)
-		# 		self._wait_for_erased(a, 5)
+			prog.update(size)
+		elif addr % 0x04000 == 0 and size % 0x04000 == 0:
+			# Sector erase
+			for a in range(addr, addr + size, 0x04000):
+				prog.update(a - addr)
+				self.sst_sector_erase(a)
+				self._wait_for_erased(a, 5)
+			prog.update(a - addr)
 		else:
 			# Overwrite memory manually
 			# onset .. sectors .. coda
@@ -579,17 +624,22 @@ class BaseSstCard(BaseCard):
 				onset = shortest - onset
 			coda = (addr + size) % shortest
 
-		# 	# Erase parts which are valid sectors
-		# 	sectors_start = addr + onset
-		# 	sectors_end = addr + size - coda
-		# 	for a in range(sectors_start, sectors_end, 0x04000):
-		# 		self.sst_sector_erase(a)
-		# 		self._wait_for_erased(a, 5)
+			# Erase parts which are valid sectors
+			sectors_start = addr + onset
+			sectors_end = addr + size - coda
+			for a in range(sectors_start, sectors_end, 0x04000):
+				prog.update(a - addr - onset)
+				self.sst_sector_erase(a)
+				self._wait_for_erased(a, 5)
+			prog.update(a - addr - onset)
 
-		# 	# Overwrite onset and coda (the bookends)
-		# 	self.write_data(addr, b"\xff" * onset)
-		# 	self.write_data(sectors_end, b"\xff" * coda)
+			# Overwrite onset and coda (the bookends)
+			self.write_data(addr, b"\xff" * onset)
+			prog.add(onset)
+			self.write_data(sectors_end, b"\xff" * coda)
+			prog.add(coda)
 		self.erased = (addr, addr + size)
+		verbose("Erase complete")
 
 	def _wait_for_erased(self, addr: int, secs: int):
 		start = time()

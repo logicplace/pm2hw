@@ -6,7 +6,7 @@ from typing import  Dict, List, Tuple
 from . import themes
 from .i18n import _, TStringVar
 from .widgets import Menu, RichText, ScrollFrame
-from .components import open_about, refresh_linkers, GameList, HelpDialog
+from .components import add_progress, make_status, open_about, refresh_linkers, set_status, GameList, HelpDialog
 from .. import logger
 
 # TODO: update title on lg change
@@ -35,14 +35,7 @@ log_pane = RichText(
 
 pw1.add(pw2, weight=1)
 
-status = tk.StringVar(value="...")
-status_lbl = ttk.Label(root, relief=tk.RIDGE, borderwidth=2, textvariable=status, padding=(5, 2))
-status_lbl.grid(column=0, row=2, sticky=tk.NSEW)
-
-def auto_refresh():
-	refresh_linkers(list)
-	root.after(5000, auto_refresh)
-auto_refresh()
+make_status(root).grid(column=0, row=2, sticky=tk.NSEW)
 
 log_toggler = tk.BooleanVar(root)
 log_pane_height = 0
@@ -77,16 +70,19 @@ def insert_log_entry(record: logger.LogRecord):
 	tag = record.levelname.lower()
 	if isinstance(record.msg, logger.progress):
 		if record.msg in progress_bars:
-			start, end = progress_bars[record.msg]
-			log_pane.delete(start, end)
-			log_pane.insert(start, f"\n{msg}", tag)
-			end_line = int(start.split(".", 1)[0]) + len(msg.splitlines())
-			progress_bars[record.msg] = (start, f"{end_line}.0")
+			if record.msg.is_complete() or log_toggler.get():
+				start, end = progress_bars[record.msg]
+				log_pane.delete(start, end)
+				log_pane.insert(start, f"\n{msg}", tag)
+				end_line = int(start.split(".", 1)[0]) + len(msg.splitlines())
+				progress_bars[record.msg] = (start, f"{end_line}.0")
+			set_status()
 		else:
 			start = log_pane.index(tk.END)
 			log_pane.insert(tk.END, f"\n{msg}", tag)
 			end = log_pane.index(tk.END)
 			progress_bars[record.msg] = (start, end)
+			add_progress(record.msg)
 	else:
 		log_pane.insert(tk.END, f"\n{msg}", tag)
 
@@ -102,8 +98,10 @@ def update_log_entries(varname, idx, mode):
 		log_pane.yview(pos)
 log_title.trace_add("write", update_log_entries)
 
+logger.set_level(logger.INFO)
 log_handler = logger.Handler(logger.INFO, raw_handler=add_log_entry)
-log_handler.setFormatter(logger.nice_formatter)
+log_handler.set_formatter(logger.nice_formatter)
+logger.add_handler(log_handler)
 
 # TODO: remember window settings in config
 
@@ -139,6 +137,11 @@ with Menu(root) as m:
 			)
 		)
 		help.add_command(label=_("window.menu.help.about"), command=partial(open_about, root))
+
+def auto_refresh():
+	refresh_linkers(list)
+	root.after(5000, auto_refresh)
+auto_refresh()
 
 # from .linker import DittoFlash
 # from .. import BaseLinker

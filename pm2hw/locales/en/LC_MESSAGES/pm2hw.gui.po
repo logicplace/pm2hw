@@ -50,7 +50,7 @@ msgstr "How to _use"
 msgid "window.menu.help.about"
 msgstr "_About"
 
-#: pm2hw\gui\gamelist.py:
+#: pm2hw\gui\components\gamelist.py:
 msgid "info.rom.details.name"
 msgstr "Name"
 
@@ -144,7 +144,7 @@ msgstr "Linkers"
 msgid "library.list.header.games"
 msgstr "Games"
 
-#: pm2hw\gui\help.py:
+#: pm2hw\gui\components\help.py:
 msgid "help.about.title"
 msgstr "About pm2hw"
 
@@ -392,6 +392,31 @@ msgstr "Command line reference"
 
 msgid "help.topic.reference.content"
 msgstr "# <str name=help.topic.reference.title/>\n"
+
+#: pm2hw\gui\components\status.py:
+msgid "status.flashing.in-progress"
+msgstr "Flashing {name} ({pc:.0f}%)"
+
+msgid "status.flashing.complete"
+msgstr "Completed flashing {name} in {secs:.3f}s"
+
+msgid "status.reading.in-progress"
+msgstr "Reading {name} into memory ({pc:.0f}%)"
+
+msgid "status.reading.complete"
+msgstr "Completed reading {name} in {secs:.3f}s"
+
+msgid "status.dumping.in-progress"
+msgstr "Dumping {name} ({pc:.0f}%)"
+
+msgid "status.dumping.complete"
+msgstr "Completed dumping {name} in {secs:.3f}s"
+
+msgid "status.erasing.in-progress"
+msgstr "Erasing {name} ({pc:.0f}%)"
+
+msgid "status.erasing.complete"
+msgstr "Completed erasing {name} in {secs:.3f}s"
 
 # ROM names
 msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.4433B736"

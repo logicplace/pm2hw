@@ -1,6 +1,6 @@
-import sys
+import time
 import logging
-from typing import Sequence, Set
+from typing import Sequence, Set, Tuple, Union
 from logging import NOTSET, DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL, LogRecord
 
 from . import __name__ as logger_name
@@ -8,16 +8,29 @@ from . import __name__ as logger_name
 PROTOCOL = 5
 VERBOSE = INFO - 1
 
+ALL = "ALL"
 LOG = "INFO.LOG"
 PROGRESS = "INFO.PROGRESS"
 EXCEPTION = "ERROR.EXCEPTION"
 FATAL = "CRITICAL.FATAL"
 
 _levelToName = {
-	PROTOCOL: "PROTOCOL",
 	VERBOSE: "VERBOSE",
+	PROTOCOL: "PROTOCOL",
 	**logging._levelToName
 }
+
+_nameToLevel = {
+	"EXCEPTION": ERROR,
+	"VERBOSE": VERBOSE,
+	"PROTOCOL": PROTOCOL,
+	**logging._nameToLevel
+}
+
+def get_level_from_name(name: str):
+	level, *_ = name.split(".", 1)
+	return _nameToLevel[level]
+
 
 logger = logging.getLogger(logger_name)
 
@@ -42,8 +55,8 @@ class Formatter(logging.Formatter):
 	}
 	default_shortlevelname_format = "{0[0]}: "
 
-	def __init__(self, fmt=None, datefmt=None, style="{", validate=True) -> None:
-		super().__init__(fmt, datefmt, style, validate)
+	def __init__(self, fmt=None, datefmt=None) -> None:
+		super().__init__(fmt, datefmt, "{", True)
 
 	def format(self, record: LogRecord):
 		if isinstance(record.msg, SubtypedMessage):
@@ -58,6 +71,16 @@ class Formatter(logging.Formatter):
 		)
 		return super().format(record)
 
+class MonospacePrefixFormatter(Formatter):
+	def formatMessage(self, record: LogRecord):
+		beginning = self._style.format(record)
+		if "\n" in record.message:
+			# TODO: regard character widths (narrow/wide)
+			prefix = " " * len(beginning)
+			lines = record.message.splitlines(keepends=True)
+			return beginning + prefix.join(lines)
+		return beginning + record.message
+
 class Handler(logging.Handler):
 	def __init__(self, level, *, handler=None, raw_handler=None) -> None:
 		super().__init__(level)
@@ -67,8 +90,13 @@ class Handler(logging.Handler):
 	def set_handler(self, handler):
 		self._handler = handler
 
+	def handle(self, record: LogRecord) -> bool:
+		return super().handle(record)
+
 	def emit(self, record):
 		self._handler(record if self._raw else self.format(record))
+
+	add_filter = logging.Handler.addFilter
 
 	def add_subtype_filter(self, level: int, allow: Sequence[str] = (), reject: Sequence[str] = ()):
 		def filterer(record: LogRecord):
@@ -81,57 +109,91 @@ class Handler(logging.Handler):
 			return True
 		self.addFilter(filterer)
 
+	set_formatter = logging.Handler.setFormatter
+
 class PiecewiseFilter(logging.Filter):
 	def __init__(self, name):
 		super().__init__(name)
 		self.enabled: Set[str] = set()
-		self.all_enabled = True
+		self.disabled: Set[str] = set()
+		self.default_enabled = True
 
 	def filter(self, record: LogRecord):
 		if not super().filter(record):
 			# Name check failed
 			return False
-		return self.all_enabled or (
+		lookup = (
 			f"{record.levelname}.{record.msg.subtype}"
 			if isinstance(record.msg, SubtypedMessage) else
 			record.levelname
-		) in self.enabled
+		)
+		res = (
+			lookup not in self.disabled
+			if self.default_enabled else
+			lookup in self.enabled
+		)
+		return res
 
-	def enable(self, *args):
+	def _xable(self, args):
 		what = {_levelToName.get(a, str(a)).upper() for a in args}
-		if "ALL" in what:
-			self.all_enabled = False
+		has_all = "ALL" in what
+		if has_all:
 			what.remove("ALL")
-		self.enabled.update(what)
+		return what, has_all
 
-	def disable(self, *args: str):
-		for a in args:
-			x = _levelToName.get(a, str(a)).upper()
-			if x == "ALL":
-				self.enabled.clear()
-				return
-			self.enabled.remove(x)
+	def enable(self, *args, update_logger=False):
+		what, had_all = self._xable(args)
+		if had_all:
+			self.default_enabled = True
+		self.enabled.update(what)
+		self.disabled -= what
+		if update_logger:
+			self.set_level_to_min()
+
+	def disable(self, *args: str, update_logger=False):
+		what, had_all = self._xable(args)
+		if had_all:
+			self.default_enabled = False
+		self.disabled.update(what)
+		self.enabled -= what
+		if update_logger:
+			self.set_level_to_min()
+
+	def set_level_to_min(self):
+		if self.name:
+			level = min(map(get_level_from_name, self.enabled))
+			logger = logging.getLogger(self.name)
+			logger.setLevel(level)
 
 logger_filter = PiecewiseFilter(logger_name)
 logger.addFilter(logger_filter)
 enable = logger_filter.enable
 disable = logger_filter.disable
+add_filter = logger.addFilter
+remove_filter = logger.removeFilter
+add_handler = logger.addHandler
+remove_handler = logger.removeHandler
+set_level = logger.setLevel
+get_effective_level = logger.getEffectiveLevel
+is_enabled_for = logger.isEnabledFor
 
-nice_formatter = Formatter("[{asctime}] {shortlevelname}{message}")
+nice_formatter = MonospacePrefixFormatter("[{asctime}] {shortlevelname}")
 
 def add_log_only_handler():
 	handler = Handler(logging.INFO)
-	handler.setFormatter(nice_formatter)
-	handler.addFilter(lambda record: record.levelno == logging.INFO)
-	logger.addHandler(handler)
+	handler.set_formatter(nice_formatter)
+	handler.add_filter(lambda record: record.levelno == logging.INFO)
+	add_handler(handler)
 	return handler
 
+
 def protocol(msg, data=None, **kwargs):
-	if data:
-		msg = " ".join(msg, *(f"{b:02x}" for b in data))
-	else:
-		msg = msg.format(**kwargs)
-	logger.log(PROTOCOL, msg)
+	if is_enabled_for(PROTOCOL):
+		if data:
+			msg = " ".join((msg, *(f"{b:02x}" for b in data)))
+		else:
+			msg = msg.format(**kwargs)
+		logger.log(PROTOCOL, msg)
 
 def debug(msg, **kwargs):
 	logger.debug(msg.format(**kwargs))
@@ -145,27 +207,69 @@ def info(msg, **kwargs):
 def log(msg, **kwargs):
 	logger.info(SubtypedMessage(msg.format(**kwargs), "LOG"))
 
+_OneToThreeStrings = Union[str, Tuple[str], Tuple[str, str], Tuple[str, str, str]]
+
 class progress(SubtypedMessage):
-	def __init__(self, msg: str, end: int, **kwargs):
+	@staticmethod
+	def basic(prefix: str):
+		return prefix + ": {cur}/{end} ({pc:.0f}%)", "  Completed in {secs:.3f}s"
+
+	def __init__(self, msg: _OneToThreeStrings, end: int, *, level="INFO", **kwargs):
 		super().__init__(msg, "PROGRESS")
-		self.msg = msg
+		if isinstance(msg, str):
+			self.msg, self.final_msg = msg, None
+		else:
+			lmsg = len(msg)
+			self.msg = msg[0]
+			self.final_msg = msg[1] if lmsg >= 2 else None
+			self.final_form = msg[2] if lmsg >= 3 else "{}\n{}"
+
 		self.current = 0
 		self.percent = 0
 		self.end = end
 		self.kwargs = kwargs
-		logger.info(self)
+		self.record = logger.makeRecord(
+			logger_name, _nameToLevel.get(level, level),
+			"(unknown file)", 0, self, [],
+			None, "(unknown function)", None, None
+		)
+		self.time = self.record.created
+		logger.handle(self.record)
+
+	def add(self, value: int):
+		self.update(self.current + value)
 
 	def update(self, value: int):
 		self.current = value
-		self.percent = value / self.end
-		logger.info(self)
+		self.percent = value * 100 / self.end
+		self.time = time.time()
+		logger.handle(self.record)
+
+	def done(self):
+		""" Force a done state """
+		if self.end > self.current:
+			self.end = self.current
+
+	def is_complete(self):
+		return self.current >= self.end
+
+	def time_taken(self):
+		return self.time - self.record.created
 
 	def __str__(self):
-		return self.msg.format(**{
-			"cur": self.current,
-			"%": self.percent,
-			"end": self.end,
-		}, **self.kwargs)
+		seconds = self.time_taken()
+		if self.final_msg and self.current >= self.end:
+			# Finished
+			msg = self.final_form.format(self.msg, self.final_msg)
+		else:
+			msg = self.msg
+		return msg.format(
+			cur=self.current,
+			pc=self.percent,
+			end=self.end,
+			secs=seconds,
+			**self.kwargs
+		)
 
 def warn(msg, **kwargs):
 	logger.warn(msg.format(**kwargs))

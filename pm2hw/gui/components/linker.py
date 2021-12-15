@@ -4,11 +4,15 @@ from typing import TYPE_CHECKING, Optional
 
 from tkinter import ttk, filedialog
 
+from pm2hw.locales import natural_size
+
+from .status import prepare_progress
 from .library import BaseRomEntry
 from ..i18n import _, localized_game_name
 from ..util import filetypes_min, threaded
 from ... import get_connected_linkers, BaseLinker, BaseFlashable
 from ...info import games
+from ...logger import log, verbose
 from ...exceptions import DeviceError
 
 if TYPE_CHECKING:
@@ -45,7 +49,14 @@ class Linker(BaseRomEntry):
 	def ensure_connected(self):
 		# TODO: check for disconnections
 		if not self.connected:
+			verbose("Connecting to {linker.name}...", linker=self.linker)
 			self.flashable = self.linker.init()
+			try:
+				size = self.flashable.memory
+				log("Connected! Discovered a {name} ({size})",
+					name=self.flashable.name, size=natural_size(size))
+			except AttributeError:
+				log("Connected! Discovered a {name}", name=self.flashable.name)
 			self.info = games.lookup(self.flashable)
 			self.connected = True
 			self.parent.update_entry(self)
@@ -78,6 +89,7 @@ class Linker(BaseRomEntry):
 		# TODO: disable buttons, switch to throbber, whatever
 		if not bypass:
 			self.lock.acquire()
+			prepare_progress(self.flashable, "reading")
 		self.reading = True
 
 		self.data.seek(0)
@@ -87,7 +99,7 @@ class Linker(BaseRomEntry):
 		self.info = games.lookup(self.data, check_crc=True)
 
 		self.reading = False
-		self.parent.update_info()
+		self.parent.update_preview()
 		self.parent.update_entry(self)
 		if not bypass:
 			self.lock.release()
@@ -115,6 +127,7 @@ class Linker(BaseRomEntry):
 				self.data.seek(0)
 				out.write(self.data.read())
 			else:
+				prepare_progress(self.flashable, "dumping")
 				self.read_to_memory(bypass=True)
 				self.data.seek(0)
 				out.write(self.data.read())
@@ -148,7 +161,7 @@ class Linker(BaseRomEntry):
 		self.ensure_connected()
 		self.lock.acquire()
 		self.flashing = True
-		# TODO: status updates
+		prepare_progress(self.flashable, "erasing", "flashing")
 		with open(fn, "rb") as f:
 			self.data.seek(0)
 			self.data.write(f.read())
@@ -159,7 +172,7 @@ class Linker(BaseRomEntry):
 		self.flashable.flash(self.data)
 
 		self.flashing = False
-		self.parent.update_info()
+		self.parent.update_preview()
 		self.parent.update_entry(self)
 		self.lock.release()
 
@@ -171,6 +184,7 @@ class Linker(BaseRomEntry):
 
 		self.lock.acquire()
 		self.erasing = True
+		prepare_progress(self.flashable, "erasing")
 
 		self.flashable.erase()
 		self.data.seek(0)
@@ -178,7 +192,7 @@ class Linker(BaseRomEntry):
 		self.info = None
 
 		self.erasing = False
-		self.parent.update_info()
+		self.parent.update_preview()
 		self.parent.update_entry(self)
 		self.lock.release()
 
@@ -230,6 +244,7 @@ def refresh_linkers(game_list: "GameList"):
 			cls = label2entry_cls[linker.name]
 			e = entries[k] = cls(game_list, linker)
 			game_list.add(e)
+			log("Discovered a {linker.name}", linker=linker)
 
 	# If there are no entries, add a message
 	if not entries:

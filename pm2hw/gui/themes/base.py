@@ -212,7 +212,7 @@ class BaseTheme(metaclass=MetaTheme):
 		},
 		"Console.RichText": {
 			"configure": {
-				"font": "RichTextMonoFont",
+				"font": "RichTextConsoleFont",
 				"wrap": tk.WORD,
 			}
 		},
@@ -253,14 +253,26 @@ class BaseTheme(metaclass=MetaTheme):
 			if x.endswith("Font"):
 				yield x, getattr(self, x)
 
+	@staticmethod
+	def _norm_font_config(families, config):
+		if isinstance(config.get("family"), (list, tuple)):
+			for family in config["family"]:
+				if family in families:
+					config["family"] = family
+					break
+
 	def create_fonts(self):
+		families = font.families()
 		for name, config in self.fonts():
+			self._norm_font_config(families, config)
 			f = font.Font(self.root, name=name, **config)
 			self.anti_collection.append(f)
 
 	def update_fonts(self):
+		families = font.families()
 		for name, config in self.fonts():
 			f = font.nametofont(name)
+			self._norm_font_config(families, config)
 			f.configure(**config)
 
 	# Fonts
@@ -309,6 +321,10 @@ class BaseTheme(metaclass=MetaTheme):
 	}
 	RichTextMonoFont = {
 		"family": "Courier New",
+		"size": 12,
+	}
+	RichTextConsoleFont = {
+		"family": ["Consolas", "Courier New"],
 		"size": 12,
 	}
 	RichTextH1Font = {
