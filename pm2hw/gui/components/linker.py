@@ -6,7 +6,7 @@ from tkinter import ttk, filedialog
 
 from pm2hw.locales import natural_size
 
-from .status import prepare_progress
+from .status import prepare_progress, set_status
 from .library import BaseRomEntry
 from ..i18n import _, localized_game_name
 from ..util import filetypes_min, threaded
@@ -46,6 +46,12 @@ class Linker(BaseRomEntry):
 			return _("library.list.linker.name.unconnected").format(name=self.linker.name)
 		return _("library.list.linker.name.no_rom").format(name=self.flashable.name)
 
+	@property
+	def title(self):
+		if self.flashable is not None:
+			return self.flashable.name
+		return ""
+
 	def ensure_connected(self):
 		# TODO: check for disconnections
 		if not self.connected:
@@ -71,12 +77,20 @@ class Linker(BaseRomEntry):
 			self.add_button(frm, _("info.button.read.in-progress"), disabled=True)
 		elif not (self.dumping or self.flashing or self.data.seek(0, os.SEEK_END)) and self.info:
 			self.add_button(frm, _("info.button.read"), self.read_to_memory)
-		# TODO: self.xing
-		self.add_button(frm, _("info.button.dump"), self.dump)
+		if self.dumping:
+			self.add_button(frm, _("info.button.dump.in-progress"), disabled=True)
+		else:
+			self.add_button(frm, _("info.button.dump"), self.dump, disabled=self.flashing or self.erasing)
 		if self.flashable.can_flash:
-			self.add_button(frm, _("info.button.flash"), self.flash, disabled=self.reading)
+			if self.flashing:
+				self.add_button(frm, _("info.button.flash.in-progress"), disabled=True)
+			else:
+				self.add_button(frm, _("info.button.flash"), self.flash, disabled=self.reading)
 		if self.flashable.can_erase:
-			self.add_button(frm, _("info.button.erase"), self.erase, disabled=self.reading)
+			if self.erasing:
+				self.add_button(frm, _("info.button.erase.in-progress"), disabled=True)
+			else:
+				self.add_button(frm, _("info.button.erase"), self.erase, disabled=self.reading)
 		return frm
 			
 	def render_details_to(self, target: ttk.Frame):
@@ -89,8 +103,11 @@ class Linker(BaseRomEntry):
 		# TODO: disable buttons, switch to throbber, whatever
 		if not bypass:
 			self.lock.acquire()
+			self.reading = True
+			self.parent.update_preview()
 			prepare_progress(self.flashable, "reading")
-		self.reading = True
+		else:
+			self.reading = True
 
 		self.data.seek(0)
 		# TODO: status updates
@@ -120,6 +137,7 @@ class Linker(BaseRomEntry):
 			# TODO: disable buttons, switch to throbber, whatever
 			self.lock.acquire()
 			self.dumping = True
+			self.parent.update_preview()
 
 			# Check if it's already been read into memory
 			# TODO: status updates
@@ -142,11 +160,10 @@ class Linker(BaseRomEntry):
 	@threaded
 	def flash(self):
 		if not self.flashable.can_flash:
-			# TODO: error to status
+			set_status(f"{self.flashable.name} does not support flashing")
 			return
 
 		fn = filedialog.askopenfilename(
-			mode="rb",
 			defaultextension=".min",
 			filetypes=filetypes_min,
 			# TODO: initialdir
@@ -161,11 +178,14 @@ class Linker(BaseRomEntry):
 		self.ensure_connected()
 		self.lock.acquire()
 		self.flashing = True
+		self.parent.update_preview()
 		prepare_progress(self.flashable, "erasing", "flashing")
+
 		with open(fn, "rb") as f:
 			self.data.seek(0)
 			self.data.write(f.read())
 			self.data.truncate()
+
 		self.data.seek(0)
 		self.info = games.lookup(self.data, check_crc=True)
 		self.data.seek(0)
@@ -179,11 +199,12 @@ class Linker(BaseRomEntry):
 	@threaded
 	def erase(self):
 		if not self.linker.can_erase:
-			# TODO: error to status
+			set_status(f"{self.flashable.name} does not support erasing")
 			return
 
 		self.lock.acquire()
 		self.erasing = True
+		self.parent.update_preview()
 		prepare_progress(self.flashable, "erasing")
 
 		self.flashable.erase()
@@ -198,13 +219,11 @@ class Linker(BaseRomEntry):
 
 
 class PokeFlash(Linker):
-	title = "PokéCard512 (Rev. 2.1)"
 	icon = "pokecard_icon.gif"
 	preview = "pokecard512-210_preview.gif"
 
 
 class DittoFlash(Linker):
-	title = "Ditto mini"
 	icon = "ditto_icon.gif"
 	preview = "ditto_preview.gif"
 
@@ -234,6 +253,7 @@ def refresh_linkers(game_list: "GameList"):
 	for k in list(entries.keys()):
 		if k not in linkers:
 			entry = entries.pop(k)
+			log("{linker.name} disconnected", linker=entry.linker)
 			game_list.remove_entry(entry)
 
 	# Update existing ones & add new ones
