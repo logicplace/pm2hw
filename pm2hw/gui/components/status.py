@@ -16,7 +16,7 @@ retained_value = ""
 def make_status(r: tk.Tk):
 	global root, status
 	root = r
-	status = ttk.Label(root, relief=tk.RIDGE, borderwidth=2, text="...", padding=(5, 2))
+	status = ttk.Label(root, style="Status.TLabel", relief=tk.RIDGE, borderwidth=2, text="...", padding=(5, 2))
 	return status
 
 def set_status(value: str = ""):

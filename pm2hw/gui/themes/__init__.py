@@ -1,4 +1,4 @@
-from . import base
+from . import base, dark, light, solarized
 from .base import themes
 
 root = None

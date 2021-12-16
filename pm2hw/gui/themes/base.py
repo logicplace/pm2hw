@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import font, ttk
-from typing import ClassVar
+from typing import ClassVar, Dict
 
-themes = {}
+themes: Dict[str, "BaseTheme"] = {}
 
 class MetaTheme(type):
 	def __new__(cls, name, bases, dct):
+		if "name" not in dct:
+			dct["name"] = ""
 		if "parent" not in dct:
 			if bases and isinstance(bases[0], BaseTheme):
 				dct["parent"] = bases[0].name
@@ -41,11 +43,22 @@ class BaseTheme(metaclass=MetaTheme):
 				"padding": 2,
 			},
 			"map": {
+				"foreground": [
+					("disabled", "#666"),
+					("!disabled", "#000"),
+				],
 				"relief": [
+					("disabled", tk.RIDGE),
 					("pressed", tk.SUNKEN),
-					("!pressed", tk.RAISED)
+					("!pressed", tk.RAISED),
 				],
 			},
+		},
+		"Treeview": {
+			"configure": {
+				"indent": 3,
+				"rowheight": 32,  # Do not overwrite this
+			}
 		},
 		"p.RichText": {
 			"configure": {
@@ -237,15 +250,17 @@ class BaseTheme(metaclass=MetaTheme):
 		self.anti_collection = []
 
 		self.style = ttk.Style(root)
-		self.style.theme_create(
-			self.name,
-			parent=self.parent,
-			settings=self.settings
-		)
+		if self.name:
+			self.style.theme_create(
+				self.name,
+				parent=self.parent,
+				settings=self.settings
+			)
 
 	def apply(self):
-		self.style.theme_use(self.name)
-		self.update_fonts()
+		if self.name:
+			self.style.theme_use(self.name)
+			self.update_fonts()
 
 	# Font management
 	def fonts(self):

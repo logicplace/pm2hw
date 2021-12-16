@@ -55,7 +55,6 @@ class Library(ttk.Frame):
 			selectmode="extended",
 			takefocus=True,
 		)
-		ttk.Style().configure("Treeview", rowheight=32)
 
 		f = font.nametofont("LibraryListEntryFont")
 		self.tree.tag_configure("LibraryListEntryFont", font=f)
@@ -195,7 +194,7 @@ class BaseRomEntry(Entry):
 	def add_button(self, frm: ttk.Frame, text: str, command=None, disabled=False):
 		kw = {"command": command} if command is not None else {}
 		if disabled:
-			kw["default"] = tk.DISABLED
+			kw["state"] = tk.DISABLED
 		btn = ttk.Button(frm, textvariable=TStringVar(text), **kw)
 		btn.grid(column=0, row=self.num_buttons, sticky=tk.NSEW)
 		self.num_buttons += 1

@@ -27,14 +27,10 @@ class ScrollFrame(ttk.Frame):
 		self.pack = self.top.pack
 		self.place = self.top.place
 
-		s = ttk.Style()
-		bg = s.lookup("TFrame", "background")
-		if not bg:
-			bg = "#d9d9d9"
-			s.configure("TFrame", background=bg)
-		# TODO: update BG on style change
-		self.canvas = tk.Canvas(self.top, background=bg)
+		self.canvas = tk.Canvas(self.top)
 		super().__init__(self.canvas, class_="ScrollFrame", **ikw)
+		self.bind("<<ThemeChanged>>", self._update_styling)
+		self._update_styling()
 
 		# Scrollbars
 		cmds = {}
@@ -73,6 +69,14 @@ class ScrollFrame(ttk.Frame):
 		if orient:
 			self.top.bind("<Enter>", self._on_enter)
 			self.top.bind("<Leave>", self._on_leave)
+
+	def _update_styling(self, event=None):
+		s = ttk.Style()
+		bg = s.lookup("TFrame", "background")
+		if not bg:
+			bg = "#d9d9d9"
+			s.configure("TFrame", background=bg)
+		self.canvas.configure(background=bg, highlightbackground=bg)
 
 	def _resize(self):
 		# TODO: what the fuck event can I use to catch children being added
