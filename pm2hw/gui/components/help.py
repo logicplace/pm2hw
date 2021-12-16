@@ -44,7 +44,7 @@ class HelpDialog(simpledialog.Dialog):
 		self.text = RichText(self.window, state="readonly", style_tags=RichText.markdown_tags)
 
 		self.window.add(self.tree)
-		self.window.add(self.text.frame, weight=1)
+		self.window.add(self.text.top, weight=1)
 
 		self.tree.bind("<<TreeviewSelect>>", self.show_topic)
 

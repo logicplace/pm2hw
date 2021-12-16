@@ -22,15 +22,15 @@ pw2 = ttk.PanedWindow(root, orient=tk.HORIZONTAL)
 pw1.grid(column=0, row=0, sticky=tk.NSEW)
 
 info = ScrollFrame(pw2, orient=tk.VERTICAL)
-list = GameList(pw2, info)
-list.reload()
+game_list = GameList(pw2, info)
+game_list.reload()
 
-pw2.add(list, weight=1)
+pw2.add(game_list, weight=1)
 pw2.add(info.top, weight=1)
 
 log_pane = RichText(
 	pw1, height=8, state="readonly", orient=tk.VERTICAL,
-	style="Console.RichText", style_tags=("info", "warn", "error")
+	style="Console.RichText", style_tags=("info", "warning", "error")
 )
 
 pw1.add(pw2, weight=1)
@@ -109,10 +109,10 @@ with Menu(root) as m:
 	with Menu(m, label=_("window.menu.main")) as main:
 		main.add_command(
 			label=_("window.menu.main.refresh"),
-			command=partial(refresh_linkers, list)
+			command=partial(refresh_linkers, game_list)
 		)
 		main.add_command(
-			label=_("window.menu.main.preferences")
+			label=_("window.menu.main.preferences"),
 		)
 		main.add_separator()
 		main.add_command(
@@ -139,7 +139,7 @@ with Menu(root) as m:
 		help.add_command(label=_("window.menu.help.about"), command=partial(open_about, root))
 
 def auto_refresh():
-	refresh_linkers(list)
+	refresh_linkers(game_list)
 	root.after(5000, auto_refresh)
 auto_refresh()
 
@@ -189,4 +189,4 @@ auto_refresh()
 # 		self.f.seek(0)
 # 		self.f.truncate()
 
-# list.add(DittoFlash(list, DittoTest(r"C:\dev\pokemini_060_windev\roms\Pokemon Race Mini (J).min")))
+# game_list.add(DittoFlash(game_list, DittoTest(r"C:\dev\pokemini_060_windev\roms\Pokemon Race Mini (J).min")))
