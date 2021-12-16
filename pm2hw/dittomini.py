@@ -115,6 +115,8 @@ class DittoFlash(BaseFtdiLinker):
 
 # There is no Rev 1 or 2, though
 class DittoMiniRev3(BaseSstCard):
+	name = "Ditto mini"
+
 	def __init__(self, linker: BaseLinker):
 		super().__init__(linker)
 		self.buffer_sdp = (
