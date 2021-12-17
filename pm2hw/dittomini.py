@@ -173,7 +173,7 @@ class DittoMiniRev3(BaseSstCard):
 		# TODO: Dump the rest of the fields
 		verbose("Flash CFI Magic Header: {header}", header=cfiqs.magic_qry.decode())
 		verbose(
-			"Flash CFI Reported device size: {bytes:d} bytes ({size:d})",
+			"Flash CFI Reported device size: {bytes:d} bytes ({size})",
 			bytes=size_bytes, size=natural_size(size_bytes))
 		verbose("Number of block regions: {br:d}", br=cfiqs.number_of_erase_block_regions)
 		for i, block_region in enumerate(block_regions):
@@ -209,7 +209,7 @@ class DittoMiniRev3(BaseSstCard):
 		).to_bytes(4, "big")
 
 	def read_info(self, addr: int, size: int):
-		reader: BaseReader = self.linker.read(
+		reader: BaseReader = self.linker.read_data(
 			b"".join(
 				self.prepare_read_packet(a)
 				for a in range(addr, addr + size)
