@@ -131,7 +131,7 @@ class Library(ttk.Frame):
 	def add_file(self):
 		lafd = config["GUI"].get("last-added-file-dir")
 		kw = {"initialdir": lafd} if lafd else {}
-		files = filedialog.askopenfilenames(filetypes=filetypes_min, **kw)
+		files = filedialog.askopenfilenames(filetypes=filetypes_min, title=_("library.list.add.file"), **kw)
 		if files:
 			config["GUI"]["last-added-file-dir"] = os.path.dirname(files[0])
 			for fn in files:

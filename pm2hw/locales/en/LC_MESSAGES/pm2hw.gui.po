@@ -17,8 +17,11 @@ msgstr ""
 "Language: en\n"
 
 #: pm2hw\gui\__init__.py:
-msgid "window.title"
-msgstr "pm2hw - Pokémon mini Flashing Utility"
+msgid "window.help.title"
+msgstr "pm2hw - Help topics"
+
+msgid "window.log.title"
+msgstr "Log"
 
 msgid "window.menu.main"
 msgstr "⚙"
@@ -50,99 +53,24 @@ msgstr "How to _use"
 msgid "window.menu.help.about"
 msgstr "_About"
 
+msgid "window.title"
+msgstr "pm2hw - Pokémon mini Flashing Utility"
+
 #: pm2hw\gui\components\gamelist.py:
-msgid "info.rom.details.name"
-msgstr "Name"
-
-msgid "info.rom.details.developer"
-msgstr "Developer"
-
-msgid "info.rom.details.genre"
-msgstr "Genre"
-
-msgid "info.rom.details.size"
-msgstr "Size"
-
-msgid "info.rom.details.players"
-msgstr "Players"
-
-msgid "info.rom.details.features"
-msgstr "Features"
-
-msgid "info.rom.details.save slots"
-msgstr "Save slots"
-
-msgid "info.rom.details.minlib"
-msgstr "MINLIB version"
-
-msgid "info.rom.details.crc32"
-msgstr "CRC32"
-
-msgid "info.rom.details.header"
-msgstr "ROM Details"
-
-msgid "library.list.rom.name.unknown"
-msgstr "{rom.acode} - {rom.internal}"
-
 msgid "info.rom.name.unknown"
 msgstr "{rom.internal} ({rom.acode})"
 
-msgid "library.list.linker.name.with_rom"
-msgstr "{game} ({name})"
-
-msgid "library.list.linker.name.unconnected"
-msgstr "{name} (connection unestablished)"
-
-msgid "library.list.linker.name.no_rom"
-msgstr "{name} (empty)"
-
-msgid "library.list.no-linkers"
-msgstr "Connect a linker to get started"
-
-msgid "info.button.read"
-msgstr "Read contents"
-
-msgid "info.button.read.in-progress"
-msgstr "Reading contents..."
-
-msgid "info.button.dump"
-msgstr "Dump contents"
-
-msgid "info.button.dump.in-progress"
-msgstr "Dumping contents..."
-
-msgid "info.button.flash.to_card"
-msgstr "Flash to {name}"
-
-msgid "info.button.flash.via_linker"
-msgstr "Flash via {name}"
-
-msgid "info.button.flash"
-msgstr "Flash a file"
-
-msgid "info.button.flash.in-progress"
-msgstr "Flashing contents..."
-
-msgid "info.button.erase"
-msgstr "Erase card"
-
-msgid "info.button.erase.in-progress"
-msgstr "Erasing contents..."
-
-msgid "info.button.eeprom"
-msgstr "Open EEPROM transfer wizard"
-
-msgid "select-location.linker.dump"
-msgstr "Specify location to dump to"
-
-msgid "select-location.linker.flash"
-msgstr "Specify file to flash"
+msgid "library.list.header.games"
+msgstr "Games"
 
 msgid "library.list.header.linkers"
 msgstr "Linkers"
 
-msgid "library.list.header.games"
-msgstr "Games"
+msgid "library.list.no-linkers"
+msgstr "Connect a linker to get started"
+
+msgid "library.list.rom.name.unknown"
+msgstr "{rom.acode} - {rom.internal}"
 
 #: pm2hw\gui\components\help.py:
 msgid "help.about.title"
@@ -194,6 +122,12 @@ msgstr "# <str name=help.topic.basics.title/>\n"
 " pm2hw, or the Pokémon mini hardware in general.\n\n"
 "`.min` files are 512 KiB and `.eep` files are 8 KiB (containing 6"
 " save slots).\n\n"
+"Remember: It may or may not be legal to backup or restore ROMs of"
+" copyrighted games in your country, but it is always illegal to"
+" share them with others or receive them from others. Please"
+" consult your country's copyright laws and international"
+" agreements it has signed or seek counsel from a copyright lawyer"
+" in order to be familiar with your rights.\n\n"
 "## Linkers\n"
 "Linkers (aka flashers, programmers, or proggers) sit in the middle"
 " between your computer and your flash cart. While some systems may"
@@ -362,30 +296,173 @@ msgstr "Graphical interface overview"
 
 msgid "help.topic.gui.content"
 msgstr "# <str name=help.topic.gui.title/>\n"
+"When you first started the GUI you were faced with this interface:\n\n"
+"<widget name=gui-overview/>\n\n"
+"1. [Menu](#menu)\n"
+"2. [Linkers list](#linkers)\n"
+"3. [Game library](#library)\n"
+"4. Add folder to game library\n"
+"5. Add ROM game library\n"
+"6. Remove game from library\n"
+"7. [Info pane](#info)\n"
+"8. Status bar\n\n"
+"Click one of the links above to see more on what each component does.\n\n"
+"## <a id=menu/>Menu\n"
+"Use the menu to perform more uncommon operations or view extra"
+" information, like this help dialog! Clearly you know what you're"
+" doing here already. So here's an explanation of the rest of the"
+" options:\n\n"
+"* **<str name=window.menu.main del=_/>**\n"
+"  * **<str name=window.menu.main.refresh del=_/>** - Manually check"
+" for changes to connected linkers. While the system automatically"
+" checks for if new linkers are connected or known ones are removed,"
+" it does not check if the cards connected to them have changed."
+" This will check that, and it may also be useful if there are bugs.  \n"
+" Please keep in mind it will take a moment for your OS to register"
+" that the device was connected before it can appear here.\n"
+"  * **<str name=window.menu.main.preferences del=_/>** - Open the"
+" preferences menu. From here you can change the theme and stuff.\n"
+"  * **<str name=window.menu.main.exit del=_/>** - Close pm2hw.\n"
+"* **<str name=window.menu.view del=_/>**\n"
+"  * **<str name=window.menu.view.log del=_/>** - Open the log"
+" pane, allowing you to see more detailed usage of the app than"
+" the status bar provides.\n"
+"* **<str name=window.menu.help del=_/>**\n"
+"  * **<str name=window.menu.help.howto del=_/>** - You are here!\n"
+"  * **<str name=window.menu.help.about del=_/>** - Version info,"
+" authorship, licenses. Stuff you'll need for bug reports or legal"
+" reasons.\n\n"
+"## <a id=linkers/>Linkers list\n"
+"When you connect a linker to your computer, it will appear in this"
+" list. pm2hw does not connect to it automatically, so you will not"
+" see much information immediately, simply what linker it is. Once"
+" you click the entry, pm2hw will initialize the connection and"
+" display information about the cartridge and its contents in the"
+" [info pane](#info).\n\n"
+"To read about how to use the linker from the info pane, see"
+" [here](linker).\n\n"
+"## <a id=library/>Game library\n"
+"This is a list of the games you have registered in your library."
+" From here, you can quickly flash your games to connected cards"
+" or simply view more information about the game.\n\n"
+"In order to register more games, use the add folder or file"
+" options below the library list. Adding a folder will import all"
+" the ROMs it finds within it _one time_, it will not"
+" automatically import new ROMs added to that folder later.\n\n"
+"To read about how to use a game's info pane, see [here](game).\n\n"
+"## <a id=info/>Info pane\n"
+"When you click a linker or a game from your library, it will open"
+" an interface into this pane. See those sections for instructions"
+" on how to use this interface.\n\n"
+"## <a id=log/>Log pane\n"
+"If you select <str name=window.menu.view del=_/> ->"
+" <str name=window.menu.view.log del=_/> from the menu, this pane"
+" will open above the status bar. Here you can see a log of all"
+" your actions performed during this session, similar to what"
+" you would see in a console session.\n"
 
 msgid "help.topic.linker.title"
 msgstr "Linker view"
 
 msgid "help.topic.linker.content"
 msgstr "# <str name=help.topic.linker.title/>\n"
+"This view appears in the info pane after selecting a linker"
+" from the linker list. It will look something like this:\n\n"
+"<widget name=gui-linker/>\n\n"
+"1. Cartridge name\n"
+"2. Cartridge banner\n"
+"3. Actions which can be performed\n"
+"4. Details about the linker, cart, and contents\n\n"
+"What you see on this screen will somewhat depend on the"
+" linker you're using and what's connected to it. Most linkers,"
+" such as the DITTO mini Flasher, will only be able to connect"
+" to its official flash cart whereas others, such as PokeUSB,"
+" will be able to accept both certain flash carts as well as"
+" the official cartridges.\n\n"
+"When you first open this screen, you will see details about"
+" the linker, flash cartridge (if one is connected), and limited"
+" information about the contents of the cart. Once you click"
+" either <kbd>\t<str name=info.button.read/>\t</kbd> or"
+" <kbd>\t<str name=info.button.dump/>\t</kbd>, pm2hw will read"
+" the entire contents of the cart and be able to provide you"
+" with more information about its contents. All linkers and"
+" cartridges will have these actions available.\n\n"
+"When you're connected to a flash cart, you will also be able"
+" to run flash and erase operations by clicking the respective"
+" buttons. Flashing will allow you to select a ROM file from"
+" anywhere on your system, but it would generally be more"
+" convenient to just add ROMs to your game library and flash"
+" from there. Generally, you will not need to erase the cart"
+" yourself, but the action is there in case you need it.\n\n"
+"For flash carts with can be written to from within software"
+" running on the PM, the following buttons will also be"
+" available:\n\n"
+"* <kbd>\t<str name=info.button.eeprom/>\t</kbd>\n"
+"  * This will open a wizard to step you through the process"
+" of either backing up or restoring save data on your PM.\n"
+"* <kbd>\t<str name=info.button.bios/>\t</kbd>\n"
+"  * This will open a wizard to step you through the process"
+" of dumping the BIOS of your PM for use with emulators.\n"
+"  * Remember: It is illegal to share your BIOS dump with"
+" others! Whether or not the backup is legal in your area is"
+" up to your country's copyright laws and international"
+" agreements your country has signed. Please consult these"
+" documents or a copyright lawyer in order to be familiar"
+" with your rights.\n"
+"  * Backing up your own BIOS and retaining a single copy of"
+" it for private use is legal in the USA.\n"
 
 msgid "help.topic.game.title"
 msgstr "Game view"
 
 msgid "help.topic.game.content"
 msgstr "# <str name=help.topic.game.title/>\n"
+"From here you can view information about the game and its"
+" releases (if any) as well as flash it to any connected"
+" linkers with one click.\n The interface looks something"
+" like this:\n\n"
+"<widget name=gui-game/>\n\n"
+"1. Game name\n"
+"2. Game banner\n"
+"3. Flash this to a connected linker\n"
+"4. Details about the game and releases etc\n\n"
+"You may flash to multiple linkers at once without waiting"
+" from this screen.\n"
 
 msgid "help.topic.flashing.title"
 msgstr "Flashing ROMs to your card"
 
 msgid "help.topic.flashing.content"
 msgstr "# <str name=help.topic.flashing.title/>\n"
+"From the GUI, there are two ways to flash a ROM to your"
+" flash cart. You may select the linker and click"
+" <kbd>\t<str name=info.button.flash/>\t</kbd> in order"
+" to select an arbitrary ROM file to flash or you can"
+" select a game from your game library and click the"
+" button there.\n\n"
+"From the CLI, run the following command:\n\n"
+"```sh\n"
+"pm2hw --flash FILENAME\n"
+"```\n\n"
+"For more information on the CLI usage, see [here](reference).\n"
 
 msgid "help.topic.dumping.title"
 msgstr "Dumping ROMs from your card"
 
 msgid "help.topic.dumping.content"
 msgstr "# <str name=help.topic.dumping.title/>\n"
+"From the GUI, select the linker you want to dump from"
+" from the linker list. Then in the info pane, click"
+" <kbd>\t<str name=info.button.dump/>\t</kbd> and select"
+" the destination folder and filename. After doing so,"
+" the game will automatically be added to your game"
+" library so that you can easily flash it back onto a"
+" flash cart later.\n\n"
+"From the CLI, run the following command:\n\n"
+"```sh\n"
+"pm2hw --dump FILENAME\n"
+"```\n\n"
+"For more information on the CLI usage, see [here](reference).\n"
 
 msgid "help.topic.reference.title"
 msgstr "Command line reference"
@@ -393,19 +470,96 @@ msgstr "Command line reference"
 msgid "help.topic.reference.content"
 msgstr "# <str name=help.topic.reference.title/>\n"
 
+#: pm2hw\gui\components\library.py:
+msgid "info.rom.details.header"
+msgstr "ROM Details"
+
+msgid "info.rom.details.name"
+msgstr "Name"
+
+msgid "info.rom.details.developer"
+msgstr "Developer"
+
+msgid "info.rom.details.genre"
+msgstr "Genre"
+
+msgid "info.rom.details.size"
+msgstr "Size"
+
+msgid "info.rom.details.players"
+msgstr "Players"
+
+msgid "info.rom.details.features"
+msgstr "Features"
+
+msgid "info.rom.details.save slots"
+msgstr "Save slots"
+
+msgid "info.rom.details.minlib"
+msgstr "MINLIB version"
+
+msgid "info.rom.details.crc32"
+msgstr "CRC32"
+
+msgid "library.list.add.file"
+msgstr "Add file to library"
+
+msgid "library.list.add.folder"
+msgstr "Add folder's contents to library"
+
+#: pm2hw\gui\components\linker.py:
+msgid "info.button.bios"
+msgstr "Open BIOS transfer wizard"
+
+msgid "info.button.dump"
+msgstr "Dump contents"
+
+msgid "info.button.dump.in-progress"
+msgstr "Dumping contents..."
+
+msgid "info.button.eeprom"
+msgstr "Open EEPROM transfer wizard"
+
+msgid "info.button.erase"
+msgstr "Erase card"
+
+msgid "info.button.erase.in-progress"
+msgstr "Erasing contents..."
+
+msgid "info.button.flash.card"
+msgstr "Flash to {name}"
+
+msgid "info.button.flash.linker"
+msgstr "Flash via {name}"
+
+msgid "info.button.flash"
+msgstr "Flash a file"
+
+msgid "info.button.flash.in-progress"
+msgstr "Flashing contents..."
+
+msgid "info.button.read"
+msgstr "Read contents"
+
+msgid "info.button.read.in-progress"
+msgstr "Reading contents..."
+
+msgid "library.list.linker.name.no-rom"
+msgstr "{name} (empty)"
+
+msgid "library.list.linker.name.unconnected"
+msgstr "{name} (connection unestablished)"
+
+msgid "library.list.linker.name.with-rom"
+msgstr "{game} ({name})"
+
+msgid "select-location.linker.dump"
+msgstr "Specify location to dump to"
+
+msgid "select-location.linker.flash"
+msgstr "Select file to flash"
+
 #: pm2hw\gui\components\status.py:
-msgid "status.flashing.in-progress"
-msgstr "Flashing {name} ({pc:.0f}%)"
-
-msgid "status.flashing.complete"
-msgstr "Completed flashing {name} in {secs:.3f}s"
-
-msgid "status.reading.in-progress"
-msgstr "Reading {name} into memory ({pc:.0f}%)"
-
-msgid "status.reading.complete"
-msgstr "Completed reading {name} in {secs:.3f}s"
-
 msgid "status.dumping.in-progress"
 msgstr "Dumping {name} ({pc:.0f}%)"
 
@@ -418,6 +572,19 @@ msgstr "Erasing {name} ({pc:.0f}%)"
 msgid "status.erasing.complete"
 msgstr "Completed erasing {name} in {secs:.3f}s"
 
+msgid "status.flashing.in-progress"
+msgstr "Flashing {name} ({pc:.0f}%)"
+
+msgid "status.flashing.complete"
+msgstr "Completed flashing {name} in {secs:.3f}s"
+
+msgid "status.reading.in-progress"
+msgstr "Reading {name} into memory ({pc:.0f}%)"
+
+msgid "status.reading.complete"
+msgstr "Completed reading {name} in {secs:.3f}s"
+
+#: pm2hw\gui\i18n.py:
 # ROM names
 msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.4433B736"
 msgstr "Pokémon Race mini (J)"
@@ -542,3 +709,10 @@ msgstr "Togepi's Adventure (J) (Preview)"
 
 msgid "library.list.rom.MZ2J.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ2.CA5A4E7B"
 msgstr "Pokémon Puzzle Collection Vol. 2 (J)"
+
+#: pm2hw\gui\util.py:
+msgid "misc.filetypes.all"
+msgstr "All files"
+
+msgid "misc.filetypes.min"
+msgstr "Pokemon mini ROMs"

@@ -38,13 +38,13 @@ class Linker(BaseRomEntry):
 	def name(self):
 		if self.info:
 			# TODO: name updates on lang change
-			return _("library.list.linker.name.with_rom").format(
+			return _("library.list.linker.name.with-rom").format(
 				game=localized_game_name(self.info),
 				name=self.flashable.name
 			)
 		elif not self.connected:
 			return _("library.list.linker.name.unconnected").format(name=self.linker.name)
-		return _("library.list.linker.name.no_rom").format(name=self.flashable.name)
+		return _("library.list.linker.name.no-rom").format(name=self.flashable.name)
 
 	@property
 	def title(self):

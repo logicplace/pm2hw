@@ -31,13 +31,17 @@ class ROM(BaseRomEntry):
 		frm = super().render_buttons_to(target)
 		for x in self.parent.entries.values():
 			if isinstance(x, Linker):
-				# TODO: x.flashing
-				msg = (
-					_("info.button.flash.to_card").format(name=x.flashable.name)
-					if x.connected else
-					_("info.button.flash.via_linker").format(name=x.linker.name)
-				)
-				self.add_button(frm, msg, partial(self.flash_to, x), disabled=x.reading)
+				if x.flashing:
+					msg = _("info.button.flash.in-progress")
+					disabled = True
+				else:
+					msg = (
+						_("info.button.flash.card").format(name=x.flashable.name)
+						if x.connected else
+						_("info.button.flash.linker").format(name=x.linker.name)
+					)
+					disabled = x.reading
+				self.add_button(frm, msg, partial(self.flash_to, x), disabled=disabled)
 		return frm
 			
 	def render_details_to(self, target: ttk.Frame):

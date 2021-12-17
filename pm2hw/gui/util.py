@@ -3,8 +3,8 @@ from threading import Thread
 from .i18n import _
 
 filetypes_min = (
-	(_("Pokemon mini ROMs"), "*.min"),
-	(_("All files"), "*"),
+	(_("misc.filetypes.min"), "*.min"),
+	(_("misc.filetypes.all"), "*"),
 )
 
 # https://gist.github.com/awesomebytes/0483e65e0884f05fb95e314c4f2b3db8

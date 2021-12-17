@@ -133,7 +133,7 @@ with Menu(root) as m:
 			command=partial(
 				HelpDialog,
 				root,
-				title=str(_("pm2hw - Help topics"))
+				title=str(_("window.help.title"))
 			)
 		)
 		help.add_command(label=_("window.menu.help.about"), command=partial(open_about, root))

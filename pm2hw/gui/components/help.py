@@ -104,7 +104,7 @@ class HelpDialog(simpledialog.Dialog):
 
 	def translation_handler(self, renderer, attrs):
 		if "name" in attrs:
-			return renderer.text(str(_(attrs["name"])))
+			return renderer.text(str((_)(attrs["name"])))
 		return renderer.noop
 
 
