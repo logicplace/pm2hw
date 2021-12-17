@@ -5,7 +5,8 @@ from typing import Any, BinaryIO, Callable, ClassVar, Dict, Iterable, Optional, 
 
 from ftd2xx import FTD2XX
 
-from .logger import log, progress, verbose, warn, protocol
+from .logger import error, log, progress, verbose, warn, protocol
+from .locales import _, natural_size
 from .exceptions import clarify, DeviceError
 
 Transform = Callable[[int], int]
@@ -231,7 +232,7 @@ class BaseCard(BaseFlashable):
 		if not size:
 			end = memory
 		elif start + size > memory:
-			warn("Requested to dump more than the available size, truncating request.")
+			warn(_("log.blocks.over"))
 			end = memory
 		else:
 			end = start + size
@@ -245,14 +246,14 @@ class BaseCard(BaseFlashable):
 		stream.seek(0, SEEK_END)
 		size = stream.tell()
 		if (size > self.memory):
-			raise DeviceError(f"The input file is too large! Max. size is {self.memory} KiB!")
+			raise DeviceError(_("exception.flash.too-large").format(size=natural_size(self.memory)))
 		stream.seek(0, SEEK_SET)
 
 		# Chip erase or sector erase
 		self.erase_data(0, size)
 
 		prog = progress(
-			progress.basic("Flashing to {card.name} from {fn}"),
+			progress.basic(_("log.flash.progress")),
 			size,
 			card=self,
 			fn=stream.name
@@ -262,25 +263,16 @@ class BaseCard(BaseFlashable):
 		for addr, s in self.blocks(0, size):
 			self.write_data(addr, stream.read(s))
 			prog.update(addr + s)
-		verbose("Flashing complete")
 
 	def verify(self, stream: BinaryIO) -> bool:
 		""" Verify the ROM on the card is correct """
-		if stream.seekable():
-			stream.seek(0, SEEK_END)
-			prog = progress(
-				progress.basic("Verifying contents of {card.name}"),
-				stream.tell(),
-				card=self
-			)
-
-			stream.seek(0, SEEK_SET)
-		else:
-			prog = progress(
-				("Verifying contents of {card.name}: {cur}", "  Completed in {secs:.3f}s"),
-				float("+inf"),
-				card=self
-			)
+		stream.seek(0, SEEK_END)
+		prog = progress(
+			progress.basic(_("log.verify.progress")),
+			stream.tell(),
+			card=self
+		)
+		stream.seek(0, SEEK_SET)
 
 		block_size = self.block_size
 		read = block_size
@@ -297,19 +289,19 @@ class BaseCard(BaseFlashable):
 		prog.done()
 
 		if any(bads):
-			warn("Verification failed")
-			verbose("...with bad bytes in the following blocks:")
+			error(_("log.verify.failed"))
+			verbose(_("log.verify-failed.report.title"))
 			for i, c in enumerate(bads):
-				verbose("  Block {block}: {count}", block=i, count=c)
+				verbose(_("log.verify-failed.report.entry"), block=i, count=c)
 			return False
 		else:
-			log("Verification successful")
+			log(_("log.verify.success"))
 		return True
 
 	def dump(self, stream: BinaryIO, size: int = 0):
 		""" Dump a ROM from the card """
 		prog = progress(
-			progress.basic("Dumping from {card.name} to {fn}"),
+			progress.basic(_("log.dump.progress")),
 			size or self.memory,
 			card=self,
 			fn=stream.name
@@ -317,7 +309,6 @@ class BaseCard(BaseFlashable):
 		for addr, s in self.blocks(0, size):
 			stream.write(self.read_data(addr, s))
 			prog.update(addr + s)
-		verbose("Dumping complete")
 
 	def erase(self):
 		self.erase_data(0, self.memory)
@@ -398,51 +389,51 @@ class BaseFtdiLinker(BaseLinker):
 
 	def init(self):
 		handle = self.handle
-		protocol("* ==== FTDI device ====")
+		protocol(_("log.ftdi.title"))
 
-		with clarify("Unable to reset device"):
+		with clarify(_("exception.ftdi.reset.failed")):
 			handle.resetDevice()
-			protocol("* reset device")
+			protocol(_("log.ftdi.reset"))
 
 		# Clear the input buffer
 		self.read_all()
 
 		# Disable event and error characters
-		with clarify("Unable to reset event/error chars"):
+		with clarify(_("exception.ftdi.characters.disable.failed")):
 			handle.setChars(0, 0, 0, 0)
-			protocol("* set EventChar=disabled ErrorChar=disabled")
+			protocol(_("log.ftdi.characters.disable"))
 
 		# Set USB request transfer size to 64KiB
-		with clarify("Unable to set request transfer size"):
+		with clarify(_("exception.ftdi.transfer.size.set.failed")):
 			handle.setUSBParameters(65536, 65536)
-			protocol("* set RequestTransferSize In={in} Out={out} (bytes)", **{"in": 65536, "out": 65536})
+			protocol(_("log.ftdi.transfer.size.set"), **{"in": 65536, "out": 65536})
 
 		# Sets the read and write timeouts in 10 sec
 		handle.setTimeouts(10000, 10000)
-		protocol("* set TransferTimeout Read={read} Write={write} (ms)", read=10000, write=10000)
+		protocol(_("log.ftdi.transfer.timeout.set"), read=10000, write=10000)
 
 		# Setup latency
-		with clarify("Set USB Device Latency Timer failed!"):
+		with clarify(_("exception.ftdi.latency.set.failed")):
 			handle.setLatencyTimer(255)
-			protocol("* set LatencyTimer {ms} (ms)", ms=255)
+			protocol(_("log.ftdi.latency.set"), ms=255)
 
 		# Reset controller
-		with clarify("Device reset failed!"):
+		with clarify(_("exception.ftdi.controller.reset.failed")):
 			handle.setBitMode(0x0, 0x0)
-			protocol("* set BitMode Mask=0 Mode=0 (reset)")
+			protocol(_("log.ftdi.controller.reset"))
 
 		# Set the port to MPSSE mode
-		with clarify("Set to MPSSE mode failed!"):
+		with clarify(_("exception.ftdi.mpsse.enable.failed")):
 			handle.setBitMode(0x0, 0x2)
-			protocol("* set BitMode Mask=0 Mode=2 (MPSSE)")
+			protocol(_("log.ftdi.mpsse.enable"))
 
 		sleep(0.050)
 
 		# Check sync...
-		with clarify("Unable to synchronise the MPSSE write/read cycle!"):
+		with clarify(_("exception.ftdi.mpsse.sync.failed")):
 			self.sync_to_mpsse()
 
-		with clarify("Unable to configure MPSSE for SPI!"):
+		with clarify(_("exception.ftdi.mpsse.spi.failed")):
 			self.configure_mpsse_for_spi()
 
 	def sync_to_mpsse(self):
@@ -461,7 +452,7 @@ class BaseFtdiLinker(BaseLinker):
 
 		# Wait for a response and confirm MPSSE says it's a bad command
 		if self.wait_read(2) != b"\xfa\xaa":
-			raise DeviceError("MPSSE Sync Failed")
+			raise DeviceError(_("exception.ftdi.mpsse.sync.failed-check"))
 
 	def configure_mpsse_for_spi(self):
 		handle = self.handle
@@ -562,12 +553,12 @@ class BaseFtdiLinker(BaseLinker):
 		queued = handle.getQueueStatus()
 		if exact and queued > size:
 			raise DeviceError(
-				"Device queued an unexpected amount of data."
-				f" Wanted {size} but queued {queued}")
+				_("exception.read.wait.too-large").format(
+					size=size, queued=queued))
 		if queued < size:
 			raise DeviceError(
-				"Device took too long to queue data."
-				" Wanted {size} but queued {queued}")
+				_("exception.read.wait.timeout").format(
+					size=size, queued=queued))
 		
 		if queued:
 			ret = cast(bytes, handle.read(size))
@@ -600,7 +591,7 @@ class BaseSstCard(BaseCard):
 			size = self.memory
 
 		prog = progress(
-			progress.basic("Erasing data on {card.name}"),
+			progress.basic(_("log.erase.progress")),
 			size,
 			card=self
 		)
@@ -641,7 +632,6 @@ class BaseSstCard(BaseCard):
 			self.write_data(sectors_end, b"\xff" * coda)
 			prog.add(coda)
 		self.erased = (addr, addr + size)
-		verbose("Erase complete")
 
 	def _wait_for_erased(self, addr: int, secs: int):
 		start = time()

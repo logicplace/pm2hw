@@ -10,7 +10,7 @@ from typing import List
 from . import get_connected_linkers, logger
 from .base import BaseFlashable
 from .logger import log, error, exception, progress, verbose, LogRecord
-from .locales import natural_size
+from .locales import _, natural_size
 from .exceptions import DeviceError
 
 def completed_progess_only(record: LogRecord):
@@ -37,17 +37,15 @@ default_shortlevelname_format = "{}: "
 handler.set_formatter(logger.nice_formatter)
 logger.add_handler(handler)
 
-parser = argparse.ArgumentParser(
-	"pm2hw",
-	description="Flash Pokémon mini ROMs to any card.")
+parser = argparse.ArgumentParser("pm2hw", description=_("cli.description"))
 
 group = parser.add_mutually_exclusive_group()
 group.add_argument("-l", "--linker", metavar="name", dest="linker_global",
-	help="Specify a linker by name. Fail if that linker is not connected.")
+	help=_("cli.help.param.linker"))
 group.add_argument("-a", "--all", action="store_true", dest="all_global",
-	help="Perform the action against all connected linkers.")
+	help=_("cli.help.param.all"))
 parser.add_argument("-v", "--verbose", action="count", dest="verbose_global", default=0,
-	help="Output verbose information.")
+	help=_("cli.help.param.verbose"))
 parser.add_argument("--profile", action="store_true", dest="profile_global",
 	help=argparse.SUPPRESS)
 
@@ -58,73 +56,58 @@ def add_common_flags(cmd: argparse.ArgumentParser):
 	cmd.add_argument("-v", "--verbose", action="count", default=0, help=argparse.SUPPRESS)
 	cmd.add_argument("--profile", action="store_true", help=argparse.SUPPRESS)
 	cmd.add_argument("-c", "--clock", type=int, metavar="div", default=1,
-		help="Set clock divider (higher=slower). Valid value range depends on card.")
+		help="cli.help.param.clock")
 
 subparsers = parser.add_subparsers(dest="cmd", title="actions")
 
-flash_cmd = subparsers.add_parser("flash", aliases=["f"], help="Flash to cart.")
+flash_cmd = subparsers.add_parser("flash", aliases=["f"],
+	help=_("cli.help.command.flash"))
 add_common_flags(flash_cmd)
 # flash_cmd.add_argument("-m", "--multicart", metavar="id", default="",
-# 	help="Choose the multicart system to use when flashing multiple ROMs")
+# 	help=_("cli.help.param.flash.multicart"))
 flash_cmd.add_argument("-E", "--no-erase", action="store_false", dest="erase",
-	help="Don't erase the cart before flashing.")
+	help=_("cli.help.param.flash.no-erase"))
 flash_cmd.add_argument("-V", "--no-verify", action="store_false", dest="verify",
-	help="Don't verify the contents after flashing.")
+	help=_("cli.help.param.flash.no-verify"))
 flash_cmd.add_argument("roms", metavar="file", # nargs=argparse.ONE_OR_MORE,
-	help="Flash the given file or use - to read from stdin.")
+	help=_("cli.help.param.flash.roms"))
 
-dump_cmd = subparsers.add_parser("dump", aliases=["d"], help="Dump from cart.")
+dump_cmd = subparsers.add_parser("dump", aliases=["d"],
+	help=_("cli.help.command.dump"))
 add_common_flags(dump_cmd)
 # group = parser.add_mutually_exclusive_group()
 # group.add_argument("-s", "--split-all", action="store_true",
-# 	help="Split all the ROMs out of a multicart.")
+# 	help=_("cli.help.param.dump.split-all"))
 # group.add_argument("-S", "--split",
-# 	help="Select which ROMs to split out of a multicart. May be one of:\n"
-# 	" * menu - Pick from an interactive menu.\n"
-# 	" * all - Split out all the ROMs.\n"
-# 	" * 1 - Pick the first only.\n"
-# 	" * 1,2 - Pick the first and second.\n"
-# 	" * 1-3 - Pick the first three.\n"
-# 	" * HW - Pick only the Hello World demo (code)."
-# )
+# 	help=_("cli.help.param.dump.split"))
 dump_cmd.add_argument("-p", "--partial", metavar="{size,offset:size}",
-	help="Extract only part of the ROM. Specify either just the size in bytes or"
-	" specify the offset and size in bytes.")
+	help=_("cli.help.param.dump.partial"))
 dump_cmd.add_argument("dest", metavar="file", nargs="?", default="{i:02d}-{code}-{name}.min",
-	help="Dump the contents of the card to the given filename or use - to pipe to stdout.\n"
-	"The filename may be templated as a Python format string using the following variables:\n"
-	" * i - Index of the linker (integer)\n"
-	" * linker - Linker name\n"
-	" * code - Four-character code in the ROM (ASCII)\n"
-	" * name - Internal name in the ROM (SHIFT-JIS)\n"
-	"By default uses the format: {i:02d}-{code}-{name}.min\n"
-	"This would be rendered as, for example: 00-MPZE-Puzzle.min"
-)
+	help=_("cli.help.param.dump.dest"))
 
-erase_cmd = subparsers.add_parser("erase", aliases=["e"], help="Erase a flash cart.")
+erase_cmd = subparsers.add_parser("erase", aliases=["e"],
+	help=_("cli.help.command.erase"))
 add_common_flags(erase_cmd)
 erase_cmd.add_argument("-p", "--partial", metavar="{size,offset:size}",
-	help="Erase only part of the ROM. Specify either just the size in bytes or"
-	" specify the offset and size in bytes.")
+	help=_("cli.help.param.erase.partial"))
 
 # # TODO: info-gathering command(s)
 
 def connect(args):
-	log("Searching for device...")
-	logger.enable("verbose", update_logger=True)
+	log(_("cli.connect.search"))
 	linkers = get_connected_linkers()
 	if not linkers:
-		raise DeviceError("No linkers connected!")
+		raise DeviceError(_("cli.connect.no-linkers"))
 	elif len(linkers) > 1 and not args.all:
 		valid_choices = ["a", "A"]
-		print("Select a linker to connect to:", file=sys.stderr)
+		print(_("cli.connect.select-linker.title"), file=sys.stderr)
 		for i, l in enumerate(linkers):
-			print(f" {i}) {l.name}", file=sys.stderr)
+			print(_("cli.connect.select-linker.option").format(i=i, name=l.name), file=sys.stderr)
 			valid_choices.append(str(i))
-		print(" a) All", file=sys.stderr)
+		print(" a) " + _("cli.connect.select-linker.all"), file=sys.stderr)
 		choice = ""
 		while choice not in valid_choices:
-			print("Selection: ", file=sys.stderr, end="")
+			print(_("cli.connect.select-linker.prompt"), file=sys.stderr, end="")
 			choice = input()
 
 		try:
@@ -138,9 +121,9 @@ def connect(args):
 	for linker in linkers:
 		flashable = linker.init()
 		flashables.append(flashable)
-		log("Connected! Discovered a {name}", name=flashable.name)
+		log(_("cli.connect.connected"), name=flashable.name)
 		try:
-			verbose("  Specifically, a {chip} {size} card",
+			verbose(_("cli.connect.connected.details"),
 				chip=flashable.chip, size=natural_size(flashable.memory))
 		except AttributeError:
 			pass
@@ -148,9 +131,13 @@ def connect(args):
 	return flashables, time()
 
 def main(args):
+	if args.verbose:
+		levels = ["verbose", "debug", "protocol"]
+		logger.enable(*levels[:args.verbose], update_logger=True)
+
 	if args.cmd in {"f", "flash"}:
 		flashables, start = connect(args)
-		log("Flashing...")
+		log(_("cli.flash.intro"))
 		data = BytesIO(sys.stdin.buffer.read())
 		for flashable in flashables:
 			# TODO: multithreaded
@@ -164,17 +151,17 @@ def main(args):
 				with open(args.roms, "rb") as f:
 					flashable.flash(f)
 					if args.verify:
-						log("Verifying write...")
+						log(_("cli.flash.verify.intro"))
 						if flashable.verify(f):
-							log("...write ok")
+							log(_("cli.flash.verify.success"))
 						else:
-							log("...write failed")
+							log(_("cli.flash.verify.failure"))
 		if len(flashables) > 1:
-			log("Flashing complete! Completed in {secs:.3f}", secs=time() - start)
+			log(_("cli.flash.complete"), secs=time() - start)
 		return flashables
 	elif args.cmd in {"d", "dump"}:
 		flashables, start = connect(args)
-		log("Dumping...")
+		log(_("cli.dump.intro"))
 		for i, flashable in enumerate(flashables):
 			# TODO: multithreaded, partial
 			if args.dest == "-":
@@ -194,16 +181,16 @@ def main(args):
 				with open(args.dest.format(**kw), "wb") as f:
 					flashable.dump(f)
 		if len(flashables) > 1:
-			log("Dumping complete! Completed in {secs:.3f}", secs=time() - start)
+			log(_("cli.dump.complete"), secs=time() - start)
 		return flashables
 	elif args.cmd in {"e", "erase"}:
 		flashables, start = connect(args)
-		log("Erasing...")
+		log(_("cli.erase.intro"))
 		for i, flashable in enumerate(flashables):
 			# TODO: multithreaded, partial
 			flashable.erase()
 		if len(flashables) > 1:
-			log("Erasing complete! Completed in {secs:.3f}", secs=time() - start)
+			log(_("cli.erase.complete"), secs=time() - start)
 		return flashables
 	else:
 		parser.print_help()
@@ -234,8 +221,8 @@ try:
 	else:
 		main(args)
 except DeviceError as err:
-	error("A device error occurred: {errmsg}", errmsg=str(err))
+	error(_("cli.error.device"), errmsg=str(err))
 	sys.exit(1)
 except Exception as err:
-	exception("An error occurred", err)
+	exception(_("cli.error.exception"), err)
 	sys.exit(2)

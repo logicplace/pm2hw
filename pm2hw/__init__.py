@@ -3,6 +3,7 @@ import ftd2xx
 
 from . import pokecard, dittomini
 from .base import BaseFlashable, BaseLinker, BaseCard, linkers
+from .locales import _
 from .exceptions import *
 
 def get_connected_linkers(**kwargs):
@@ -11,7 +12,7 @@ def get_connected_linkers(**kwargs):
 	devices: List[BaseLinker] = []
 	for i in range(num_devices):
 		# getDeviceInfoDetail returns null data for PokeCard
-		with clarify("Failed opening the device!"):
+		with clarify(_("exception.device.open.failed")):
 			dev = ftd2xx.open(i)
 		linker_cls = linkers.get(dev.description)
 		if linker_cls:

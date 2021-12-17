@@ -2,22 +2,24 @@ from contextlib import contextmanager
 
 import ftd2xx
 
+from .locales import _
+
 class DeviceError(Exception): pass
 
 class DeviceNotSupportedError(DeviceError):
 	def __init__(self, manufacturer: int, device: int, extended: int):
-		super().__init__("Device not supported", manufacturer, device, extended)
+		super().__init__(_("exception.device.unsupported"), manufacturer, device, extended)
 		self.manufacturer = manufacturer
 		self.device = device
 		self.extended = extended
 
 	def __str__(self):
-		return f"""\
-			Device not supported:
-			Manufacturer code: {self.manufacturer:02X}
-			Device code: {self.device:02X}
-			Extended code: {self.extended:02X}
-		""".replace("\t", "")
+		return _().format(
+			self.args[0],
+			manufacturer=self.manufacturer,
+			device=self.device,
+			extended=self.extended,
+		)
 
 	def __repr__(self):
 		name = type(self).__name__

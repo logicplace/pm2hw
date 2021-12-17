@@ -16,6 +16,235 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: en\n"
 
+#: pm2hw\__init__.py:
+msgid "exception.device.open.failed"
+msgstr "Failed opening the device!"
+
+#: pm2hw\__main__.py:
+msgid "cli.connect.connected"
+msgstr "Connected! Discovered a {name}"
+
+msgid "cli.connect.connected.details"
+msgstr "  Specifically, a {chip} {size} card"
+
+msgid "cli.connect.no-linkers"
+msgstr "No linkers connected!"
+
+msgid "cli.connect.search"
+msgstr "Searching for device..."
+
+msgid "cli.connect.select-linker.title"
+msgstr "Select a linker to connect to:"
+
+msgid "cli.connect.select-linker.option"
+msgstr " {i}) {name}"
+
+msgid "cli.connect.select-linker.all"
+msgstr "All"
+
+msgid "cli.connect.select-linker.prompt"
+msgstr "Selection: "
+
+msgid "cli.description"
+msgstr "Flash Pokémon mini ROMs to any card."
+
+msgid "cli.dump.intro"
+msgstr "Dumping..."
+
+msgid "cli.dump.complete"
+msgstr "Dumping complete! Completed in {secs:.3f}"
+
+msgid "cli.erase.intro"
+msgstr "Erasing..."
+
+msgid "cli.erase.complete"
+msgstr "Erasing complete! Completed in {secs:.3f}"
+
+msgid "cli.error.device"
+msgstr "A device error occurred: {errmsg}"
+
+msgid "cli.error.exception"
+msgstr "An error occurred"
+
+msgid "cli.flash.intro"
+msgstr "Flashing..."
+
+msgid "cli.flash.verify.intro"
+msgstr "Verifying write..."
+
+msgid "cli.flash.verify.success"
+msgstr "...write ok"
+
+msgid "cli.flash.verify.failure"
+msgstr "...write failed"
+
+msgid "cli.flash.complete"
+msgstr "Flashing complete! Completed in {secs:.3f}"
+
+msgid "cli.help.command.dump"
+msgstr "Dump from cart."
+
+msgid "cli.help.command.erase"
+msgstr "Erase a flash cart."
+
+msgid "cli.help.command.flash"
+msgstr "Flash to cart."
+
+msgid "cli.help.param.all"
+msgstr "Perform the action against all connected linkers."
+
+msgid "cli.help.param.clock"
+msgstr "Set clock divider (higher=slower). Valid value range depends on card."
+
+msgid "cli.help.param.linker"
+msgstr "Specify a linker by name. Fail if that linker is not connected."
+
+msgid "cli.help.param.verbose"
+msgstr "Output verbose information."
+
+msgid "cli.help.param.dump.dest"
+msgstr "Dump the contents of the card to the given filename or use - to pipe to stdout.\n"
+"The filename may be templated as a Python format string using the following variables:\n"
+" * i - Index of the linker (integer)\n"
+" * linker - Linker name\n"
+" * code - Four-character code in the ROM (ASCII)\n"
+" * name - Internal name in the ROM (SHIFT-JIS)\n"
+"By default uses the format: {i:02d}-{code}-{name}.min\n"
+"This would be rendered as, for example: 00-MPZE-Puzzle.min"
+
+msgid "cli.help.param.dump.partial"
+msgstr "Extract only part of the ROM. Specify either just the size in bytes or"
+" specify the offset and size in bytes."
+
+msgid "cli.help.param.dump.split"
+msgstr "Select which ROMs to split out of a multicart."
+" May be one of:\n"
+" * menu - Pick from an interactive menu.\n"
+" * all - Split out all the ROMs.\n"
+" * 1 - Pick the first only.\n"
+" * 1,2 - Pick the first and second.\n"
+" * 1-3 - Pick the first three.\n"
+" * HW - Pick only the Hello World demo (code)."
+
+msgid "cli.help.param.dump.split-all"
+msgstr "Split all the ROMs out of a multicart."
+
+msgid "cli.help.param.erase.partial"
+msgstr "Erase only part of the ROM. Specify either just the size in bytes or"
+" specify the offset and size in bytes."
+
+msgid "cli.help.param.flash.multicart"
+msgstr "Choose the multicart system to use when flashing multiple ROMs"
+
+msgid "cli.help.param.flash.no-erase"
+msgstr "Don't erase the cart before flashing."
+
+msgid "cli.help.param.flash.no-verify"
+msgstr "Don't verify the contents after flashing."
+
+msgid "cli.help.param.flash.roms"
+msgstr "Flash the given file or use - to read from stdin."
+
+#: pm2hw\base.py:
+msgid "log.blocks.over"
+msgstr "Requested to access more than the available size, truncating request."
+
+msgid "log.dump.progress"
+msgstr "Dumping from {card.name} to {fn}"
+
+msgid "log.erase.progress"
+msgstr "Erasing data on {card.name}"
+
+msgid "log.flash.progress"
+msgstr "Flashing to {card.name} from {fn}"
+
+msgid "log.ftdi.characters.disable"
+msgstr "* set EventChar=disabled ErrorChar=disabled"
+
+msgid "log.ftdi.controller.reset"
+msgstr "* set BitMode Mask=0 Mode=0 (reset)"
+
+msgid "log.ftdi.latency.set"
+msgstr "* set LatencyTimer {ms} (ms)"
+
+msgid "log.ftdi.mpsse.enable"
+msgstr "* set BitMode Mask=0 Mode=2 (MPSSE)"
+
+msgid "log.ftdi.reset"
+msgstr "* reset device"
+
+msgid "log.ftdi.title"
+msgstr "* ==== FTDI device ===="
+
+msgid "log.ftdi.transfer.size.set"
+msgstr "* set RequestTransferSize In={in} Out={out} (bytes)"
+
+msgid "log.ftdi.transfer.timeout.set"
+msgstr "* set TransferTimeout Read={read} Write={write} (ms)"
+
+msgid "log.verify.progress"
+msgstr "Verifying contents of {card.name}"
+
+msgid "log.verify.failed"
+msgstr "Verification failed"
+
+msgid "log.verify-failed.report.title"
+msgstr "...with bad bytes in the following blocks:"
+
+msgid "log.verify-failed.report.entry"
+msgstr "  Block {block}: {count}"
+
+msgid "log.verify.success"
+msgstr "Verification successful"
+
+msgid "exception.flash.too-large"
+msgstr "The input file is too large! Max size is {size}!"
+
+msgid "exception.ftdi.characters.disable.failed"
+msgstr "Unable to reset event/error chars"
+
+msgid "exception.ftdi.controller.reset.failed"
+msgstr "Device reset failed!"
+
+msgid "exception.ftdi.latency.set.failed"
+msgstr "Set USB Device Latency Timer failed!"
+
+msgid "exception.ftdi.mpsse.enable.failed"
+msgstr "Set to MPSSE mode failed!"
+
+msgid "exception.ftdi.mpsse.spi.failed"
+msgstr "Unable to configure MPSSE for SPI!"
+
+msgid "exception.ftdi.mpsse.sync.failed"
+msgstr "Unable to synchronise the MPSSE write/read cycle!"
+
+msgid "exception.ftdi.mpsse.sync.failed-check"
+msgstr "MPSSE Sync Failed"
+
+msgid "exception.ftdi.reset.failed"
+msgstr "Unable to reset device"
+
+msgid "exception.ftdi.transfer.size.set.failed"
+msgstr "Unable to set request transfer size"
+
+msgid "exception.read.wait.too-large"
+msgstr "Device queued an unexpected amount of data."
+" Wanted {size} but queued {queued}"
+
+msgid "exception.read.wait.timeout"
+msgstr "Device took too long to queue data."
+" Wanted {size} but queued {queued}"
+
+#: pm2hw\exceptions.py:
+msgid "exception.device.unsupported"
+msgstr "Device not supported"
+
+msgid "exception.device.unsupported.details"
+msgstr "{0}:\n"
+"Manufacturer code: {manufacturer:02X}\n"
+"Device code: {device:02X}\n"
+"Extended code: {extended:02X}"
+
 #: pm2hw\gui\__init__.py:
 msgid "window.help.title"
 msgstr "pm2hw - Help topics"
