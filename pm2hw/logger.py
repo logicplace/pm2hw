@@ -210,9 +210,21 @@ def log(msg, **kwargs):
 _OneToThreeStrings = Union[str, Tuple[str], Tuple[str, str], Tuple[str, str, str]]
 
 class progress(SubtypedMessage):
-	@staticmethod
-	def basic(prefix: str):
-		return prefix + ": {cur}/{end} ({pc:.0f}%)", "  Completed in {secs:.3f}s"
+	class prefixed(str):
+		prefix: str
+
+		def __new__(self, prefix: str, suffix: str):
+			return str.__new__(self, prefix + suffix)
+
+		def __init__(self, prefix: str, suffix: str):
+			self.prefix = prefix
+
+	@classmethod
+	def basic(cls, prefix: str):
+		return (
+			cls.prefixed(prefix, ": {cur}/{end} ({pc:.0f}%)"),
+			"  Completed in {secs:.3f}s"
+		)
 
 	def __init__(self, msg: _OneToThreeStrings, end: int, *, level="INFO", **kwargs):
 		super().__init__(msg, "PROGRESS")
@@ -233,7 +245,7 @@ class progress(SubtypedMessage):
 			"(unknown file)", 0, self, [],
 			None, "(unknown function)", None, None
 		)
-		self.time = self.record.created
+		self.created = self.time = self.record.created
 		logger.handle(self.record)
 
 	def add(self, value: int):
@@ -254,7 +266,7 @@ class progress(SubtypedMessage):
 		return self.current >= self.end
 
 	def time_taken(self):
-		return self.time - self.record.created
+		return self.time - self.created
 
 	def __str__(self):
 		seconds = self.time_taken()

@@ -90,9 +90,9 @@ class BaseFlashable:
 		""" Verify the ROM on the card is correct """
 		stream.seek(0, SEEK_SET)
 		buff1 = stream.read()
-		buff2 = BytesIO(b"\x00" * len(buff1))
+		buff2 = BytesIO()
 		self.dump(buff2)
-		return buff1 == buff2
+		return buff1 == buff2.read()
 
 	def dump(self, stream: BinaryIO, size: int = 0):
 		""" Dump a ROM from the card """
@@ -252,9 +252,10 @@ class BaseCard(BaseFlashable):
 		self.erase_data(0, size)
 
 		prog = progress(
-			progress.basic("Flashing to {card.name}"),
+			progress.basic("Flashing to {card.name} from {fn}"),
 			size,
-			card=self
+			card=self,
+			fn=stream.name
 		)
 
 		# Programming
@@ -308,9 +309,10 @@ class BaseCard(BaseFlashable):
 	def dump(self, stream: BinaryIO, size: int = 0):
 		""" Dump a ROM from the card """
 		prog = progress(
-			progress.basic("Dumping from {card.name}"),
+			progress.basic("Dumping from {card.name} to {fn}"),
 			size or self.memory,
-			card=self
+			card=self,
+			fn=stream.name
 		)
 		for addr, s in self.blocks(0, size):
 			stream.write(self.read_data(addr, s))
