@@ -1,9 +1,11 @@
 import time
 import logging
-from typing import Sequence, Set, Tuple, Union
-from logging import NOTSET, DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL, LogRecord
+import configparser
+from typing import Sequence, Set
+from logging import NOTSET, DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL, LogRecord, _levelToName, _nameToLevel
 
 from . import __name__ as logger_name
+from .locales import _
 
 PROTOCOL = 5
 VERBOSE = INFO - 1
@@ -14,24 +16,23 @@ PROGRESS = "INFO.PROGRESS"
 EXCEPTION = "ERROR.EXCEPTION"
 FATAL = "CRITICAL.FATAL"
 
-_levelToName = {
+_levelToName.update({
 	VERBOSE: "VERBOSE",
 	PROTOCOL: "PROTOCOL",
-	**logging._levelToName
-}
+})
 
-_nameToLevel = {
+_nameToLevel.update({
 	"EXCEPTION": ERROR,
 	"VERBOSE": VERBOSE,
 	"PROTOCOL": PROTOCOL,
-	**logging._nameToLevel
-}
+})
 
 def get_level_from_name(name: str):
 	level, *_ = name.split(".", 1)
 	return _nameToLevel[level]
 
 
+view = "cli"
 logger = logging.getLogger(logger_name)
 
 class SubtypedMessage:
@@ -207,34 +208,51 @@ def info(msg, **kwargs):
 def log(msg, **kwargs):
 	logger.info(SubtypedMessage(msg.format(**kwargs), "LOG"))
 
-_OneToThreeStrings = Union[str, Tuple[str], Tuple[str, str], Tuple[str, str, str]]
+class ProgressConfig(configparser.ConfigParser):
+	is_loaded = False
 
-class progress(SubtypedMessage):
-	class prefixed(str):
-		prefix: str
-
-		def __new__(self, prefix: str, suffix: str):
-			return str.__new__(self, prefix + suffix)
-
-		def __init__(self, prefix: str, suffix: str):
-			self.prefix = prefix
-
-	@classmethod
-	def basic(cls, prefix: str):
-		return (
-			cls.prefixed(prefix, ": {cur}/{end} ({pc:.0f}%)"),
-			"  Completed in {secs:.3f}s"
+	def __init__(self):
+		super().__init__(
+			interpolation=configparser.ExtendedInterpolation(),
 		)
 
-	def __init__(self, msg: _OneToThreeStrings, end: int, *, level="INFO", **kwargs):
-		super().__init__(msg, "PROGRESS")
-		if isinstance(msg, str):
-			self.msg, self.final_msg = msg, None
+	def load(self, cfg: str, force=False):
+		if force or not self.is_loaded:
+			self.read_string(str(cfg))
+			self.is_loaded = True
+
+	def get_message(self, mode: str):
+		self.load(_("log.progress"))
+		return ProgressMessage(self[mode])
+
+class ProgressMessage:
+	def __init__(self, section):
+		self.section = section
+
+	def format_as(self, progress: "progress", view: str):
+		fmt: str
+		if progress.current == 0:
+			fmt = self.section.get(f"{view}.initial")
+		elif progress.is_complete():
+			fmt = self.section.get(f"{view}.final")
 		else:
-			lmsg = len(msg)
-			self.msg = msg[0]
-			self.final_msg = msg[1] if lmsg >= 2 else None
-			self.final_form = msg[2] if lmsg >= 3 else "{}\n{}"
+			fmt = self.section.get(f"{view}.medial")
+
+		return fmt.format(
+			*(
+				self.section.get(f"message.{i}")
+				for i in range(int(self.section.get("count")))
+			),
+			suffix=self.section.get("suffix"),
+			completed=self.section.get("completed"),
+		)
+
+class progress(SubtypedMessage):
+	config = ProgressConfig()
+
+	def __init__(self, msg: ProgressMessage, end: int, *, level="INFO", **kwargs):
+		super().__init__(msg, "PROGRESS")
+		self.msg = msg
 
 		self.current = 0
 		self.percent = 0
@@ -245,7 +263,7 @@ class progress(SubtypedMessage):
 			"(unknown file)", 0, self, [],
 			None, "(unknown function)", None, None
 		)
-		self.created = self.time = self.record.created
+		self.updated = self.created = self.record.created
 		logger.handle(self.record)
 
 	def add(self, value: int):
@@ -254,7 +272,7 @@ class progress(SubtypedMessage):
 	def update(self, value: int):
 		self.current = value
 		self.percent = value * 100 / self.end
-		self.time = time.time()
+		self.updated = time.time()
 		logger.handle(self.record)
 
 	def done(self):
@@ -266,20 +284,15 @@ class progress(SubtypedMessage):
 		return self.current >= self.end
 
 	def time_taken(self):
-		return self.time - self.created
+		return self.updated - self.created
 
 	def __str__(self):
-		seconds = self.time_taken()
-		if self.final_msg and self.current >= self.end:
-			# Finished
-			msg = self.final_form.format(self.msg, self.final_msg)
-		else:
-			msg = self.msg
+		msg = self.msg.format_as(self, view)
 		return msg.format(
 			cur=self.current,
 			pc=self.percent,
 			end=self.end,
-			secs=seconds,
+			secs=self.time_taken(),
 			**self.kwargs
 		)
 

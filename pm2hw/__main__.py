@@ -1,41 +1,40 @@
-from io import BytesIO
 import sys
 import argparse
+from io import BytesIO
 from time import time
-
-import cProfile
-from pstats import Stats
 from typing import List
 
-from . import get_connected_linkers, logger
-from .base import BaseFlashable
+from . import get_connected_linkers, logger, BaseFlashable
 from .logger import log, error, exception, progress, verbose, LogRecord
 from .locales import _, natural_size
 from .exceptions import DeviceError
 
-def completed_progess_only(record: LogRecord):
+logger.view = "cli"
+last_progress = time()
+
+def some_progess_only(record: LogRecord):
+	global last_progress
 	if isinstance(record.msg, progress):
-		if record.msg.is_complete():
-			record.msg.final_form = "  {1}"
-			ct = record.created = record.msg.time
-			record.msecs = (ct - int(ct)) * 1000
-			return True
-		elif record.msg.current == 0 and isinstance(record.msg.msg, progress.prefixed):
-			record.msg.msg = f"  {record.msg.msg.prefix}"
+		now = time()
+		if record.msg.is_complete() or record.msg.current == 0 or now - last_progress >= 10:
+			record.created = record.msg.updated
+			last_progress = now
 			return True
 		return False
 	return True
 
 logger.set_level(logger.INFO)
-handler = logger.Handler(logger.INFO, handler=lambda m: sys.stderr.write(f"{m}\n"))
-handler.add_filter(completed_progess_only)
+handler = logger.Handler(logger.NOTSET, handler=lambda m: sys.stderr.write(f"{m}\n"))
+handler.add_filter(some_progess_only)
+logger.add_handler(handler)
+
 logger.nice_formatter.default_shortlevelname = {
 	f"{logger.INFO}.LOG": "",
 	f"{logger.INFO}.PROGRESS": "",
+	str(logger.VERBOSE): "",
 }
-default_shortlevelname_format = "{}: "
+logger.nice_formatter.default_shortlevelname_format = "{}: "
 handler.set_formatter(logger.nice_formatter)
-logger.add_handler(handler)
 
 parser = argparse.ArgumentParser("pm2hw", description=_("cli.description"))
 
@@ -132,13 +131,13 @@ def connect(args):
 
 def main(args):
 	if args.verbose:
-		levels = ["verbose", "debug", "protocol"]
-		logger.enable(*levels[:args.verbose], update_logger=True)
+		logger.set_level([logger.VERBOSE, logger.DEBUG, logger.PROTOCOL][min(args.verbose - 1, 2)])
 
 	if args.cmd in {"f", "flash"}:
 		flashables, start = connect(args)
 		log(_("cli.flash.intro"))
-		data = BytesIO(sys.stdin.buffer.read())
+		if args.roms == "-":
+			data = BytesIO(sys.stdin.buffer.read())
 		for flashable in flashables:
 			# TODO: multithreaded
 			if not args.erase:
@@ -203,7 +202,10 @@ try:
 	args.profile = args.profile_global or args.profile
 	args.verbose += args.verbose_global
 
-	if args.profile:
+	if args.profile:	
+		import cProfile
+		from pstats import Stats
+
 		with cProfile.Profile() as pr:
 			flashables = main(args)
 		if flashables:

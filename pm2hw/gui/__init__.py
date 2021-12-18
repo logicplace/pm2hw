@@ -9,6 +9,8 @@ from .widgets import Menu, RichText, ScrollFrame
 from .components import add_progress, make_status, open_about, refresh_linkers, set_status, GameList, HelpDialog
 from .. import logger
 
+logger.view = "gui"
+
 # TODO: update title on lg change
 root = tk.Tk()
 root.winfo_toplevel().title(str(_("window.title")))

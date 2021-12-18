@@ -1,6 +1,6 @@
 import os
 import gettext
-from typing import Literal
+from typing import Literal, Optional
 
 from ..config import config
 
@@ -23,17 +23,34 @@ current_lang = default_lang
 available_languages = {"en"}
 
 
-# https://stackoverflow.com/a/21754294/734170
 class FailInPlace(dict):
+	def __init__(self, d={}, *, pfx: str = ""):
+		super().__init__(d)
+		self._pfx = pfx
+		self._fmt = ""
+
 	def __missing__(self, key): 
-		return key.join("{}")
+		return FailInPlace(pfx=f"{self._pfx}.{key}" if self._pfx else key)
+
+	def __getattr__(self, attr):
+		return self[attr]
+
+	def __str__(self):
+		if self._fmt:
+			return f"{{{self._pfx}:{self._fmt}}}"
+		return self._pfx.join("{}")
+
+	def __format__(self, format_spec: str):
+		# TODO: half-asleep and not sure how correct this is; works tho
+		self._fmt = format_spec
+		return super().__format__("")
 
 
 class tstr(str):
 	key: str
 	value: str
 	args: list
-	data: dict
+	data: Optional[dict]
 
 	def __new__(self, value: str, **kw):
 		return str.__new__(self, value)
@@ -41,13 +58,15 @@ class tstr(str):
 	def __init__(self, value: str, *, key: str = ""):
 		self.key = key or value
 		self.value = value
-		self.data = FailInPlace()
+		self.data = None
 
 	# TODO: why isn't this enough for tk? C strings?
 	def __str__(self):
 		res = current_lang.gettext(self.key)
 		if res == self.key:
 			return str(self.value)
+		if self.data is None:
+			return res
 		return res.format_map(self.data)
 
 	def __add__(self, __s: str) -> str:

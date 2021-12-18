@@ -1,8 +1,9 @@
 from typing import List
 import ftd2xx
 
-from . import pokecard, dittomini
-from .base import BaseFlashable, BaseLinker, BaseCard, linkers
+from .base import BaseFlashable
+from .carts import BaseCard
+from .linkers import BaseLinker, linkers
 from .locales import _
 from .exceptions import *
 
