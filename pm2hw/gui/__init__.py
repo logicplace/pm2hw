@@ -92,6 +92,7 @@ def insert_log_entry(record: logger.LogRecord):
 
 def update_log_entries(value):
 	# Language changed
+	logger.progress.config.load(value, force=True)
 	pos, _ = log_pane.yview()
 	log_pane.delete("1.0", tk.END)
 	progress_bars.clear()
@@ -100,8 +101,8 @@ def update_log_entries(value):
 		insert_log_entry(record)
 	log_pane.yview_moveto(pos)
 
-log_title = TStringVar(_("window.log.title"))
-log_title.on_update(update_log_entries)
+progress_config = TStringVar(_("log.progress"))
+progress_config.on_update(update_log_entries)
 
 logger.set_level(logger.INFO)
 log_handler = logger.Handler(logger.INFO, raw_handler=add_log_entry)

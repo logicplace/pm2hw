@@ -263,9 +263,6 @@ msgstr "{0}:\n"
 msgid "window.help.title"
 msgstr "pm2hw - Help topics"
 
-msgid "window.log.title"
-msgstr "Log"
-
 msgid "window.menu.main"
 msgstr "⚙"
 
