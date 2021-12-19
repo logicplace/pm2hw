@@ -4,6 +4,7 @@ from typing import Literal, Optional, Sequence
 
 class ScrollFrame(ttk.Frame):
 	top: ttk.Frame
+	canvas: tk.Canvas
 
 	def __init__(
 		self,

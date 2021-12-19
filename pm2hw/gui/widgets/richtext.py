@@ -36,6 +36,7 @@ class RichText(tk.Text):
 		"kbd", "tt", "code", "a",
 		"a:hover", "a:active", "a:visited",
 		"ol", "ul", "li", "ol.listmark", "ul.listmark",
+		"widget",
 	)
 
 	def __init__(self, master=None, cnf={}, *, style="RichText", style_tags=(), orient=(), **kw):
@@ -172,6 +173,18 @@ class RichText(tk.Text):
 			self.tk.call(self._orig, "delete", index1, index2)
 		else:
 			super().delete(index1, index2)
+
+	def clear(self):
+		if self.cget("state") != "disabled":
+			self.delete("1.0", tk.END)
+			for child in list(self.children.values()):
+				child.destroy()
+				import gc
+				gc.collect()
+				for x in gc.get_referrers(child):
+					if not isinstance(x, list):
+						tmp = gc.get_referrers(x)
+						pass
 
 	def _get_hyperlink_deets(self, href_or_callable):
 		link_id = f"a-{len(self.links)}"
@@ -311,7 +324,7 @@ class RichTextRenderer(BaseRenderer):
 				i //= len_seq
 				digit = i % len_seq - 1 if repeat_0 else i % len_seq
 			digits.append(seq[digit])
-			return format.format("".join(reversed(map(str, digits))))
+			return format.format("".join(map(str, reversed(digits))))
 
 		return handler
 
@@ -319,6 +332,14 @@ class RichTextRenderer(BaseRenderer):
 	def noop(self):
 		return self.index, self.index
 
+	def widget(self, window):
+		start = self.index
+		self.target.window_create(start, window=window)
+		end = self.index = self.target.index(f"{start} + 1c")
+		self.target.tag_add("widget", start, end)
+		return start, self.text("\n")[1]
+
+	# BaseRenderer methods
 	def text(self, text, *tags):
 		start = self.index
 		self.target.insert(start, text, *tags)

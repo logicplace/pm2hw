@@ -6,8 +6,12 @@ from tkinter import ttk, messagebox, simpledialog
 from typing import Dict, Union
 
 import pm2hw_icons
-from ..widgets.richtext import RichText
+from .linker import DittoFlash
+from .status import _make_status
+from .gamelist import GameList, ROM
+from ..widgets import RichText, ScrollFrame
 from ..i18n import _
+from ...linkers import BaseLinker
 
 def open_about(root: tk.Tk):
 	messagebox.showinfo(
@@ -24,12 +28,28 @@ def open_about(root: tk.Tk):
 	)))
 
 
+class DummyLinker(BaseLinker):
+	name = "DITTO mini Flasher"
+
+	def __init__(self):
+		...
+
+class DummyROM(ROM):
+	def get_info(self, code, name, crc):
+		from ...info import games
+
+		for info in games.games_by_rom.get((code, name), []):
+			if info.crc32 == crc:
+				return info
+		return games.ROM(games.Status.unidentified, code, name, crc)
+
 class HelpDialog(simpledialog.Dialog):
 	def body(self, master: tk.Frame):
 		self.topics: Dict[str, RichText] = {}
 		self.html_handlers = {
 			"a": self.link_handler,
 			"str": self.translation_handler,
+			"widget": self.widget_handler,
 		}
 
 		master.pack_configure(fill=tk.BOTH, expand=True)
@@ -85,10 +105,13 @@ class HelpDialog(simpledialog.Dialog):
 		if not sel:
 			return
 		topic = sel[0]
-		self.text.delete("1.0", tk.END)
+		self.text.clear()
 		self.topics[topic].render_to(self.text)
 
 	def link_handler(self, renderer, attrs):
+		if "href" not in attrs:
+			return renderer.noop
+
 		parsed = urlparse(attrs["href"])
 		if parsed.scheme:
 			return attrs["href"]
@@ -106,6 +129,45 @@ class HelpDialog(simpledialog.Dialog):
 		if "name" in attrs:
 			return renderer.text(str((_)(attrs["name"])))
 		return renderer.noop
+
+	def widget_handler(self, renderer, attrs):
+		name = attrs.get("name")
+		if name == "gui-overview":
+			frm = ttk.Frame(self.text)
+			frm.columnconfigure(0, weight=1)
+			frm.rowconfigure(1, weight=1)
+			menu = tk.Frame(frm)
+			for x in ["main", "view", "help"]:
+				mb = tk.Menubutton(
+					menu,
+					text=str((_)(f"window.menu.{x}")).replace("_", ""),
+					state=tk.DISABLED
+				)
+				mb.pack(side=tk.LEFT)
+			menu.configure(background=mb.cget("background"))
+			menu.grid(column=0, row=0, columnspan=2, stick=tk.NSEW)
+
+			info = ttk.Frame(frm, width=200, height=200)#, orient=tk.VERTICAL)
+			info.grid(column=1, row=1, sticky=tk.NSEW)
+
+			game_list = GameList(frm, info, width=300, height=200, theight=4, disabled=True)
+			# game_list.add(DittoFlash(game_list, DummyLinker()))
+			# rom = DummyROM(game_list, b"MRCJ", "ﾎﾟｹﾓﾝﾚｰｽ", 0x4433B736)
+			# game_list.add(rom)
+			# rom.render_to(info)
+			game_list.grid(column=0, row=1, sticky=tk.NSEW)
+
+			status = _make_status(frm)
+			status.grid(column=0, row=2, columnspan=2, stick=tk.NSEW)
+
+			# TODO: draw numbers
+			return renderer.widget(frm)
+		elif name == "gui-linker":
+			return renderer.noop
+		elif name == "gui-game":
+			return renderer.noop
+		else:
+			raise ValueError("widget name")
 
 
 class HelpTopic:

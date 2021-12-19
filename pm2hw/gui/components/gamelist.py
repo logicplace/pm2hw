@@ -3,6 +3,7 @@ from functools import partial
 
 import tkinter as tk
 from tkinter import ttk
+import weakref
 
 from pm2hw_icons import graphic
 from ..i18n import _, localized_game_name
@@ -12,11 +13,9 @@ from ...info import games
 from ...config import config
 
 class ROM(BaseRomEntry):
-	def __init__(self, parent: "GameList", fn: str):
+	def __init__(self, parent: "GameList", *args):
 		super().__init__(parent)
-		self.filename = fn
-		with open(fn, "rb") as f:
-			self.info = games.lookup(f, True)
+		self.info = self.get_info(*args)
 
 		self.name = localized_game_name(self.info, fallback=_("library.list.rom.name.unknown"))
 		self.title = localized_game_name(self.info, fallback=_("info.rom.name.unknown"))
@@ -25,6 +24,11 @@ class ROM(BaseRomEntry):
 		if self.info.boxings:
 			self.icon = self.info.boxings[0].icon
 			self.preview = self.info.boxings[0].preview
+
+	def get_info(self, fn: str):
+		self.filename = fn
+		with open(fn, "rb") as f:
+			return games.lookup(f, True)
 
 	def render_buttons_to(self, target: ttk.Frame):
 		frm = super().render_buttons_to(target)
@@ -60,7 +64,7 @@ class GameList(Library):
 
 	def __init__(self, master, info_view: ttk.Frame, **kw):
 		super().__init__(master, **kw)
-		self.info_view = info_view
+		self._info_view = weakref.ref(info_view)
 		self.updating_info = False  # thread safety
 
 		self.iids = {
@@ -74,9 +78,8 @@ class GameList(Library):
 			file=graphic("unknown_game_icon.gif")
 		)
 
-	def cleanup(self):
-		for k in list(self.entries.keys()):
-			self.entries[k].cleanup()
+	def info_view(self):
+		return self._info_view()
 
 	def reload(self):
 		""" Reload library from config file. """
@@ -99,8 +102,11 @@ class GameList(Library):
 						if isinstance(game, ROM):
 							if entry.filename == game.filename:
 								return
-					config["GUI"].setdefault("library-games", "") 
-					config["GUI"]["library-games"] += f"\n{entry.filename}"
+					try:
+						config["GUI"].setdefault("library-games", "") 
+						config["GUI"]["library-games"] += f"\n{entry.filename}"
+					except AttributeError:
+						pass
 
 					if not entry.icon:
 						entry.pi_icon = self.unknown_game_icon

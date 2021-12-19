@@ -223,6 +223,11 @@ class BaseTheme(metaclass=MetaTheme):
 				"font": "RichTextUListMarkFont",
 			}
 		},
+		"widget.RichText": {
+			"configure": {
+				"justify": tk.CENTER,
+			}
+		},
 		"Console.RichText": {
 			"configure": {
 				"font": "RichTextConsoleFont",

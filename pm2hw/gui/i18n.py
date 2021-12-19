@@ -13,6 +13,7 @@ string_vars: List["TStringVar"] = []
 class TStringVar(tk.StringVar):
 	def __init__(self, value: str, *, master: tk.Widget = None):
 		self._value = value
+		self._cb_name = ""
 		if isinstance(value, _):
 			value, name = str(value), value.key
 		else:
@@ -22,6 +23,7 @@ class TStringVar(tk.StringVar):
 
 	def __del__(self):
 		string_vars.remove(self)
+		self.trace_remove("write", self._cb_name)
 		super().__del__()
 
 	def set(self, value):
@@ -38,7 +40,9 @@ class TStringVar(tk.StringVar):
 			if mode == "write":
 				return fun(str(self._value))
 
-		self.trace_add("write", handler)
+		if self._cb_name:
+			self.trace_remove("write", self._cb_name)
+		self._cb_name = self.trace_add("write", handler)
 		if now:
 			fun(str(self._value))
 

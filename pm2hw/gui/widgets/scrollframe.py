@@ -6,10 +6,16 @@ from functools import partial
 class ScrollFrame(ttk.Frame):
 	def __init__(self, master=None, *, orient=None, **kw):
 		ikw = {
-			x[1:]: kw.pop(x)
-			for x in ["iborder", "iborderwidth", "irelief", "ipadding", "istyle"]
-			if x in kw
+			k[1:]: kw.pop(k)
+			for k in ["iborder", "iborderwidth", "irelief", "ipadding", "istyle"]
+			if k in kw
 		}
+		ckw = {
+			k: kw[k]
+			for k in ["width", "height"]
+			if k in kw
+		}
+		ikw.update(ckw)
 
 		if isinstance(orient, (tuple, list)):
 			orient = set(orient)
@@ -27,7 +33,7 @@ class ScrollFrame(ttk.Frame):
 		self.pack = self.top.pack
 		self.place = self.top.place
 
-		self.canvas = tk.Canvas(self.top)
+		self.canvas = tk.Canvas(self.top, **ckw)
 		super().__init__(self.canvas, class_="ScrollFrame", **ikw)
 		self.bind("<<ThemeChanged>>", self._update_styling)
 		self._update_styling()

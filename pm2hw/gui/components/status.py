@@ -13,10 +13,20 @@ active: Dict[BaseFlashable, Dict[str, Optional[progress]]] = {}
 
 retained_value = ""
 
+def _make_status(parent: tk.Misc):
+	return ttk.Label(
+		parent,
+		style="Status.TLabel",
+		relief=tk.RIDGE,
+		borderwidth=2,
+		text="...",
+		padding=(5, 2)
+	)
+
 def make_status(r: tk.Tk):
 	global root, status
 	root = r
-	status = ttk.Label(root, style="Status.TLabel", relief=tk.RIDGE, borderwidth=2, text="...", padding=(5, 2))
+	status = _make_status(r)
 	return status
 
 def set_status(value: str = ""):

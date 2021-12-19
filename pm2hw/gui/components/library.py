@@ -2,7 +2,9 @@ import os
 import glob
 from enum import Enum
 from typing import Any, ClassVar, Dict, List, Optional, cast
+from functools import partial
 from threading import Lock
+import weakref
 
 import tkinter as tk
 from tkinter import ttk, font, filedialog
@@ -14,6 +16,9 @@ from ...info import games
 from ...config import config
 from ...logger import warn
 from ...locales import natural_size
+
+def update_text(fn, iid, text):
+	return fn(iid, text=text)
 
 class Entry:
 	iid: str  # set by Library
@@ -31,8 +36,12 @@ class Entry:
 	parent_iid: str
 
 	def __init__(self, parent: "Library"):
-		self.parent = parent
+		self._parent = weakref.ref(parent)
 		self.lock = Lock()
+
+	@property
+	def parent(self):
+		return self._parent()
 
 	def render_to(self, target: ttk.Frame):
 		raise NotImplementedError
@@ -47,16 +56,18 @@ class Library(ttk.Frame):
 	library_name: ClassVar[str]
 	library_class: ClassVar[type]
 
-	def __init__(self, master, **kw):
+	def __init__(self, master, *, theight=None, disabled=False, **kw):
 		super().__init__(master, **kw)
 		self.vars = {}
 		self.entries = {}
 
+		tkw = {} if theight is None else {"height": theight}
 		self.tree = ttk.Treeview(self,
 			#columns=("Name",),
 			show="tree",
 			selectmode="extended",
 			takefocus=True,
+			**tkw
 		)
 
 		f = font.nametofont("LibraryListEntryFont")
@@ -83,9 +94,13 @@ class Library(ttk.Frame):
 				file=graphic("add_folder.gif")
 			),
 		]
-		ttk.Button(tree_actions, command=self.remove_entry, image=ai[0]).pack(side=tk.RIGHT)
-		ttk.Button(tree_actions, command=self.add_file, image=ai[1]).pack(side=tk.RIGHT)
-		ttk.Button(tree_actions, command=self.add_folder, image=ai[2]).pack(side=tk.RIGHT)
+		for cmd, im in zip([
+			self.remove_entry,
+			self.add_file,
+			self.add_folder
+		], ai):
+			kw = {} if disabled else {"command": cmd}
+			ttk.Button(tree_actions, image=im, **kw).pack(side=tk.RIGHT)
 
 		self.tree.grid(column=0, row=0, sticky=tk.NSEW)
 		scroll_y.grid(column=1, row=0, sticky="nes")
@@ -94,12 +109,24 @@ class Library(ttk.Frame):
 		self.columnconfigure(0, weight=1)
 		self.rowconfigure(0, weight=1)
 
-		self.tree.bind("<<TreeviewSelect>>", self.on_select)
+		if not disabled:
+			self.tree.bind("<<TreeviewSelect>>", self.on_select)
+
+	def __del__(self):
+		self.cleanup()
+
+	def cleanup(self):
+		for k in list(self.entries.keys()):
+			self.entries[k].cleanup()
+
+	def destroy(self):
+		self.cleanup()
+		super().destroy()
 
 	def make(self, text: str, *, tags="LibraryListEntryFont", parent="", **kw):
 		var = TStringVar(text)
 		iid = self.tree.insert(parent, "end", text=var.get(), tags=tags, **kw)
-		var.on_update(lambda v: self.tree.item(iid, text=v))
+		var.on_update(partial(update_text, self.tree.item, iid))
 		self.vars[iid] = var
 		return iid
 

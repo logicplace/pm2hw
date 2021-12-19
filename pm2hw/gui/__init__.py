@@ -4,7 +4,7 @@ from functools import partial
 from typing import  Dict, List, Tuple
 
 from . import themes
-from .i18n import _, TStringVar, change_language
+from .i18n import _, TStringVar
 from .widgets import Menu, RichText, ScrollFrame
 from .components import add_progress, make_status, open_about, refresh_linkers, set_status, GameList, HelpDialog
 from .. import logger

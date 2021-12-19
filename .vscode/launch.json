@@ -5,13 +5,24 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
+			"name": "Launch GUI",
+			"type": "python",
+			"request": "launch",
+			"module": "pm2hw.gui"
+		},
+		{
 			"name": "Dump whatever's connected",
 			"type": "python",
 			"request": "launch",
 			"module": "pm2hw",
 			"cwd": "${workspaceFolder}",
-			"env": {"PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"},
-			"args": ["-d", "test_dump.min"]
+			"env": {
+				"PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+			},
+			"args": [
+				"-d",
+				"test_dump.min"
+			]
 		},
 		{
 			"name": "Flash test_flash.min to whatever's connected",
@@ -19,8 +30,13 @@
 			"request": "launch",
 			"module": "pm2hw",
 			"cwd": "${workspaceFolder}",
-			"env": {"PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"},
-			"args": ["-f", "test_flash.min"]
+			"env": {
+				"PYTHONPATH": "${workspaceFolder}:${env:PYTHONPATH}"
+			},
+			"args": [
+				"-f",
+				"test_flash.min"
+			]
 		},
 	]
 }

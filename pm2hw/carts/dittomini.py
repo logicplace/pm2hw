@@ -111,6 +111,7 @@ class DittoMiniRev3(BaseSstCard):
 		self.memory = size_bytes = cfiqs.get_size()
 
 		# TODO: make this configurable?
+		# note, seems to read about 5s faster with the bigger size; write much faster with smaller tho
 		self.block_size = min(block_regions, key=lambda x: x.block_size).get_size()
 
 		self.cfiqs = cfiqs
