@@ -9,7 +9,7 @@ DEV_DESC = b"Dual RS232 A"
 # DEV_DESC = b"FT2232H MiniModule A"
 
 class DittoFlash(BaseFtdiLinker):
-	name = "DittoFlash"
+	name = "DITTO mini Flasher"
 	clock_divisor = 1
 
 	PWR = BaseFtdiLinker.GPIOL0

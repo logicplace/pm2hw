@@ -16,6 +16,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: en\n"
 
+
+msgid "RAM"
+msgstr "RAM"
+
 #: pm2hw\__init__.py:
 msgid "exception.device.open.failed"
 msgstr "Failed opening the device!"
@@ -791,11 +795,32 @@ msgstr "{name} (connection unestablished)"
 msgid "library.list.linker.name.with-rom"
 msgstr "{game} ({name})"
 
+msgid "log.connect.in-progress"
+msgstr "Connecting to {linker.name}..."
+
+msgid "log.connect.complete"
+msgstr "Connected! Discovered a {name}"
+
+msgid "log.connect.complete.with-size"
+msgstr "Connected! Discovered a {name} ({size})"
+
+msgid "log.linker.found"
+msgstr "Discovered a {linker.name}"
+
+msgid "log.linker.removed"
+msgstr "{linker.name} disconnected"
+
 msgid "select-location.linker.dump"
 msgstr "Specify location to dump to"
 
 msgid "select-location.linker.flash"
 msgstr "Select file to flash"
+
+msgid "status.erase.unsupported"
+msgstr "{name} does not support erasing"
+
+msgid "status.flash.unsupported"
+msgstr "{name} does not support flashing"
 
 #: pm2hw\gui\components\status.py:
 msgid "status.dumping.in-progress"
@@ -923,9 +948,6 @@ msgstr "Pokémon Puzzle Collection (U)"
 
 msgid "library.list.rom.MPZJ.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ.29545BDA"
 msgstr "Pokémon Puzzle Collection (J)"
-
-msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.4433B736"
-msgstr "Pokémon Race mini (J)"
 
 msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.3388EDB3"
 msgstr "Pokémon Race Petit (J)"

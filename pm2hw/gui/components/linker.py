@@ -34,10 +34,12 @@ class Linker(BaseRomEntry):
 		self.flashing = False
 		self.erasing = False
 
+	def cleanup(self):
+		self.linker.cleanup()
+
 	@property
 	def name(self):
 		if self.info:
-			# TODO: name updates on lang change
 			return _("library.list.linker.name.with-rom").format(
 				game=localized_game_name(self.info),
 				name=self.flashable.name
@@ -55,14 +57,14 @@ class Linker(BaseRomEntry):
 	def ensure_connected(self):
 		# TODO: check for disconnections
 		if not self.connected:
-			verbose("Connecting to {linker.name}...", linker=self.linker)
+			verbose(_("log.connect.in-progress"), linker=self.linker)
 			self.flashable = self.linker.init()
 			try:
 				size = self.flashable.memory
-				log("Connected! Discovered a {name} ({size})",
+				log(_("log.connect.complete.with-size"),
 					name=self.flashable.name, size=natural_size(size))
 			except AttributeError:
-				log("Connected! Discovered a {name}", name=self.flashable.name)
+				log(_("log.connect.complete"), name=self.flashable.name)
 			self.info = games.lookup(self.flashable)
 			self.connected = True
 			self.parent.update_entry(self)
@@ -160,7 +162,7 @@ class Linker(BaseRomEntry):
 	@threaded
 	def flash(self):
 		if not self.flashable.can_flash:
-			set_status(f"{self.flashable.name} does not support flashing")
+			set_status(_("status.flash.unsupported").format(name=self.flashable.name))
 			return
 
 		fn = filedialog.askopenfilename(
@@ -199,7 +201,7 @@ class Linker(BaseRomEntry):
 	@threaded
 	def erase(self):
 		if not self.linker.can_erase:
-			set_status(f"{self.flashable.name} does not support erasing")
+			set_status(_("status.erase.unsupported").format(name=self.flashable.name))
 			return
 
 		self.lock.acquire()
@@ -234,7 +236,7 @@ class DittoFlash(Linker):
 
 label2entry_cls = {
 	"PokeFlash": PokeFlash,
-	"DittoFlash": DittoFlash,
+	"DITTO mini Flasher": DittoFlash,
 }
 
 
@@ -253,7 +255,7 @@ def refresh_linkers(game_list: "GameList"):
 	for k in list(entries.keys()):
 		if k not in linkers:
 			entry = entries.pop(k)
-			log("{linker.name} disconnected", linker=entry.linker)
+			log(_("log.linker.removed"), linker=entry.linker)
 			game_list.remove_entry(entry)
 
 	# Update existing ones & add new ones
@@ -264,7 +266,7 @@ def refresh_linkers(game_list: "GameList"):
 			cls = label2entry_cls[linker.name]
 			e = entries[k] = cls(game_list, linker)
 			game_list.add(e)
-			log("Discovered a {linker.name}", linker=linker)
+			log(_("log.linker.found"), linker=linker)
 
 	# If there are no entries, add a message
 	if not entries:

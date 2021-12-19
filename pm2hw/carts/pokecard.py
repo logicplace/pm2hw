@@ -10,7 +10,7 @@ from ..exceptions import DeviceNotSupportedError
 if TYPE_CHECKING:
 	from ..linkers.base import BaseLinker
 
-# TODO: separate Rev 1 and Rev 2.0
+# TODO: implement separate Rev 1 and Rev 2.0
 class PokeCard512(BaseSstCard):
 	memory = 512 * 1024
 	block_size = 8 * 1024

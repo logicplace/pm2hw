@@ -68,7 +68,6 @@ class BaseSstCard(BaseCard):
 			self.blocks(addr, len(data)),
 			chunked(self.block_size, data)
 		):
-			# TODO: buffer inside or outside?
 			self.linker.start_buffering()
 			for a, d in zip(range(start, start + bsize), block):
 				self.sst_byte_program(a, d)

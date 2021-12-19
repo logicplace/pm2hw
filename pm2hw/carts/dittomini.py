@@ -59,7 +59,7 @@ class CFIQueryStruct(NamedTuple):
 
 # There is no Rev 1 or 2, though
 class DittoMiniRev3(BaseSstCard):
-	name = "Ditto mini"
+	name = "DITTO mini"
 
 	def __init__(self, linker: "BaseLinker"):
 		super().__init__(linker)

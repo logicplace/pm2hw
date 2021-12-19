@@ -4,16 +4,18 @@ from functools import partial
 from typing import  Dict, List, Tuple
 
 from . import themes
-from .i18n import _, TStringVar
+from .i18n import _, TStringVar, change_language
 from .widgets import Menu, RichText, ScrollFrame
 from .components import add_progress, make_status, open_about, refresh_linkers, set_status, GameList, HelpDialog
 from .. import logger
 
 logger.view = "gui"
 
-# TODO: update title on lg change
 root = tk.Tk()
-root.winfo_toplevel().title(str(_("window.title")))
+
+title_var = TStringVar(_("window.title"))
+title_var.on_update(root.winfo_toplevel().title, now=True)
+
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
@@ -88,17 +90,18 @@ def insert_log_entry(record: logger.LogRecord):
 	else:
 		log_pane.insert(tk.END, f"\n{msg}", tag)
 
+def update_log_entries(value):
+	# Language changed
+	pos, _ = log_pane.yview()
+	log_pane.delete("1.0", tk.END)
+	progress_bars.clear()
+	for record in log_entries:
+		print(type(record.msg._msg))
+		insert_log_entry(record)
+	log_pane.yview_moveto(pos)
+
 log_title = TStringVar(_("window.log.title"))
-def update_log_entries(varname, idx, mode):
-	if mode == "write":
-		# Language changed
-		pos = log_pane.yview()
-		log_pane.delete("1.0", tk.END)
-		progress_bars.clear()
-		for record in log_entries:
-			insert_log_entry(record)
-		log_pane.yview(pos)
-log_title.trace_add("write", update_log_entries)
+log_title.on_update(update_log_entries)
 
 logger.set_level(logger.INFO)
 log_handler = logger.Handler(logger.INFO, raw_handler=add_log_entry)

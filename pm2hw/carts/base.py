@@ -107,7 +107,7 @@ class BaseCard(BaseFlashable):
 			progress.config.get_message("dump"),
 			size or self.memory,
 			card=self,
-			fn=stream.name
+			fn=getattr(stream, "name", _("RAM"))
 		)
 		for data in self.read_data(offset, size, prog=prog):
 			stream.write(data)

@@ -90,7 +90,7 @@ add_common_flags(erase_cmd)
 erase_cmd.add_argument("-p", "--partial", metavar="{size,offset:size}",
 	help=_("cli.help.param.erase.partial"))
 
-# # TODO: info-gathering command(s)
+# TODO: info-gathering command(s)
 
 def connect(args):
 	log(_("cli.connect.search"))

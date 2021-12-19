@@ -1,0 +1,628 @@
+# pm2hw GUI messages
+# Copyright (C) 2021
+# Sapphire Becker (logicplace.com), 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-11-25 16:11-0800\n"
+"PO-Revision-Date: 2021-12-18 17:54-0800\n"
+"Last-Translator: Sapphire Becker (logicplace.com)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"Last-Translator: Sapphire Becker (logicplace.com)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: ja\n"
+
+
+msgid "RAM"
+msgstr "メモリ"
+
+#: pm2hw\__init__.py:
+msgid "exception.device.open.failed"
+msgstr "デバイスをオープンできませんでした"
+
+#: pm2hw\__main__.py:
+msgid "cli.connect.connected"
+msgstr "接続成功！{name}を見つかりました"
+
+msgid "cli.connect.connected.details"
+msgstr "　デバイスの情報: {chip}チップ {size}"
+
+msgid "cli.connect.no-linkers"
+msgstr "リンカーは見つかれません"
+
+msgid "cli.connect.search"
+msgstr "接続できそうなデバイスをさがしてる…"
+
+msgid "cli.connect.select-linker.title"
+msgstr "接続するためのリンカーを選んでください"
+
+msgid "cli.connect.select-linker.option"
+msgstr " {i}) {name}"
+
+msgid "cli.connect.select-linker.all"
+msgstr "全て"
+
+msgid "cli.connect.select-linker.prompt"
+msgstr "お選びは…"
+
+msgid "cli.description"
+msgstr "ポケモンミニについてのハードウェアに読み書きます"
+
+#  msgid "cli.dump.intro"
+#  msgstr ""
+
+#  msgid "cli.dump.complete"
+#  msgstr ""
+
+#  msgid "cli.erase.intro"
+#  msgstr ""
+
+#  msgid "cli.erase.complete"
+#  msgstr ""
+
+#  msgid "cli.error.device"
+#  msgstr ""
+
+#  msgid "cli.error.exception"
+#  msgstr ""
+
+#  msgid "cli.flash.intro"
+#  msgstr ""
+
+#  msgid "cli.flash.verify.intro"
+#  msgstr ""
+
+#  msgid "cli.flash.verify.success"
+#  msgstr ""
+
+#  msgid "cli.flash.verify.failure"
+#  msgstr ""
+
+#  msgid "cli.flash.complete"
+#  msgstr ""
+
+#  msgid "cli.help.command.dump"
+#  msgstr ""
+
+#  msgid "cli.help.command.erase"
+#  msgstr ""
+
+#  msgid "cli.help.command.flash"
+#  msgstr ""
+
+#  msgid "cli.help.param.all"
+#  msgstr ""
+
+#  msgid "cli.help.param.clock"
+#  msgstr ""
+
+#  msgid "cli.help.param.linker"
+#  msgstr ""
+
+#  msgid "cli.help.param.verbose"
+#  msgstr ""
+
+#  msgid "cli.help.param.dump.dest"
+#  msgstr ""
+
+#  msgid "cli.help.param.dump.partial"
+#  msgstr ""
+
+#  msgid "cli.help.param.dump.split"
+#  msgstr ""
+
+#  msgid "cli.help.param.dump.split-all"
+#  msgstr ""
+
+#  msgid "cli.help.param.erase.partial"
+#  msgstr ""
+
+#  msgid "cli.help.param.flash.multicart"
+#  msgstr ""
+
+#  msgid "cli.help.param.flash.no-erase"
+#  msgstr ""
+
+#  msgid "cli.help.param.flash.no-verify"
+#  msgstr ""
+
+#  msgid "cli.help.param.flash.roms"
+#  msgstr ""
+
+#: pm2hw\base.py:
+#  msgid "log.blocks.over"
+#  msgstr ""
+
+msgid "log.progress"
+msgstr "[DEFAULT]\n"
+"s=\n"
+"count=1\n"
+"gui={0}: {suffix}\n"
+"gui.initial=${gui}\n"
+"gui.medial=${gui}\n"
+"gui.final={0}: {suffix}\n ${s}　{completed}\n"
+"cli.initial=${s}　{0}\n"
+"cli.medial=${s}　　……{suffix}\n"
+"cli.final=${s}　　{completed}\n"
+"suffix={cur}/{end} ({pc:.0f}%)\n"
+"completed={secs:.3f}秒で完成しました\n"
+"[dump]\n"
+"message.0={card.name}から{fn}に吸出し中\n"
+"[erase]\n"
+"message.0={card.name}のデータを消してます\n"
+"[flash]\n"
+"message.0={fn}から{card.name}に書き込み中\n"
+"[verify]\n"
+"message.0={card.name}に書いたデータを確認中\n"
+
+# TODO http://tokiwa-west.co.jp/twadmin/wp-content/uploads/2015/04/FTD2XX.pdf
+msgid "log.ftdi.characters.disable"
+msgstr ""
+
+msgid "log.ftdi.controller.reset"
+msgstr ""
+
+msgid "log.ftdi.latency.set"
+msgstr ""
+
+msgid "log.ftdi.mpsse.enable"
+msgstr ""
+
+msgid "log.ftdi.reset"
+msgstr ""
+
+msgid "log.ftdi.title"
+msgstr ""
+
+msgid "log.ftdi.transfer.size.set"
+msgstr ""
+
+msgid "log.ftdi.transfer.timeout.set"
+msgstr ""
+
+msgid "log.verify.failed"
+msgstr "確認失敗"
+
+# TODO: what's "block"?
+msgid "log.verify-failed.report.title"
+msgstr "……ブロックの間違ったバイト数は"
+
+msgid "log.verify-failed.report.entry"
+msgstr "　ブロック{block}: {count}"
+
+msgid "log.verify.success"
+msgstr "確認成功"
+
+#  msgid "exception.flash.too-large"
+#  msgstr ""
+
+#  msgid "exception.ftdi.characters.disable.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.controller.reset.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.latency.set.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.mpsse.enable.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.mpsse.spi.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.mpsse.sync.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.mpsse.sync.failed-check"
+#  msgstr ""
+
+#  msgid "exception.ftdi.reset.failed"
+#  msgstr ""
+
+#  msgid "exception.ftdi.transfer.size.set.failed"
+#  msgstr ""
+
+#  msgid "exception.read.wait.too-large"
+#  msgstr ""
+
+#  msgid "exception.read.wait.timeout"
+#  msgstr ""
+
+#: pm2hw\exceptions.py:
+#  msgid "exception.device.unsupported"
+#  msgstr ""
+
+#  msgid "exception.device.unsupported.details"
+#  msgstr ""
+
+#: pm2hw\gui\__init__.py:
+msgid "window.help.title"
+msgstr "pm2hw - ヘルプ"
+
+msgid "window.log.title"
+msgstr "ログ"
+
+msgid "window.menu.main"
+msgstr "⚙"
+
+msgid "window.menu.main.refresh"
+msgstr "リンカーを探しなおす(_R)"
+
+msgid "window.menu.main.preferences"
+msgstr "設定(_P)"
+
+msgid "window.menu.main.exit"
+msgstr "終了(_X)"
+
+msgid "window.menu.view"
+msgstr "表示(_V)"
+
+# TODO ?
+msgid "window.menu.view.multicart"
+msgstr "マルチカート(_M)"
+
+msgid "window.menu.view.log"
+msgstr "ログ(_L)"
+
+msgid "window.menu.help"
+msgstr "ヘルプ(_H)"
+
+msgid "window.menu.help.howto"
+msgstr "使い方(_U)"
+
+msgid "window.menu.help.about"
+msgstr "バージョン情報(_A)"
+
+msgid "window.title"
+msgstr "pm2hw - ポケモンミニに読み書くアプリ"
+
+#: pm2hw\gui\components\gamelist.py:
+msgid "info.rom.name.unknown"
+msgstr "{rom.internal} ({rom.acode})"
+
+msgid "library.list.header.games"
+msgstr "ゲーム"
+
+msgid "library.list.header.linkers"
+msgstr "リンカー"
+
+msgid "library.list.no-linkers"
+msgstr "始めにリンカーをつながってください"
+
+msgid "library.list.rom.name.unknown"
+msgstr "{rom.acode} - {rom.internal}"
+
+#: pm2hw\gui\components\help.py:
+msgid "help.about.title"
+msgstr "pm2hwについて"
+
+msgid "help.about.message"
+msgstr "pm2hw - ポケモンミニに読み書くアプリ\n"
+"プログラマー: {authors}\n"
+"ライセンス: {license}\n"
+"バージョン: {version}\n"
+"アイコンのバージョン: {icons_version}\n"
+"Pythonのバージョン: {py_version}\n"
+"Tclのバージョン: {tcl_version}\n"
+"Tkinterのバージョン: {tk_version} ({tk_windowing})"
+
+msgid "help.topic.welcome.title"
+msgstr "はじめに"
+
+#  msgid "help.topic.welcome.content"
+#  msgstr ""
+
+msgid "help.topic.basics.title"
+msgstr "概要"
+
+#  msgid "help.topic.basics.content"
+#  msgstr ""
+
+msgid "help.topic.gui.title"
+msgstr "グラフィカルユーザインタフェース (GUI)"
+
+#  msgid "help.topic.gui.content"
+#  msgstr ""
+
+msgid "help.topic.linker.title"
+msgstr "リンカーの領域"
+
+#  msgid "help.topic.linker.content"
+#  msgstr ""
+
+msgid "help.topic.game.title"
+msgstr "ゲームの領域"
+
+#  msgid "help.topic.game.content"
+#  msgstr ""
+
+msgid "help.topic.flashing.title"
+msgstr "フラッシュカートの書き込む方法"
+
+#  msgid "help.topic.flashing.content"
+#  msgstr ""
+
+msgid "help.topic.dumping.title"
+msgstr "フラッシュカートの吸出す方法"
+
+#  msgid "help.topic.dumping.content"
+#  msgstr ""
+
+msgid "help.topic.reference.title"
+msgstr "CLIの概要"
+
+#  msgid "help.topic.reference.content"
+#  msgstr ""
+
+#: pm2hw\gui\components\library.py:
+msgid "info.rom.details.header"
+msgstr "ロム情報"
+
+msgid "info.rom.details.name"
+msgstr "名"
+
+msgid "info.rom.details.developer"
+msgstr "開発元"
+
+msgid "info.rom.details.genre"
+msgstr "ジャンル"
+
+msgid "info.rom.details.size"
+msgstr "記憶容量"
+
+msgid "info.rom.details.players"
+msgstr "人数"
+
+msgid "info.rom.details.features"
+msgstr "対応"
+
+msgid "info.rom.details.save slots"
+msgstr "バックアップメモリ"
+
+msgid "info.rom.details.minlib"
+msgstr "MINLIB"
+
+msgid "info.rom.details.crc32"
+msgstr "CRC32"
+
+#  msgid "library.list.add.file"
+#  msgstr ""
+
+#  msgid "library.list.add.folder"
+#  msgstr ""
+
+#: pm2hw\gui\components\linker.py:
+msgid "info.button.bios"
+msgstr "BIOSの読み出すウィザード"
+
+msgid "info.button.dump"
+msgstr "データを吸出す"
+
+msgid "info.button.dump.in-progress"
+msgstr "吸出し中…"
+
+msgid "info.button.eeprom"
+msgstr "EEPROMの読み書くウィザード"
+
+msgid "info.button.erase"
+msgstr "データを消す"
+
+msgid "info.button.erase.in-progress"
+msgstr "消してます…"
+
+msgid "info.button.flash.card"
+msgstr "{name}に書き込む"
+
+msgid "info.button.flash.linker"
+msgstr "{name}に書き込む"
+
+msgid "info.button.flash"
+msgstr "ロムを書き込む"
+
+msgid "info.button.flash.in-progress"
+msgstr "書き込み中…"
+
+msgid "info.button.read"
+msgstr "メモリに読み出す"
+
+msgid "info.button.read.in-progress"
+msgstr "読み出し中…"
+
+msgid "library.list.linker.name.no-rom"
+msgstr "{name} (空っぽ)"
+
+msgid "library.list.linker.name.unconnected"
+msgstr "{name} (接続されていない)"
+
+msgid "library.list.linker.name.with-rom"
+msgstr "{game} ({name})"
+
+msgid "log.connect.in-progress"
+msgstr "{name}に接続中"
+
+msgid "log.connect.complete"
+msgstr "接続成功！{name}を見つかりました"
+
+msgid "log.connect.complete.with-size"
+msgstr "接続成功！{size}の{name}を見つかりました"
+
+msgid "log.linker.found"
+msgstr "{linker.name}発見"
+
+msgid "log.linker.removed"
+msgstr "{linker.name}の接続を切られました"
+
+msgid "select-location.linker.dump"
+msgstr "イメージファイルの名前を決定してください"
+
+msgid "select-location.linker.flash"
+msgstr "書き込むロムを選んでください"
+
+msgid "status.erase.unsupported"
+msgstr "{name}は消されません"
+
+msgid "status.flash.unsupported"
+msgstr "{name}は書き込むのはできません"
+
+#: pm2hw\gui\components\status.py:
+msgid "status.dumping.in-progress"
+msgstr "{name}から吸出し中 ({pc:.0f}%)"
+
+msgid "status.dumping.complete"
+msgstr "{name}から{secs:.3f}秒で成功に吸出した"
+
+msgid "status.erasing.in-progress"
+msgstr "{name}を消している ({pc:.0f}%)"
+
+msgid "status.erasing.complete"
+msgstr "{name}を{secs:.3f}秒で成功に消した"
+
+msgid "status.flashing.in-progress"
+msgstr "書き込み中"
+
+msgid "status.flashing.complete"
+msgstr "{name}を{secs:.3f}秒で成功に書き込んだ"
+
+msgid "status.reading.in-progress"
+msgstr "読み出し中"
+
+msgid "status.reading.complete"
+msgstr "{name}から{secs:.3f}秒で成功に読み出した"
+
+#: pm2hw\gui\i18n.py:
+# ROM names
+msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.4433B736"
+msgstr "ポケモンレースミニ"
+
+msgid "library.list.rom.MLTE.LUNCH TIME.B93E34A5"
+msgstr "カビゴンのランチタイム (EU)"
+
+msgid "library.list.rom.MLTE.LUNCH TIME.05C9BAB3"
+msgstr "カビゴンのランチタイム (英)"
+
+msgid "library.list.rom.MLTJ.ﾗﾝﾁﾀｲﾑ.BD7D1FF3"
+msgstr "カビゴンのランチタイム"
+
+#  msgid "library.list.rom.MPBE.Pinball.1CF2E0B7"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPBE.Pinball.EC5668D4"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPBJ.ﾋﾟﾝﾎﾞｰﾙﾐﾆ.8576B25D"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPBJ.ﾋﾟﾝﾎﾞｰﾙﾐﾆ.34317946"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.232F2108"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.B000B89F"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.06ABB114"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.8FD918BB"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.4DA2912C"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.F83ED29D"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTJ.ﾊﾟｰﾃｨﾐﾆ.49E2D1C3"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTJ.ﾊﾟｰﾃｨﾐﾆ.6C6641DF"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZE.Puzzle.D37113D5"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZD.Puzzle G.B28CA76B"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZF.Puzzle F.CB8D0738"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZJ.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ.66DC7DD7"
+#  msgstr ""
+
+#  msgid "library.list.rom.MACD.Zany Cards.7CF22082"
+#  msgstr ""
+
+#  msgid "library.list.rom.MACE.Zany Cards.36D435E0"
+#  msgstr ""
+
+#  msgid "library.list.rom.MACF.Zany Cards.3FF65CD4"
+#  msgstr ""
+
+#  msgid "library.list.rom.MACJ.ｱﾆﾒｶｰﾄﾞ.A5668F32"
+#  msgstr ""
+
+#  msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.BC233CEB"
+#  msgstr ""
+
+msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.623DA7E1"
+msgstr "ピチューブラザーズミニ"
+
+#  msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.1ED6F524"
+#  msgstr ""
+
+#  msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.02D973E9"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTE.Party Mini.2F76CD9A"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPTP.Party Mini E.E85743F3"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZD.Puzzle G.9EEBE5C5"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZE.Puzzle.97CF76C3"
+#  msgstr ""
+
+#  msgid "library.list.rom.MPZJ.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ.29545BDA"
+#  msgstr ""
+
+#  msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.3388EDB3"
+#  msgstr ""
+
+msgid "library.list.rom.MSDJ.ｿﾀﾞﾃﾔｻﾝ.69A4314B"
+msgstr "ポケモンそだてやさんミニ"
+
+#  msgid "library.list.rom.MSTJ.ｼｮｯｸﾃﾄﾘｽ.084E39A3"
+#  msgstr ""
+
+#  msgid "library.list.rom.MSTP.P-TETRIS-EUR.9349C0A4"
+#  msgstr ""
+
+msgid "library.list.rom.MTAJ.ﾄｹﾞﾋﾟｰ.8F48BCA8"
+msgstr "トゲピーのだいぼうけん"
+
+#  msgid "library.list.rom.MTAJ.ﾄｹﾞﾋﾟｰ.30AE890A"
+#  msgstr ""
+
+#  msgid "library.list.rom.MZ2J.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ2.CA5A4E7B"
+#  msgstr ""
+
+#: pm2hw\gui\util.py:
+msgid "misc.filetypes.all"
+msgstr "All files"
+
+msgid "misc.filetypes.min"
+msgstr "ポケモンミニのロム"
+
+#: pm2hw\linkers\base.py:
+#  msgid "log.wait.cannot.buffer"
+#  msgstr ""

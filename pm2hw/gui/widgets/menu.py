@@ -1,6 +1,7 @@
 import tkinter as tk
 from typing import Tuple
 from tkinter import ttk
+from functools import partial
 
 from ..i18n import TStringVar
 
@@ -62,6 +63,7 @@ class Menu(tk.Menu):
 	def add(self, itemType, cnf: dict, *, label: str = "", **kw):
 		cfg = self._button_config.copy()
 		if itemType == "separator":
+			self.count += 1
 			return super().add(itemType, {})
 		elif itemType not in {"checkbutton", "radiobutton"}:
 			cfg.pop("selectcolor", None)
@@ -72,8 +74,9 @@ class Menu(tk.Menu):
 		insert = kw if kw or not cnf else cnf
 		var = TStringVar(label, master=self)
 		var.index = self.count
+		self.count += 1
 		var.args = (itemType, cnf, kw)
-		self._add_trace(var)
+		var.on_update(partial(self._updater, var))
 		insert["label"], insert["underline"] = self._get_underline(var.get())
 		super().add(itemType, cnf, **kw, **cfg)
 
@@ -89,14 +92,10 @@ class Menu(tk.Menu):
 			label = label[:idx] + label[idx+1:]
 		return label, idx
 
-	def _add_trace(self, var: TStringVar):
-		def updater(varname, idx, mode):
-			if mode == "write":
-				self.delete(var.index)
-				it, cnf, kw = var.args
-				self.replace(var.index, it, cnf, label=var.get(), **kw, **self._button_config)
-
-		var.trace_add("write", updater)
+	def _updater(self, var: TStringVar, value):
+		#self.delete(var.index)
+		it, cnf, kw = var.args
+		self.replace(var.index, it, cnf, label=value, **kw, **self._button_config)
 
 	def _update_styling(self, e: tk.Event = None):
 		s = ttk.Style()

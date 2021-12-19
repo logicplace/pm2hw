@@ -37,6 +37,9 @@ class Entry:
 	def render_to(self, target: ttk.Frame):
 		raise NotImplementedError
 
+	def cleanup(self):
+		pass
+
 
 class Library(ttk.Frame):
 	vars: Dict[str, TStringVar]
@@ -96,12 +99,7 @@ class Library(ttk.Frame):
 	def make(self, text: str, *, tags="LibraryListEntryFont", parent="", **kw):
 		var = TStringVar(text)
 		iid = self.tree.insert(parent, "end", text=var.get(), tags=tags, **kw)
-
-		def updater(varname, idx, mode):
-			if mode == "write":
-				self.tree.item(iid, text=var.get())
-
-		var.trace_add("write", updater)
+		var.on_update(lambda v: self.tree.item(iid, text=v))
 		self.vars[iid] = var
 		return iid
 
@@ -165,7 +163,7 @@ class Library(ttk.Frame):
 		pass
 
 	def update_entry(self, entry: Entry):
-		self.vars[entry.iid].set(entry.name)
+		self.vars[entry.iid].set(str(entry.name))
 
 
 class BaseRomEntry(Entry):

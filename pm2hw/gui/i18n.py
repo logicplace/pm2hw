@@ -33,6 +33,15 @@ class TStringVar(tk.StringVar):
 		if isinstance(self._value, _):
 			super().set(str(self._value))
 
+	def on_update(self, fun, *, now=False):
+		def handler(varname, idx, mode):
+			if mode == "write":
+				return fun(str(self._value))
+
+		self.trace_add("write", handler)
+		if now:
+			fun(str(self._value))
+
 def init(r: tk.Tk):
 	global root
 	root = r
@@ -45,7 +54,7 @@ def change_language(*langs: str):
 		raise ValueError(f"language(s) {missing} don't exist")
 
 	locales.current_lang = gettext.translation(
-		"pm2hw.gui",
+		"pm2hw",
 		localedir=base,
 		languages=split_ietf_tag(*langs)
 	)

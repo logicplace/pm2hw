@@ -18,9 +18,8 @@ class ROM(BaseRomEntry):
 		with open(fn, "rb") as f:
 			self.info = games.lookup(f, True)
 
-		# TODO: name updates on lang change
-		self.name = str(localized_game_name(self.info, fallback=_("library.list.rom.name.unknown")))
-		self.title = str(localized_game_name(self.info, fallback=_("info.rom.name.unknown")))
+		self.name = localized_game_name(self.info, fallback=_("library.list.rom.name.unknown"))
+		self.title = localized_game_name(self.info, fallback=_("info.rom.name.unknown"))
 
 		# TODO: select by preferences
 		if self.info.boxings:
@@ -74,6 +73,10 @@ class GameList(Library):
 			master=self,
 			file=graphic("unknown_game_icon.gif")
 		)
+
+	def cleanup(self):
+		for k in list(self.entries.keys()):
+			self.entries[k].cleanup()
 
 	def reload(self):
 		""" Reload library from config file. """

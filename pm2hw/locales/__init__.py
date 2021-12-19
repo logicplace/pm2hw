@@ -15,12 +15,12 @@ def split_ietf_tag(*langs: str):
 	return ret
 
 default_lang = gettext.translation(
-	"pm2hw.gui",
+	"pm2hw",
 	localedir=base,
 	languages=split_ietf_tag(*config["general"]["language"].split(","))
 )
 current_lang = default_lang
-available_languages = {"en"}
+available_languages = {"en", "ja"}
 
 
 class FailInPlace(dict):
