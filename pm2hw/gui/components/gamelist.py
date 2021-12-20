@@ -78,6 +78,7 @@ class GameList(Library):
 			file=graphic("unknown_game_icon.gif")
 		)
 
+	@property
 	def info_view(self):
 		return self._info_view()
 

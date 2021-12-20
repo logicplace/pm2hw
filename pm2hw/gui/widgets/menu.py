@@ -76,7 +76,7 @@ class Menu(tk.Menu):
 		var.index = self.count
 		self.count += 1
 		var.args = (itemType, cnf, kw)
-		var.on_update(partial(self._updater, var))
+		var.on_update(partial(self._updater, var))  # TODO: might be a problem if menus are destroyed
 		insert["label"], insert["underline"] = self._get_underline(var.get())
 		super().add(itemType, cnf, **kw, **cfg)
 

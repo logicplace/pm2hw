@@ -176,15 +176,10 @@ class RichText(tk.Text):
 
 	def clear(self):
 		if self.cget("state") != "disabled":
+			if self.children:
+				for child in list(self.children.values()):
+					child.destroy()
 			self.delete("1.0", tk.END)
-			for child in list(self.children.values()):
-				child.destroy()
-				import gc
-				gc.collect()
-				for x in gc.get_referrers(child):
-					if not isinstance(x, list):
-						tmp = gc.get_referrers(x)
-						pass
 
 	def _get_hyperlink_deets(self, href_or_callable):
 		link_id = f"a-{len(self.links)}"

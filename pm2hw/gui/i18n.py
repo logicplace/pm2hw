@@ -1,14 +1,23 @@
-import os
 import gettext
 import tkinter as tk
-from typing import List
+import weakref
+from typing import List, TYPE_CHECKING
 
 from .. import locales
 from ..config import config
 from ..locales import _, available_languages, base, split_ietf_tag
 from ..info.games import ROM
 
-string_vars: List["TStringVar"] = []
+
+string_vars = (weakref.WeakSet["TStringVar"] if TYPE_CHECKING else weakref.WeakSet)()
+
+
+class WeakMethod(weakref.WeakMethod):
+	def __call__(self, *args, **kw):
+		fun = super().__call__()
+		if fun is not None:
+			return fun(*args, **kw)
+
 
 class TStringVar(tk.StringVar):
 	def __init__(self, value: str, *, master: tk.Widget = None):
@@ -19,11 +28,14 @@ class TStringVar(tk.StringVar):
 		else:
 			name = None
 		super().__init__(master, value, name)
-		string_vars.append(self)
+		string_vars.add(self)
+
+	def __hash__(self):
+		return hash(self._name)
 
 	def __del__(self):
-		string_vars.remove(self)
-		self.trace_remove("write", self._cb_name)
+		if self._cb_name:
+			self.trace_remove("write", self._cb_name)
 		super().__del__()
 
 	def set(self, value):
@@ -35,14 +47,15 @@ class TStringVar(tk.StringVar):
 		if isinstance(self._value, _):
 			super().set(str(self._value))
 
-	def on_update(self, fun, *, now=False):
-		def handler(varname, idx, mode):
-			if mode == "write":
-				return fun(str(self._value))
+	def _on_update_handler(self, varname, idx, mode):
+		if mode == "write":
+			return self._fun(str(self._value))
 
+	def on_update(self, fun, *, now=False):
+		self._fun = fun
 		if self._cb_name:
 			self.trace_remove("write", self._cb_name)
-		self._cb_name = self.trace_add("write", handler)
+		self._cb_name = self.trace_add("write", WeakMethod(self._on_update_handler))
 		if now:
 			fun(str(self._value))
 

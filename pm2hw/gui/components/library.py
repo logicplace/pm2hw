@@ -1,10 +1,9 @@
 import os
 import glob
+import weakref
 from enum import Enum
 from typing import Any, ClassVar, Dict, List, Optional, cast
-from functools import partial
 from threading import Lock
-import weakref
 
 import tkinter as tk
 from tkinter import ttk, font, filedialog
@@ -17,8 +16,14 @@ from ...config import config
 from ...logger import warn
 from ...locales import natural_size
 
-def update_text(fn, iid, text):
-	return fn(iid, text=text)
+
+def item_updater(library: "Library", iid: str):
+	library = weakref.ref(library)
+
+	def handler(value: str):
+		library().tree.item(iid, text=value)
+
+	return handler
 
 class Entry:
 	iid: str  # set by Library
@@ -118,15 +123,16 @@ class Library(ttk.Frame):
 	def cleanup(self):
 		for k in list(self.entries.keys()):
 			self.entries[k].cleanup()
+		self.vars.clear()
 
 	def destroy(self):
-		self.cleanup()
 		super().destroy()
+		self.cleanup()
 
 	def make(self, text: str, *, tags="LibraryListEntryFont", parent="", **kw):
 		var = TStringVar(text)
 		iid = self.tree.insert(parent, "end", text=var.get(), tags=tags, **kw)
-		var.on_update(partial(update_text, self.tree.item, iid))
+		var.on_update(item_updater(self, iid))
 		self.vars[iid] = var
 		return iid
 
@@ -195,8 +201,9 @@ class Library(ttk.Frame):
 
 class BaseRomEntry(Entry):
 	def render_to(self, target: ttk.Frame):
+		self.title_var = TStringVar(self.title)
 		ttk.Label(target,
-			textvariable=TStringVar(self.title),
+			textvariable=self.title_var,
 			font=font.nametofont("GameInfoTitleFont")
 		).pack()
 		if self.preview:
@@ -220,8 +227,10 @@ class BaseRomEntry(Entry):
 		kw = {"command": command} if command is not None else {}
 		if disabled:
 			kw["state"] = tk.DISABLED
-		btn = ttk.Button(frm, textvariable=TStringVar(text), **kw)
+		var = TStringVar(text)
+		btn = ttk.Button(frm, textvariable=var, **kw)
 		btn.grid(column=0, row=self.num_buttons, sticky=tk.NSEW)
+		btn._text_var = var
 		self.num_buttons += 1
 		return btn
 

@@ -7,10 +7,10 @@ import appdirs
 default_language = getdefaultlocale()[0]
 
 def getstrlist(s: str):
-	return [x.strip() for x in s.split(",")]
+	return [x.strip() for x in s.split(",") if x]
 
 def getlines(s: str):
-	return s.lstrip("\n").split("\n")
+	return [x for x in s.lstrip("\n").split("\n") if x]
 
 config = ConfigParser(
 	{
