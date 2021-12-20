@@ -182,7 +182,7 @@ class BaseTheme(metaclass=MetaTheme):
 				"wrap": tk.NONE,
 			}
 		},
-		"a.RichText": {
+		"a:normal.RichText": {
 			"configure": {
 				"foreground": "#06c",
 				"underline": True,

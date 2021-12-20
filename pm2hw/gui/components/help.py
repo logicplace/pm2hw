@@ -34,6 +34,18 @@ class DummyLinker(BaseLinker):
 	def __init__(self):
 		...
 
+	def __del__(self):
+		...
+
+	def init(self):
+		return self
+
+	def seek(self, *args):
+		...
+
+	def read(self, size: int):
+		return b"\xff" * size
+
 class DummyROM(ROM):
 	def get_info(self, code, name, crc):
 		from ...info import games
@@ -109,25 +121,33 @@ class HelpDialog(simpledialog.Dialog):
 		self.topics[topic].render_to(self.text)
 
 	def link_handler(self, renderer, attrs):
-		if "href" not in attrs:
-			return renderer.noop
+		if "href" in attrs and "$end" in attrs:
+			# Not a block element, requested from renderer.link
+			parsed = urlparse(attrs["href"])
+			if parsed.scheme:
+				handler = attrs["href"]
+			else:
+				def handler():
+					if parsed.path:
+						self.show_topic(parsed.path)
+					if parsed.fragment:
+						res = self.text.tag_nextrange("anchor-" + parsed.fragment, "1.0")
+						if res:
+							self.text.see(res[0])
 
-		parsed = urlparse(attrs["href"])
-		if parsed.scheme:
-			return attrs["href"]
+			start, end = renderer.index, attrs["$end"]
+			renderer.target.hyperlink_add(handler, start, end)
+			renderer.index = end
+			return start, end
 
-		def handler():
-			if parsed.path:
-				self.show_topic(parsed.path)
-			if parsed.fragment:
-				self.text.see("anchor-" + parsed.fragment)
-
-		# TODO: clean this up later
-		return handler
+		return renderer.noop
 
 	def translation_handler(self, renderer, attrs):
 		if "name" in attrs:
-			return renderer.text(str((_)(attrs["name"])))
+			s = str((_)(attrs["name"]))
+			if "del" in attrs:
+				s = s.replace(attrs["del"], "")
+			return renderer.text(s)
 		return renderer.noop
 
 	def widget_handler(self, renderer, attrs):
@@ -147,14 +167,14 @@ class HelpDialog(simpledialog.Dialog):
 			menu.configure(background=mb.cget("background"))
 			menu.grid(column=0, row=0, columnspan=2, stick=tk.NSEW)
 
-			info = ttk.Frame(frm, width=200, height=200)#, orient=tk.VERTICAL)
+			info = ScrollFrame(frm, width=200, height=200, orient=tk.VERTICAL)
 			info.grid(column=1, row=1, sticky=tk.NSEW)
 
 			game_list = GameList(frm, info, width=300, height=200, theight=4, disabled=True)
-			# game_list.add(DittoFlash(game_list, DummyLinker()))
-			# rom = DummyROM(game_list, b"MRCJ", "ﾎﾟｹﾓﾝﾚｰｽ", 0x4433B736)
-			# game_list.add(rom)
-			# rom.render_to(info)
+			game_list.add(DittoFlash(game_list, DummyLinker()))
+			rom = DummyROM(game_list, b"MRCJ", "ﾎﾟｹﾓﾝﾚｰｽ", 0x4433B736)
+			game_list.add(rom)
+			rom.render_to(info)
 			game_list.grid(column=0, row=1, sticky=tk.NSEW)
 
 			status = _make_status(frm)
@@ -163,9 +183,21 @@ class HelpDialog(simpledialog.Dialog):
 			# TODO: draw numbers
 			return renderer.widget(frm)
 		elif name == "gui-linker":
-			return renderer.noop
+			frm = ttk.Frame(self.text)
+			game_list = GameList(frm, frm, width=0, height=0, theight=0, disabled=True)
+			linker = DittoFlash(game_list, DummyLinker())
+			game_list.add(linker)
+			linker.render_to(frm)
+			# TODO: draw numbers
+			return renderer.widget(frm)
 		elif name == "gui-game":
-			return renderer.noop
+			frm = ttk.Frame(self.text)
+			game_list = GameList(frm, frm, width=0, height=0, theight=0, disabled=True)
+			game_list.add(DittoFlash(game_list, DummyLinker()))
+			rom = DummyROM(game_list, b"MRCJ", "ﾎﾟｹﾓﾝﾚｰｽ", 0x4433B736)
+			rom.render_to(frm)
+			# TODO: draw numbers
+			return renderer.widget(frm)
 		else:
 			raise ValueError("widget name")
 

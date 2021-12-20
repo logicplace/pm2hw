@@ -33,7 +33,7 @@ class RichText(tk.Text):
 	markdown_tags = (
 		"p", "em", "strong", "em+strong", "del", "ins", "u",
 		"h1", "h2", "h3", "h4", "h5", "h6", "h7",
-		"kbd", "tt", "code", "a",
+		"kbd", "tt", "code", "a", "a:normal",
 		"a:hover", "a:active", "a:visited",
 		"ol", "ul", "li", "ol.listmark", "ul.listmark",
 		"widget",
@@ -83,9 +83,11 @@ class RichText(tk.Text):
 		self._update_styling()
 
 		self._currently_hovering_over_link = ""
-		self.tag_bind("a", "<Enter>", self._hyperlink_enter)
-		self.tag_bind("a", "<Leave>", self._hyperlink_leave)
-		self.tag_bind("a", "<Button-1>", self._hyperlink_click)
+		self.tag_bind("a:normal", "<Enter>", self._hyperlink_enter)
+		self.tag_bind("a:normal", "<Leave>", self._hyperlink_leave)
+		self.tag_bind("a:normal", "<Button-1>", self._hyperlink_click)
+
+		# For debugging tags
 		# self.bind_all("<Button-1>", lambda e: print(self.tag_names(tk.CURRENT)))
 
 		self.links = {}
@@ -183,7 +185,7 @@ class RichText(tk.Text):
 
 	def _get_hyperlink_deets(self, href_or_callable):
 		link_id = f"a-{len(self.links)}"
-		tags = ["a", link_id]
+		tags = ["a:normal", link_id]
 		if isinstance(href_or_callable, str):
 			handler = partial(webbrowser.open_new_tab, href_or_callable)
 			tags.append(f"a-href-{hash(href_or_callable)}")
@@ -342,12 +344,10 @@ class RichTextRenderer(BaseRenderer):
 		return start, end
 
 	def link(self, link, children=None, title=None):
-		handler = link if ":" in link else self.html_handlers["a"](self, {"href": link})
 		if isinstance(children, tuple):
 			children = [children]  # why
-		start, end = children[0][0], children[-1][1]
-		self.target.hyperlink_add(handler, start, end)
-		return start, end
+		self.index, end = children[0][0], children[-1][1]
+		return self.html_handlers["a"](self, {"href": link, "$end": end})
 
 	def emphasis(self, children):
 		return self._tag(children, "em", combine="strong")
@@ -367,8 +367,9 @@ class RichTextRenderer(BaseRenderer):
 			thtml = html[1:-1]
 			if thtml.startswith("/"):
 				if self.open_tags[-1][1] == thtml[1:]:
-					start, *tag = self.open_tags.pop()
-					self.target.tag_add(tag, start, cur)
+					start, *tags = self.open_tags.pop()
+					for tag in tags:
+						self.target.tag_add(tag, start, cur)
 					return start, cur
 			elif thtml.endswith("/"):
 				return self.block_html(html)

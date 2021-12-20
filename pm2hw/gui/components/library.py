@@ -65,6 +65,7 @@ class Library(ttk.Frame):
 		super().__init__(master, **kw)
 		self.vars = {}
 		self.entries = {}
+		self.disabled = disabled
 
 		tkw = {} if theight is None else {"height": theight}
 		self.tree = ttk.Treeview(self,

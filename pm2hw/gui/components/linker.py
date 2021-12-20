@@ -74,25 +74,31 @@ class Linker(BaseRomEntry):
 		super().render_to(target)
 
 	def render_buttons_to(self, target: ttk.Frame):
+		disabled = self.parent.disabled
+		def dcmd(cmd):
+			if disabled:
+				return ()
+			return (cmd,)
+
 		frm = super().render_buttons_to(target)
 		if self.reading:
 			self.add_button(frm, _("info.button.read.in-progress"), disabled=True)
 		elif not (self.dumping or self.flashing or self.data.seek(0, os.SEEK_END)) and self.info:
-			self.add_button(frm, _("info.button.read"), self.read_to_memory)
+			self.add_button(frm, _("info.button.read"), *dcmd(self.read_to_memory))
 		if self.dumping:
 			self.add_button(frm, _("info.button.dump.in-progress"), disabled=True)
 		else:
-			self.add_button(frm, _("info.button.dump"), self.dump, disabled=self.flashing or self.erasing)
+			self.add_button(frm, _("info.button.dump"), *dcmd(self.dump), disabled=self.flashing or self.erasing)
 		if self.flashable.can_flash:
 			if self.flashing:
 				self.add_button(frm, _("info.button.flash.in-progress"), disabled=True)
 			else:
-				self.add_button(frm, _("info.button.flash"), self.flash, disabled=self.reading)
+				self.add_button(frm, _("info.button.flash"), *dcmd(self.flash), disabled=self.reading)
 		if self.flashable.can_erase:
 			if self.erasing:
 				self.add_button(frm, _("info.button.erase.in-progress"), disabled=True)
 			else:
-				self.add_button(frm, _("info.button.erase"), self.erase, disabled=self.reading)
+				self.add_button(frm, _("info.button.erase"), *dcmd(self.erase), disabled=self.reading)
 		return frm
 			
 	def render_details_to(self, target: ttk.Frame):
@@ -231,6 +237,7 @@ class DittoFlash(Linker):
 
 	def render_buttons_to(self, target: ttk.Frame):
 		frm = super().render_buttons_to(target)
+		# TODO: don't add command if parent is disabled
 		self.add_button(frm, _("info.button.eeprom"))
 
 
