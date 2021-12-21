@@ -102,6 +102,6 @@ class BaseFlashable:
 		""" Write to the cursor location """
 		raise NotImplementedError
 
-	def seek(self, offset: int, whence: int) -> int:
+	def seek(self, offset: int, whence: int = SEEK_SET) -> int:
 		""" Adjust cursor position """
 		raise NotImplementedError
