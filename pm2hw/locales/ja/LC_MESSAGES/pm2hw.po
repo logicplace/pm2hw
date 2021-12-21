@@ -448,6 +448,9 @@ msgstr "接続成功！{name}を見つかりました"
 msgid "log.connect.complete.with-size"
 msgstr "接続成功！{size}の{name}を見つかりました"
 
+msgid "log.connect.failed"
+msgstr "デバイスに接続失敗"
+
 msgid "log.linker.found"
 msgstr "{linker.name}発見"
 

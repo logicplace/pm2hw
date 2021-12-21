@@ -12,8 +12,8 @@ from ..i18n import _, localized_game_name
 from ..util import filetypes_min, threaded
 from ... import get_connected_linkers, BaseLinker, BaseFlashable
 from ...info import games
-from ...logger import log, verbose
-from ...exceptions import DeviceError
+from ...logger import error, exception, log, verbose
+from ...exceptions import DeviceError, DeviceNotSupportedError
 
 if TYPE_CHECKING:
 	from .gamelist import GameList
@@ -58,7 +58,16 @@ class Linker(BaseRomEntry):
 		# TODO: check for disconnections
 		if not self.connected:
 			verbose(_("log.connect.in-progress"), linker=self.linker)
-			self.flashable = self.linker.init()
+			try:
+				self.flashable = self.linker.init()
+			except DeviceNotSupportedError as err:
+				error(str(err))
+				set_status("log.connect.failed")
+				return
+			except DeviceError as err:
+				exception(str(err), err)
+				set_status("log.connect.failed")
+				return
 			try:
 				size = self.flashable.memory
 				log(_("log.connect.complete.with-size"),
@@ -71,7 +80,9 @@ class Linker(BaseRomEntry):
 
 	def render_to(self, target: ttk.Frame):
 		self.ensure_connected()
-		super().render_to(target)
+		if self.flashable:
+			super().render_to(target)
+		# TODO: render error screen, not just log
 
 	def render_buttons_to(self, target: ttk.Frame):
 		disabled = self.parent.disabled

@@ -14,12 +14,12 @@ class DeviceNotSupportedError(DeviceError):
 		self.extended = extended
 
 	def __str__(self):
-		return _().format(
+		return str(_("exception.device.unsupported.details").format(
 			self.args[0],
 			manufacturer=self.manufacturer,
 			device=self.device,
 			extended=self.extended,
-		)
+		))
 
 	def __repr__(self):
 		name = type(self).__name__

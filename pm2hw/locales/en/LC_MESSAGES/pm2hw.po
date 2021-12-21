@@ -801,6 +801,9 @@ msgstr "Connected! Discovered a {name}"
 msgid "log.connect.complete.with-size"
 msgstr "Connected! Discovered a {name} ({size})"
 
+msgid "log.connect.failed"
+msgstr "Failed to connect to device"
+
 msgid "log.linker.found"
 msgstr "Discovered a {linker.name}"
 
