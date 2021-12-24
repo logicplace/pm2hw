@@ -1,3 +1,10 @@
+# Implementation Copyright (C) 2021 Sapphire Becker (logicplace.com)
+# Color scheme Copyright (C) 2011 Ethan Schoonover (MIT license)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 from .colorized import ColorizedTheme, Color, LinkColor
 
 text = "#586e75"

@@ -1,3 +1,12 @@
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+#
+# This code has been adapted from hm05 which is licensed under MIT License and
+# Copyright (c) 2021 Miguel Ángel Pérez Martínez
+
 import struct
 from typing import TYPE_CHECKING, NamedTuple
 
