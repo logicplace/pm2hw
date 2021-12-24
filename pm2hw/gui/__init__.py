@@ -3,6 +3,8 @@ from tkinter import ttk
 from functools import partial
 from typing import  Dict, List, Tuple
 
+from pm2hw.gui.components.preferences import PreferencesDialog
+
 from . import themes
 from .i18n import _, TStringVar
 from .widgets import Menu, RichText, ScrollFrame
@@ -119,6 +121,11 @@ with Menu(root) as m:
 		)
 		main.add_command(
 			label=_("window.menu.main.preferences"),
+			command=partial(
+				PreferencesDialog,
+				root,
+				title=str(_("window.preferences.title"))
+			)
 		)
 		main.add_separator()
 		main.add_command(

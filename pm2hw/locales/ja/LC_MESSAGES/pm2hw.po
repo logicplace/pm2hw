@@ -275,6 +275,9 @@ msgstr "使い方(_U)"
 msgid "window.menu.help.about"
 msgstr "バージョン情報(_A)"
 
+msgid "window.preferences.title"
+msgstr "pm2hw - 設定"
+
 msgid "window.title"
 msgstr "pm2hw - ポケモンミニに読み書くアプリ"
 
@@ -468,6 +471,19 @@ msgstr "{name}は消されません"
 
 msgid "status.flash.unsupported"
 msgstr "{name}は書き込むのはできません"
+
+#: pm2hw\gui\components\preferences.py:
+msgid "preferences.language.title"
+msgstr "言語の選び"
+
+msgid "preferences.language.interface"
+msgstr "インタフェースの言語"
+
+msgid "preferences.language.release"
+msgstr "ゲームのリリスの地域"
+
+msgid "preferences.theme.title"
+msgstr "テーマの選び"
 
 #: pm2hw\gui\components\status.py:
 msgid "status.dumping.in-progress"

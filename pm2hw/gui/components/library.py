@@ -10,7 +10,7 @@ from tkinter import ttk, font, filedialog
 
 from pm2hw_icons import graphic
 from ..i18n import _, TStringVar
-from ..util import filetypes_min
+from ..util import WeakMethod, filetypes_min
 from ...info import games
 from ...config import config
 from ...logger import warn
@@ -239,7 +239,9 @@ class BaseRomEntry(Entry):
 		pass
 
 	def render_rom_details(self, target: ttk.Frame, info: games.ROM):
-		frame = DetailPane(target, text=_("info.rom.details.header"))
+		var = TStringVar(_("info.rom.details.header"))
+		frame = DetailPane(target, textvariable=var)
+		frame.label_var = var
 
 		def lhs(name):
 			return (_)(name, key=f"info.rom.details.{name}")
@@ -277,9 +279,12 @@ class BaseRomEntry(Entry):
 class DetailPane(ttk.LabelFrame):
 	current_row = 0
 
-	def __init__(self, *args, **kw):
-		if "text" in kw:
-			# TODO: variable
+	def __init__(self, *args, textvariable=None, **kw):
+		if "textvariable" in kw:
+			var = kw.pop("textvariable")
+			var.on_update(WeakMethod(self.configure), as_text_kwarg=True)
+			kw["text"] = var.get()
+		elif "text" in kw:
 			kw["text"] = str(kw["text"])
 		super().__init__(*args, **kw)
 		self.columnconfigure(1, weight=1)
