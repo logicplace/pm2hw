@@ -11,12 +11,12 @@ import tkinter as tk
 from tkinter import ttk
 import weakref
 
-from pm2hw_icons import graphic
 from ..i18n import _, localized_game_name
 from .linker import Linker
-from .library import Entry, Library, BaseRomEntry
+from .library import Entry, Library, BaseRomEntry, graphic
 from ...info import games
 from ...config import config
+
 
 class ROM(BaseRomEntry):
 	def __init__(self, parent: "GameList", *args):

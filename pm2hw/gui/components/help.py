@@ -11,13 +11,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 from typing import Dict, Union
 
-import pm2hw_icons
 from .linker import DittoFlash
 from .status import _make_status
 from .gamelist import GameList, ROM
 from ..widgets import RichText, ScrollFrame
 from ..i18n import _
 from ...linkers import BaseLinker
+
+try:
+	from pm2hw_icons import __version__ as icons_version
+except ImportError:
+	icons_version = _("help.plugin.not-installed")
 
 def open_about(root: tk.Tk):
 	messagebox.showinfo(
@@ -26,7 +30,7 @@ def open_about(root: tk.Tk):
 		authors="Sapphire Becker",
 		license="Mozilla Public License, version 2.0",
 		version="0.0.1",
-		icons_version=pm2hw_icons.version,
+		icons_version=icons_version,
 		py_version=version,
 		tcl_version=tk.TclVersion,
 		tk_version=tk.TkVersion,

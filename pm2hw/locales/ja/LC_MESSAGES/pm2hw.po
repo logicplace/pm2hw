@@ -311,6 +311,9 @@ msgstr "pm2hw - ポケモンミニに読み書くアプリ\n"
 "Tclのバージョン: {tcl_version}\n"
 "Tkinterのバージョン: {tk_version} ({tk_windowing})"
 
+msgid "help.plugin.not-installed"
+msgstr "ありません"
+
 msgid "help.topic.welcome.title"
 msgstr "はじめに"
 

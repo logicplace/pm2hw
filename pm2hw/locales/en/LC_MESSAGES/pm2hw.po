@@ -329,6 +329,9 @@ msgstr "pm2hw - A flashing utility for the Pokémon mini\n"
 "Tcl version: {tcl_version}\n"
 "Tkinter version: {tk_version} ({tk_windowing})"
 
+msgid "help.plugin.not-installed"
+msgstr "not installed"
+
 msgid "help.topic.welcome.title"
 msgstr "Introduction"
 

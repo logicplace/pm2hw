@@ -14,7 +14,6 @@ from threading import Lock
 import tkinter as tk
 from tkinter import ttk, font, filedialog
 
-from pm2hw_icons import graphic
 from ..i18n import _, TStringVar
 from ..util import WeakMethod, filetypes_min
 from ...info import games
@@ -22,6 +21,11 @@ from ...config import config
 from ...logger import warn
 from ...locales import natural_size
 
+try:
+	from pm2hw_icons import graphic
+except ImportError:
+	def graphic(fn: str):
+		return ""
 
 def item_updater(library: "Library", iid: str):
 	library = weakref.ref(library)
