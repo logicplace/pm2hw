@@ -2,40 +2,38 @@ from contextlib import contextmanager
 
 import ftd2xx
 
+from .locales import _
+
 class DeviceError(Exception): pass
 
 class DeviceNotSupportedError(DeviceError):
 	def __init__(self, manufacturer: int, device: int, extended: int):
-		super().__init__("Device not supported", manufacturer, device, extended)
+		super().__init__(_("exception.device.unsupported"), manufacturer, device, extended)
 		self.manufacturer = manufacturer
 		self.device = device
 		self.extended = extended
 
 	def __str__(self):
-		return """\
-			Device not supported:
-			Manufacturer code: {:02X}
-			Device code: {:02X}
-			Extended code: {:02X}
-		""".format(
-			self.manufacturer,
-			self.device,
-			self.extended
-		).replace("\t", "")
+		return str(_("exception.device.unsupported.details").format(
+			self.args[0],
+			manufacturer=self.manufacturer,
+			device=self.device,
+			extended=self.extended,
+		))
 
 	def __repr__(self):
 		name = type(self).__name__
 		args = ", ".join(
-			"{}=0x{:02x}".format(x, getattr(self, x))
+			f"{x}=0x{getattr(self, x):02x}"
 			for x in ["manufacturer", "device", "extended"]
 		)
-		return "{}({})".format(name, args)
+		return f"{name}({args})"
 
 @contextmanager
 def clarify(error_msg):
 	try:
 		yield
 	except ftd2xx.DeviceError as err:
-		raise DeviceError("{}: {}".format(error_msg, str(err))) from None
+		raise DeviceError(f"{error_msg}: {err}") from None
 	except DeviceError:
 		raise DeviceError(error_msg) from None

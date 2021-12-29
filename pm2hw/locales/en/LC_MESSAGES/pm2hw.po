@@ -1,0 +1,982 @@
+# pm2hw GUI messages
+# Copyright (C) 2021
+# Sapphire Becker (logicplace.com), 2021.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2021-11-25 16:11-0800\n"
+"PO-Revision-Date: 2021-11-25 18:24-0800\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+"X-Generator: Poedit 3.0\n"
+"Last-Translator: Sapphire Becker (logicplace.com)\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en\n"
+
+
+msgid "RAM"
+msgstr "RAM"
+
+#: pm2hw\__init__.py:
+msgid "exception.device.open.failed"
+msgstr "Failed opening the device!"
+
+#: pm2hw\__main__.py:
+msgid "cli.connect.connected"
+msgstr "Connected! Discovered a {name}"
+
+msgid "cli.connect.connected.details"
+msgstr "  Specifically, a {chip} {size} card"
+
+msgid "cli.connect.no-linkers"
+msgstr "No linkers connected!"
+
+msgid "cli.connect.search"
+msgstr "Searching for device..."
+
+msgid "cli.connect.select-linker.title"
+msgstr "Select a linker to connect to:"
+
+msgid "cli.connect.select-linker.option"
+msgstr " {i}) {name}"
+
+msgid "cli.connect.select-linker.all"
+msgstr "All"
+
+msgid "cli.connect.select-linker.prompt"
+msgstr "Selection: "
+
+msgid "cli.description"
+msgstr "Flash Pokémon mini ROMs to any card."
+
+msgid "cli.dump.intro"
+msgstr "Dumping..."
+
+msgid "cli.dump.complete"
+msgstr "Dumping complete! Completed in {secs:.3f}"
+
+msgid "cli.erase.intro"
+msgstr "Erasing..."
+
+msgid "cli.erase.complete"
+msgstr "Erasing complete! Completed in {secs:.3f}"
+
+msgid "cli.error.device"
+msgstr "A device error occurred: {errmsg}"
+
+msgid "cli.error.exception"
+msgstr "An error occurred"
+
+msgid "cli.flash.intro"
+msgstr "Flashing..."
+
+msgid "cli.flash.verify.intro"
+msgstr "Verifying write..."
+
+msgid "cli.flash.verify.success"
+msgstr "...write ok"
+
+msgid "cli.flash.verify.failure"
+msgstr "...write failed"
+
+msgid "cli.flash.complete"
+msgstr "Flashing complete! Completed in {secs:.3f}"
+
+msgid "cli.help.command.dump"
+msgstr "Dump from cart."
+
+msgid "cli.help.command.erase"
+msgstr "Erase a flash cart."
+
+msgid "cli.help.command.flash"
+msgstr "Flash to cart."
+
+msgid "cli.help.param.all"
+msgstr "Perform the action against all connected linkers."
+
+msgid "cli.help.param.clock"
+msgstr "Set clock divider (higher=slower). Valid value range depends on card."
+
+msgid "cli.help.param.linker"
+msgstr "Specify a linker by name. Fail if that linker is not connected."
+
+msgid "cli.help.param.verbose"
+msgstr "Output verbose information."
+
+msgid "cli.help.param.dump.dest"
+msgstr "Dump the contents of the card to the given filename or use - to pipe to stdout.\n"
+"The filename may be templated as a Python format string using the following variables:\n"
+" * i - Index of the linker (integer)\n"
+" * linker - Linker name\n"
+" * code - Four-character code in the ROM (ASCII)\n"
+" * name - Internal name in the ROM (SHIFT-JIS)\n"
+"By default uses the format: {i:02d}-{code}-{name}.min\n"
+"This would be rendered as, for example: 00-MPZE-Puzzle.min"
+
+msgid "cli.help.param.dump.partial"
+msgstr "Extract only part of the ROM. Specify either just the size in bytes or"
+" specify the offset and size in bytes."
+
+msgid "cli.help.param.dump.split"
+msgstr "Select which ROMs to split out of a multicart."
+" May be one of:\n"
+" * menu - Pick from an interactive menu.\n"
+" * all - Split out all the ROMs.\n"
+" * 1 - Pick the first only.\n"
+" * 1,2 - Pick the first and second.\n"
+" * 1-3 - Pick the first three.\n"
+" * HW - Pick only the Hello World demo (code)."
+
+msgid "cli.help.param.dump.split-all"
+msgstr "Split all the ROMs out of a multicart."
+
+msgid "cli.help.param.erase.partial"
+msgstr "Erase only part of the ROM. Specify either just the size in bytes or"
+" specify the offset and size in bytes."
+
+msgid "cli.help.param.flash.multicart"
+msgstr "Choose the multicart system to use when flashing multiple ROMs"
+
+msgid "cli.help.param.flash.no-erase"
+msgstr "Don't erase the cart before flashing."
+
+msgid "cli.help.param.flash.no-verify"
+msgstr "Don't verify the contents after flashing."
+
+msgid "cli.help.param.flash.roms"
+msgstr "Flash the given file or use - to read from stdin."
+
+#: pm2hw\base.py:
+msgid "log.blocks.over"
+msgstr "Requested to access more than the available size, truncating request."
+
+msgid "log.progress"
+msgstr "[DEFAULT]\n"
+"s=\n"
+"count=1\n"
+"gui={0}: {suffix}\n"
+"gui.initial=${gui}\n"
+"gui.medial=${gui}\n"
+"gui.final={0}: {suffix}\n ${s}  {completed}\n"
+"cli.initial=${s}  {0}\n"
+"cli.medial=${s}    ...{suffix}\n"
+"cli.final=${s}    {completed}\n"
+"suffix={cur}/{end} ({pc:.0f}%)\n"
+"completed=Completed in {secs:.3f}s\n"
+"[dump]\n"
+"message.0=Dumping from {card.name} to {fn}\n"
+"[erase]\n"
+"message.0=Erasing data on {card.name}\n"
+"[flash]\n"
+"message.0=Flashing to {card.name} from {fn}\n"
+"[verify]\n"
+"message.0=Verifying contents of {card.name}\n"
+
+msgid "log.ftdi.characters.disable"
+msgstr "* set EventChar=disabled ErrorChar=disabled"
+
+msgid "log.ftdi.controller.reset"
+msgstr "* set BitMode Mask=0 Mode=0 (reset)"
+
+msgid "log.ftdi.latency.set"
+msgstr "* set LatencyTimer {ms} (ms)"
+
+msgid "log.ftdi.mpsse.enable"
+msgstr "* set BitMode Mask=0 Mode=2 (MPSSE)"
+
+msgid "log.ftdi.reset"
+msgstr "* reset device"
+
+msgid "log.ftdi.title"
+msgstr "* ==== FTDI device ===="
+
+msgid "log.ftdi.transfer.size.set"
+msgstr "* set RequestTransferSize In={in} Out={out} (bytes)"
+
+msgid "log.ftdi.transfer.timeout.set"
+msgstr "* set TransferTimeout Read={read} Write={write} (ms)"
+
+msgid "log.verify.failed"
+msgstr "Verification failed"
+
+msgid "log.verify-failed.report.title"
+msgstr "...with bad bytes in the following blocks:"
+
+msgid "log.verify-failed.report.entry"
+msgstr "  Block {block}: {count}"
+
+msgid "log.verify.success"
+msgstr "Verification successful"
+
+msgid "exception.flash.too-large"
+msgstr "The input file is too large! Max size is {size}!"
+
+msgid "exception.ftdi.characters.disable.failed"
+msgstr "Unable to reset event/error chars"
+
+msgid "exception.ftdi.controller.reset.failed"
+msgstr "Device reset failed!"
+
+msgid "exception.ftdi.latency.set.failed"
+msgstr "Set USB Device Latency Timer failed!"
+
+msgid "exception.ftdi.mpsse.enable.failed"
+msgstr "Set to MPSSE mode failed!"
+
+msgid "exception.ftdi.mpsse.spi.failed"
+msgstr "Unable to configure MPSSE for SPI!"
+
+msgid "exception.ftdi.mpsse.sync.failed"
+msgstr "Unable to synchronise the MPSSE write/read cycle!"
+
+msgid "exception.ftdi.mpsse.sync.failed-check"
+msgstr "MPSSE Sync Failed"
+
+msgid "exception.ftdi.reset.failed"
+msgstr "Unable to reset device"
+
+msgid "exception.ftdi.transfer.size.set.failed"
+msgstr "Unable to set request transfer size"
+
+msgid "exception.read.wait.too-large"
+msgstr "Device queued an unexpected amount of data."
+" Wanted {size} but queued {queued}"
+
+msgid "exception.read.wait.timeout"
+msgstr "Device took too long to queue data."
+" Wanted {size} but queued {queued}"
+
+#: pm2hw\exceptions.py:
+msgid "exception.device.unsupported"
+msgstr "Device not supported"
+
+msgid "exception.device.unsupported.details"
+msgstr "{0}:\n"
+"Manufacturer code: {manufacturer:02X}\n"
+"Device code: {device:02X}\n"
+"Extended code: {extended:02X}"
+
+#: pm2hw\gui\__init__.py:
+msgid "window.help.title"
+msgstr "pm2hw - Help topics"
+
+msgid "window.menu.main"
+msgstr "⚙"
+
+msgid "window.menu.main.refresh"
+msgstr "_Refresh linkers"
+
+msgid "window.menu.main.preferences"
+msgstr "_Preferences"
+
+msgid "window.menu.main.exit"
+msgstr "E_xit"
+
+msgid "window.menu.view"
+msgstr "_View"
+
+msgid "window.menu.view.multicart"
+msgstr "_Multicart"
+
+msgid "window.menu.view.log"
+msgstr "_Log"
+
+msgid "window.menu.help"
+msgstr "_Help"
+
+msgid "window.menu.help.howto"
+msgstr "How to _use"
+
+msgid "window.menu.help.about"
+msgstr "_About"
+
+msgid "window.title"
+msgstr "pm2hw - Pokémon mini Flashing Utility"
+
+#: pm2hw\gui\components\gamelist.py:
+msgid "info.rom.name.unknown"
+msgstr "{rom.internal} ({rom.acode})"
+
+msgid "library.list.header.games"
+msgstr "Games"
+
+msgid "library.list.header.linkers"
+msgstr "Linkers"
+
+msgid "library.list.no-linkers"
+msgstr "Connect a linker to get started"
+
+msgid "library.list.rom.name.unknown"
+msgstr "{rom.acode} - {rom.internal}"
+
+#: pm2hw\gui\components\help.py:
+msgid "help.about.title"
+msgstr "About pm2hw"
+
+msgid "help.about.message"
+msgstr "pm2hw - A flashing utility for the Pokémon mini\n"
+"Authors: {authors}\n"
+"License: {license}\n"
+"Version: {version}\n"
+"Icon pack version: {icons_version}\n"
+"Python version: {py_version}\n"
+"Tcl version: {tcl_version}\n"
+"Tkinter version: {tk_version} ({tk_windowing})"
+
+msgid "help.topic.welcome.title"
+msgstr "Introduction"
+
+msgid "help.topic.welcome.content"
+msgstr "# <str name=help.topic.welcome.title/>\n"
+"pm2hw is a tool to interface with hardware related to the"
+" [Pokémon mini](https://www.pokemon-mini.net/).\n\n"
+"It provides both a [GUI](gui) and a [CLI](reference) in addition to"
+" acting as a Python library for interacting with PM ROMs and flash"
+" cards.\n\n"
+"If you are completely new to ROMs or flash carts, check out the"
+" [Overview](basics) section next. Otherwise jump to whichever topic"
+" you want help with."
+
+msgid "help.topic.basics.title"
+msgstr "Overview"
+
+msgid "help.topic.basics.content"
+msgstr "# <str name=help.topic.basics.title/>\n"
+"In this section you will learn about what hardware is available for"
+" the Pokémon mini, how they're used, and how to use this software"
+" to interact with them, if possible.\n\n"
+"## ROMs and other files\n"
+"A ROM, short for Read Only Memory, is a copy of the contents of an"
+" official game cartridge. The game cartridges use a ROM chip inside"
+" in order to store the game code and resources (but not the save data,"
+" it's read-only!) which gives them the name. However, when we use this"
+" term, we're not talking about the chip but rather the copy of those"
+" contents. It may also refer to unofficial software as well, so long"
+" as it's able to run on the console if provided to said console.\n\n"
+"ROM files for the Pokémon mini use the extension `.min` and save files"
+" use the extension `.eep`. The PokeMini emulator also has `.minc`"
+" files which provide color information, but they're not useful for"
+" pm2hw, or the Pokémon mini hardware in general.\n\n"
+"`.min` files are 512 KiB and `.eep` files are 8 KiB (containing 6"
+" save slots).\n\n"
+"Remember: It may or may not be legal to backup or restore ROMs of"
+" copyrighted games in your country, but it is always illegal to"
+" share them with others or receive them from others. Please"
+" consult your country's copyright laws and international"
+" agreements it has signed or seek counsel from a copyright lawyer"
+" in order to be familiar with your rights.\n\n"
+"## Linkers\n"
+"Linkers (aka flashers, programmers, or proggers) sit in the middle"
+" between your computer and your flash cart. While some systems may"
+" not require linkers, all released flash carts for the PM do.\n\n"
+"## Flash carts\n"
+"Flash cartridges (aka flash cards) are devices which replicate the"
+" functionality of an official game cartridge, at least from the"
+" perspective of the console it runs on. In order to transfer a game,"
+" to the cart we usually use what's called a linker. All of the PM's"
+" flash carts have a specific linker which only works with that flash"
+" cart.\n\n"
+"The only carts mentioned here are ones people could actually buy.\n\n"
+"The contents of this section is largely based on"
+" [this document](https://www.pokemon-mini.net/flash-carts/).\n\n"
+"### DITTO mini (rev 3.0)\n"
+"DITTO mini is currently the only flash cart still in production."
+" Buy it from [here](http://dittomini.com/). You can write to and"
+" read from it with the DITTO mini Flasher, purchasable at the same"
+" link.\n\n"
+"There is a 3D-printable case available"
+" [here](https://www.thingiverse.com/thing:3592237). A label for"
+" which is shipped with the flash cart.\n\n"
+"#### Features and information\n"
+"* Designed by zoranc, developed by Plamen.\n"
+"* Sold for $90 (USD) as a set (cart/linker) or $50 for just the cart"
+" or linker.\n"
+"* 2 MiB storage, capable of storing 3 official games with some space"
+" left over.\n"
+"* Fits in an official case with no modification.\n"
+"* Software can write to the card from within the PM, allowing backup"
+" and restoration of save files as well as dumping the BIOS.\n"
+"* Official flashing tool is Ditto Flash.\n"
+"* Must be used in a case, board will not make contact loose.\n\n"
+"#### Support in pm2hw\n"
+"Status: Good\n\n"
+"Supports basic operations (read, write, erase).\n\n"
+"#### Technical specifications\n"
+"* Size: 2 MiB\n"
+"* Theoretical flashing speeds: 30s (512 KiB), 2m (2 MiB)\n"
+"* Flash memory: [SST39VF1681](http://ww1.microchip.com/downloads/en/devicedoc/25040a.pdf)\n"
+"* Bridge chip: [XC9572XL-10VQ64C](https://www.xilinx.com/support/documentation/data_sheets/ds057.pdf)\n"
+"* Linker: DITTO mini Flasher\n"
+"  * Connector: USB 2.0 Micro-B\n"
+"  * Chip: [FT2232D](http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232D.pdf)\n\n"
+"### PokeCard512 (rev 2.1)\n"
+"Fan made sticker by palkone available [here](https://www.pokemon-mini.net/forum/viewtopic.php?f=11&t=1025).\n\n"
+"#### Features and information\n"
+"* Designed by Lupin.\n"
+"* Sold for €35 for just the cart and €55 for the linker.\n"
+"* 512 KiB storage, capable of storing 1 official game.\n"
+"* Fits in an official case with some modification.\n"
+"  * Requires a hole in the top for the connector and a cutout in the"
+" back for the flash memory chip.\n"
+"* Software can write to the card from within the PM, allowing backup"
+" and restoration of save files as well as dumping the BIOS.\n"
+"* Official flashing tool is PokeFlash.\n\n"
+"#### Support in pm2hw\n"
+"Status: Good\n\n"
+"Supports basic operations (read, write, erase).\n\n"
+"#### Technical specifications\n"
+"* Size: 512 KiB\n"
+"* Flash memory: [SST39VF040](https://ww1.microchip.com/downloads/en/DeviceDoc/20005023B.pdf)\n"
+"* Bridge: [XC9572XL-10VQ64C](https://www.xilinx.com/support/documentation/data_sheets/ds057.pdf)\n"
+"* Linker\n"
+"  * Connector: USB 2.0 Mini-B\n"
+"  * Chip: [FT2232HL](http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf)\n\n"
+"#### Differences from rev 2\n"
+"* The CPLD (bridge chip) is rotated with a different pin layout for PCB"
+" routing reasons.\n"
+"* Card layout has a mounting position for both the old/long flash and"
+" new/short flash package.\n"
+"* The programming connector now protrudes from the card.\n"
+"* Debug pins on the back of the card for easier manufacturing /"
+" programming of CPLD.\n"
+"* Slightly reduced component count on flasher cable, some layout"
+" optimizations (e.g. all small components are on the bottom now,"
+" only the USB connector and IC are on the top).\n\n"
+"### PokeCard512 (rev 2)\n"
+"Despite both being considered rev 2, there were two versions of this"
+" card. The differentiator is the code flashed onto the CPLD, which"
+" was updated on carts created after 2011-04-17.\n\n"
+"The CPLD of the early versions can be updated by following the steps"
+" [here](http://mrblinky.net/pm/togepi/pokecard/index.htm). This will"
+" allow running software to write to the card, in order to back up"
+" the save data or dump the BIOS.\n\n"
+"#### Features and information\n"
+"* Designed by Lupin.\n"
+"* 512 KiB storage, capable of storing 1 official game.\n"
+"* Fits in an official case with some modification.\n"
+"  * Requires a cutout in the back for the flash memory chip.\n"
+"* Software can write to the card from within the PM, allowing backup"
+" and restoration of save files as well as dumping the BIOS.\n"
+"  * Only for versions created after 2011-04-17 or early ones with"
+" an updated CPLD.\n"
+"* Official flashing tool is PokeFlash.\n\n"
+"#### Support in pm2hw\n"
+"Status: untested\n"
+"The code for revision 2.1 was taken from the PokeFlash source, so"
+" the code for interfacing with 2 should exist, but it may not be"
+" detected properly.\n\n"
+"#### Technical specifications\n"
+"* Size: 512 KiB\n"
+"* Flash memory: [AT49BV040A-70TI](https://www.mouser.com/catalog/specsheets/atmel_AT49BV040A.pdf)\n"
+"  * Possibly also [AM29LV040B](http://instrumentation.obs.carnegiescience.edu/ccd/parts/AM29LV040B.pdf)\n"
+"* Bridge: [XC9572XL-10VQ64C](https://www.xilinx.com/support/documentation/data_sheets/ds057.pdf)\n"
+"* Linker\n"
+"  * Connector: USB 2.0 Mini-B\n"
+"  * Chip: [FT2232HL](http://www.ftdichip.com/Support/Documents/DataSheets/ICs/DS_FT2232H.pdf)\n\n"
+"### PokeCard512 (rev 1)\n"
+"#### Features and information\n"
+"* Designed by Lupin.\n"
+"* Sold for €30 for just the cart.\n"
+"* Software can**not** write to the card from within the PM.\n"
+"* Official flashing tool is PokeUSB.\n\n"
+"#### Support in pm2hw\n"
+"Status: in development\n\n"
+"#### Technical specifications\n"
+"* Size: 512 KiB\n"
+"* Flash memory: [AT49LV040-90TC](https://www.mouser.com/datasheet/2/268/Atmel_AT49BV040-1180265.pdf)\n"
+"* Bridge: [XC9536XL-10VQ44C](https://www.xilinx.com/support/documentation/data_sheets/ds058.pdf)"
+"* Linker: PokeUSB\n"
+"  * Connector: USB 2.0(?) Type B\n"
+"  * Chip: [ATMEGA162-16DIP](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2513-8-bit-AVR-Microntroller-ATmega162_Datasheet.pdf)\n"
+"* Linker: [PokeUSB 1.2](http://mrblinky.net/pm/PokeUSB/index.htm)\n"
+"  * Connector: USB 2.0(?) Type B\n"
+"  * Chip: [ATMEGA162-16PI]\n\n"
+"### JustBurn's Flashcart\n"
+"Did this not have a better name?\n\n"
+"#### Features and information\n"
+"* Designed by JustBurn.\n"
+"* Sold for $40 (USD) for just the cart in 2004.\n"
+"* Sold for $59/€49 for the cart and $69/€59 for the link.\n"
+"  * $20/€15 discount on the linker for sending in a PM to be"
+" sacrificed.\n"
+"* Software can**not** write to the card from within the PM.\n\n"
+"#### Support in pm2hw\n"
+"Status: unplanned (contact me if you have one)\n\n"
+"#### Technical specifications\n"
+"* Size: 512 KiB\n"
+"* Bridge: XC9536(?)"
+"* Linker\n"
+"  * Connector: EPP-enabled LPT.\n"
+"  * Chip: ???\n\n"
+"## Pokémon Channel\n"
+"Pokémon Channel was a GameCube game released worldwide which"
+" contained a built-in Pokémon mini emulator. The emulation"
+" quality is not great, but it's enough to play the official"
+" games and some homebrew. Through the use of an injector, one"
+" can play arbitrary PM ROMs on GameCube through the Pokémon"
+" Channel emulator.\n\n"
+"### Features and information\n"
+"* Divide by 0 exception handling not seen in hardware.\n"
+"* TODO: broken features in the emulator.\n"
+"* No infrared support obviously!\n\n"
+"### Support in pm2hw\n"
+"Status: no support\n\n"
+"## Multicarts\n"
+"Multicarts are a way of compiling multiple games into a single"
+" ROM along with a menu to select which game you want to play."
+" Generally, official games will need to be patched in order to"
+" run properly from a multicart.\n\n"
+
+msgid "help.topic.gui.title"
+msgstr "Graphical interface overview"
+
+msgid "help.topic.gui.content"
+msgstr "# <str name=help.topic.gui.title/>\n"
+"When you first started the GUI you were faced with this interface:\n\n"
+"<widget name=gui-overview/>\n\n"
+"1. [Menu](#menu)\n"
+"2. [Linkers list](#linkers)\n"
+"3. [Game library](#library)\n"
+"4. Add folder to game library\n"
+"5. Add ROM game library\n"
+"6. Remove game from library\n"
+"7. [Info pane](#info)\n"
+"8. Status bar\n\n"
+"Click one of the links above to see more on what each component does.\n\n"
+"## <a id=menu>Menu</a>\n"
+"Use the menu to perform more uncommon operations or view extra"
+" information, like this help dialog! Clearly you know what you're"
+" doing here already. So here's an explanation of the rest of the"
+" options:\n\n"
+"* **<str name=window.menu.main del=_/>**\n"
+"  * **<str name=window.menu.main.refresh del=_/>** - Manually check"
+" for changes to connected linkers. While the system automatically"
+" checks for if new linkers are connected or known ones are removed,"
+" it does not check if the cards connected to them have changed."
+" This will check that, and it may also be useful if there are bugs.  \n"
+" Please keep in mind it will take a moment for your OS to register"
+" that the device was connected before it can appear here.\n"
+"  * **<str name=window.menu.main.preferences del=_/>** - Open the"
+" preferences menu. From here you can change the theme and stuff.\n"
+"  * **<str name=window.menu.main.exit del=_/>** - Close pm2hw.\n"
+"* **<str name=window.menu.view del=_/>**\n"
+"  * **<str name=window.menu.view.log del=_/>** - Open the log"
+" pane, allowing you to see more detailed usage of the app than"
+" the status bar provides.\n"
+"* **<str name=window.menu.help del=_/>**\n"
+"  * **<str name=window.menu.help.howto del=_/>** - You are here!\n"
+"  * **<str name=window.menu.help.about del=_/>** - Version info,"
+" authorship, licenses. Stuff you'll need for bug reports or legal"
+" reasons.\n\n"
+"## <a id=linkers>Linkers list</a>\n"
+"When you connect a linker to your computer, it will appear in this"
+" list. pm2hw does not connect to it automatically, so you will not"
+" see much information immediately, simply what linker it is. Once"
+" you click the entry, pm2hw will initialize the connection and"
+" display information about the cartridge and its contents in the"
+" [info pane](#info).\n\n"
+"To read about how to use the linker from the info pane, see"
+" [here](linker).\n\n"
+"## <a id=library>Game library</a>\n"
+"This is a list of the games you have registered in your library."
+" From here, you can quickly flash your games to connected cards"
+" or simply view more information about the game.\n\n"
+"In order to register more games, use the add folder or file"
+" options below the library list. Adding a folder will import all"
+" the ROMs it finds within it _one time_, it will not"
+" automatically import new ROMs added to that folder later.\n\n"
+"To read about how to use a game's info pane, see [here](game).\n\n"
+"## <a id=info>Info pane</a>\n"
+"When you click a linker or a game from your library, it will open"
+" an interface into this pane. See those sections for instructions"
+" on how to use this interface.\n\n"
+"## <a id=log>Log pane</a>\n"
+"If you select <str name=window.menu.view del=_/> ->"
+" <str name=window.menu.view.log del=_/> from the menu, this pane"
+" will open above the status bar. Here you can see a log of all"
+" your actions performed during this session, similar to what"
+" you would see in a console session.\n"
+
+msgid "help.topic.linker.title"
+msgstr "Linker view"
+
+msgid "help.topic.linker.content"
+msgstr "# <str name=help.topic.linker.title/>\n"
+"This view appears in the info pane after selecting a linker"
+" from the linker list. It will look something like this:\n\n"
+"<widget name=gui-linker/>\n\n"
+"1. Cartridge name\n"
+"2. Cartridge banner\n"
+"3. Actions which can be performed\n"
+"4. Details about the linker, cart, and contents\n\n"
+"What you see on this screen will somewhat depend on the"
+" linker you're using and what's connected to it. Most linkers,"
+" such as the DITTO mini Flasher, will only be able to connect"
+" to its official flash cart whereas others, such as PokeUSB,"
+" will be able to accept both certain flash carts as well as"
+" the official cartridges.\n\n"
+"When you first open this screen, you will see details about"
+" the linker, flash cartridge (if one is connected), and limited"
+" information about the contents of the cart. Once you click"
+" either <kbd>\t<str name=info.button.read/>\t</kbd> or"
+" <kbd>\t<str name=info.button.dump/>\t</kbd>, pm2hw will read"
+" the entire contents of the cart and be able to provide you"
+" with more information about its contents. All linkers and"
+" cartridges will have these actions available.\n\n"
+"When you're connected to a flash cart, you will also be able"
+" to run flash and erase operations by clicking the respective"
+" buttons. Flashing will allow you to select a ROM file from"
+" anywhere on your system, but it would generally be more"
+" convenient to just add ROMs to your game library and flash"
+" from there. Generally, you will not need to erase the cart"
+" yourself, but the action is there in case you need it.\n\n"
+"For flash carts with can be written to from within software"
+" running on the PM, the following buttons will also be"
+" available:\n\n"
+"* <kbd>\t<str name=info.button.eeprom/>\t</kbd>\n"
+"  * This will open a wizard to step you through the process"
+" of either backing up or restoring save data on your PM.\n"
+"* <kbd>\t<str name=info.button.bios/>\t</kbd>\n"
+"  * This will open a wizard to step you through the process"
+" of dumping the BIOS of your PM for use with emulators.\n"
+"  * Remember: It is illegal to share your BIOS dump with"
+" others! Whether or not the backup is legal in your area is"
+" up to your country's copyright laws and international"
+" agreements your country has signed. Please consult these"
+" documents or a copyright lawyer in order to be familiar"
+" with your rights.\n"
+"  * Backing up your own BIOS and retaining a single copy of"
+" it for private use is legal in the USA.\n"
+
+msgid "help.topic.game.title"
+msgstr "Game view"
+
+msgid "help.topic.game.content"
+msgstr "# <str name=help.topic.game.title/>\n"
+"From here you can view information about the game and its"
+" releases (if any) as well as flash it to any connected"
+" linkers with one click.\n The interface looks something"
+" like this:\n\n"
+"<widget name=gui-game/>\n\n"
+"1. Game name\n"
+"2. Game banner\n"
+"3. Flash this to a connected linker\n"
+"4. Details about the game and releases etc\n\n"
+"You may flash to multiple linkers at once without waiting"
+" from this screen.\n"
+
+msgid "help.topic.flashing.title"
+msgstr "Flashing ROMs to your card"
+
+msgid "help.topic.flashing.content"
+msgstr "# <str name=help.topic.flashing.title/>\n"
+"From the GUI, there are two ways to flash a ROM to your"
+" flash cart. You may select the linker and click"
+" <kbd>\t<str name=info.button.flash/>\t</kbd> in order"
+" to select an arbitrary ROM file to flash or you can"
+" select a game from your game library and click the"
+" button there.\n\n"
+"From the CLI, run the following command:\n\n"
+"```sh\n"
+"pm2hw --flash FILENAME\n"
+"```\n\n"
+"For more information on the CLI usage, see [here](reference).\n"
+
+msgid "help.topic.dumping.title"
+msgstr "Dumping ROMs from your card"
+
+msgid "help.topic.dumping.content"
+msgstr "# <str name=help.topic.dumping.title/>\n"
+"From the GUI, select the linker you want to dump from"
+" from the linker list. Then in the info pane, click"
+" <kbd>\t<str name=info.button.dump/>\t</kbd> and select"
+" the destination folder and filename. After doing so,"
+" the game will automatically be added to your game"
+" library so that you can easily flash it back onto a"
+" flash cart later.\n\n"
+"From the CLI, run the following command:\n\n"
+"```sh\n"
+"pm2hw --dump FILENAME\n"
+"```\n\n"
+"For more information on the CLI usage, see [here](reference).\n"
+
+msgid "help.topic.reference.title"
+msgstr "Command line reference"
+
+msgid "help.topic.reference.content"
+msgstr "# <str name=help.topic.reference.title/>\n"
+
+#: pm2hw\gui\components\library.py:
+msgid "info.rom.details.header"
+msgstr "ROM Details"
+
+msgid "info.rom.details.name"
+msgstr "Name"
+
+msgid "info.rom.details.developer"
+msgstr "Developer"
+
+msgid "info.rom.details.genre"
+msgstr "Genre"
+
+msgid "info.rom.details.size"
+msgstr "Size"
+
+msgid "info.rom.details.players"
+msgstr "Players"
+
+msgid "info.rom.details.features"
+msgstr "Features"
+
+msgid "info.rom.details.save slots"
+msgstr "Save slots"
+
+msgid "info.rom.details.minlib"
+msgstr "MINLIB version"
+
+msgid "info.rom.details.crc32"
+msgstr "CRC32"
+
+msgid "library.list.add.file"
+msgstr "Add file to library"
+
+msgid "library.list.add.folder"
+msgstr "Add folder's contents to library"
+
+#: pm2hw\gui\components\linker.py:
+msgid "info.button.bios"
+msgstr "Open BIOS transfer wizard"
+
+msgid "info.button.dump"
+msgstr "Dump contents"
+
+msgid "info.button.dump.in-progress"
+msgstr "Dumping contents..."
+
+msgid "info.button.eeprom"
+msgstr "Open EEPROM transfer wizard"
+
+msgid "info.button.erase"
+msgstr "Erase card"
+
+msgid "info.button.erase.in-progress"
+msgstr "Erasing contents..."
+
+msgid "info.button.flash.card"
+msgstr "Flash to {name}"
+
+msgid "info.button.flash.linker"
+msgstr "Flash via {name}"
+
+msgid "info.button.flash"
+msgstr "Flash a file"
+
+msgid "info.button.flash.in-progress"
+msgstr "Flashing contents..."
+
+msgid "info.button.read"
+msgstr "Read contents"
+
+msgid "info.button.read.in-progress"
+msgstr "Reading contents..."
+
+msgid "library.list.linker.name.no-rom"
+msgstr "{name} (empty)"
+
+msgid "library.list.linker.name.unconnected"
+msgstr "{name} (connection unestablished)"
+
+msgid "library.list.linker.name.with-rom"
+msgstr "{game} ({name})"
+
+msgid "log.connect.in-progress"
+msgstr "Connecting to {linker.name}..."
+
+msgid "log.connect.complete"
+msgstr "Connected! Discovered a {name}"
+
+msgid "log.connect.complete.with-size"
+msgstr "Connected! Discovered a {name} ({size})"
+
+msgid "log.connect.failed"
+msgstr "Failed to connect to device"
+
+msgid "log.linker.found"
+msgstr "Discovered a {linker.name}"
+
+msgid "log.linker.removed"
+msgstr "{linker.name} disconnected"
+
+msgid "select-location.linker.dump"
+msgstr "Specify location to dump to"
+
+msgid "select-location.linker.flash"
+msgstr "Select file to flash"
+
+msgid "status.erase.unsupported"
+msgstr "{name} does not support erasing"
+
+msgid "status.flash.unsupported"
+msgstr "{name} does not support flashing"
+
+#: pm2hw\gui\components\status.py:
+msgid "status.dumping.in-progress"
+msgstr "Dumping {name} ({pc:.0f}%)"
+
+msgid "status.dumping.complete"
+msgstr "Completed dumping {name} in {secs:.3f}s"
+
+msgid "status.erasing.in-progress"
+msgstr "Erasing {name} ({pc:.0f}%)"
+
+msgid "status.erasing.complete"
+msgstr "Completed erasing {name} in {secs:.3f}s"
+
+msgid "status.flashing.in-progress"
+msgstr "Flashing {name} ({pc:.0f}%)"
+
+msgid "status.flashing.complete"
+msgstr "Completed flashing {name} in {secs:.3f}s"
+
+msgid "status.reading.in-progress"
+msgstr "Reading {name} into memory ({pc:.0f}%)"
+
+msgid "status.reading.complete"
+msgstr "Completed reading {name} in {secs:.3f}s"
+
+#: pm2hw\gui\i18n.py:
+# ROM names
+msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.4433B736"
+msgstr "Pokémon Race mini (J)"
+
+msgid "library.list.rom.MLTE.LUNCH TIME.B93E34A5"
+msgstr "Lunch Time"
+
+msgid "library.list.rom.MLTE.LUNCH TIME.05C9BAB3"
+msgstr "Snorlax's Lunch Time"
+
+msgid "library.list.rom.MLTJ.ﾗﾝﾁﾀｲﾑ.BD7D1FF3"
+msgstr "Snorlax's Lunch Time (J)"
+
+msgid "library.list.rom.MPBE.Pinball.1CF2E0B7"
+msgstr "Pokémon Pinball mini"
+
+msgid "library.list.rom.MPBE.Pinball.EC5668D4"
+msgstr "Pokémon Pinball Petit"
+
+msgid "library.list.rom.MPBJ.ﾋﾟﾝﾎﾞｰﾙﾐﾆ.8576B25D"
+msgstr "Pokémon Pinball mini (J)"
+
+msgid "library.list.rom.MPBJ.ﾋﾟﾝﾎﾞｰﾙﾐﾆ.34317946"
+msgstr "Pokémon Pinball Petit (J)"
+
+msgid "library.list.rom.MPTE.Party Mini.232F2108"
+msgstr "Slowking's Judge"
+
+msgid "library.list.rom.MPTE.Party Mini.B000B89F"
+msgstr "Baseline Judge"
+
+msgid "library.list.rom.MPTE.Party Mini.06ABB114"
+msgstr "Chansey's Dribble"
+
+msgid "library.list.rom.MPTE.Party Mini.8FD918BB"
+msgstr "Ricochet Dribble"
+
+msgid "library.list.rom.MPTE.Party Mini.4DA2912C"
+msgstr "Pikachu's Rocket Start"
+
+msgid "library.list.rom.MPTE.Party Mini.F83ED29D"
+msgstr "Rocket Start"
+
+msgid "library.list.rom.MPTJ.ﾊﾟｰﾃｨﾐﾆ.49E2D1C3"
+msgstr "Slowking's Judge (J)"
+
+msgid "library.list.rom.MPTJ.ﾊﾟｰﾃｨﾐﾆ.6C6641DF"
+msgstr "Chansey's Dribble (J)"
+
+msgid "library.list.rom.MPZE.Puzzle.D37113D5"
+msgstr "Puzzle Collection Petit"
+
+msgid "library.list.rom.MPZD.Puzzle G.B28CA76B"
+msgstr "Puzzle Collection Petit (G)"
+
+msgid "library.list.rom.MPZF.Puzzle F.CB8D0738"
+msgstr "Puzzle Collection Petit (F)"
+
+msgid "library.list.rom.MPZJ.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ.66DC7DD7"
+msgstr "Puzzle Collection Petit (J)"
+
+# TODO: compare to name list readme, check game lists for casing
+msgid "library.list.rom.MACD.Zany Cards.7CF22082"
+msgstr "Pokémon Zany Cards (G)"
+
+msgid "library.list.rom.MACE.Zany Cards.36D435E0"
+msgstr "Pokémon Zany Cards (U)"
+
+msgid "library.list.rom.MACF.Zany Cards.3FF65CD4"
+msgstr "Pokémon Zany Cards (F)"
+
+msgid "library.list.rom.MACJ.ｱﾆﾒｶｰﾄﾞ.A5668F32"
+msgstr "Pokémon Anime Card Daisakusen (J)"
+
+msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.BC233CEB"
+msgstr "Pichu Bros. Mini (J)"
+
+msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.623DA7E1"
+msgstr "Skateboard Pichu (J)"
+
+msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.1ED6F524"
+msgstr "Magby's Hot-air Balloon (J)"
+
+msgid "library.list.rom.MBRJ.ﾋﾟﾁｭｰﾐﾆ.02D973E9"
+msgstr "Hoppip's Jump (J)"
+
+msgid "library.list.rom.MPTE.Party Mini.2F76CD9A"
+msgstr "Pokémon Party mini (U)"
+
+msgid "library.list.rom.MPTP.Party Mini E.E85743F3"
+msgstr "Pokémon Party mini (E)"
+
+msgid "library.list.rom.MPZD.Puzzle G.9EEBE5C5"
+msgstr "Pokémon Puzzle Collection (G)"
+
+msgid "library.list.rom.MPZE.Puzzle.97CF76C3"
+msgstr "Pokémon Puzzle Collection (U)"
+
+msgid "library.list.rom.MPZJ.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ.29545BDA"
+msgstr "Pokémon Puzzle Collection (J)"
+
+msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.3388EDB3"
+msgstr "Pokémon Race Petit (J)"
+
+msgid "library.list.rom.MSDJ.ｿﾀﾞﾃﾔｻﾝ.69A4314B"
+msgstr "Pokémon Breeder mini (J)"
+
+msgid "library.list.rom.MSTJ.ｼｮｯｸﾃﾄﾘｽ.084E39A3"
+msgstr "Pokémon Shock Tetris (J)"
+
+msgid "library.list.rom.MSTP.P-TETRIS-EUR.9349C0A4"
+msgstr "Pokémon Tetris (E) (M3)"
+
+msgid "library.list.rom.MTAJ.ﾄｹﾞﾋﾟｰ.8F48BCA8"
+msgstr "Togepi's Adventure (J)"
+
+msgid "library.list.rom.MTAJ.ﾄｹﾞﾋﾟｰ.30AE890A"
+msgstr "Togepi's Adventure (J) (Preview)"
+
+msgid "library.list.rom.MZ2J.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ2.CA5A4E7B"
+msgstr "Pokémon Puzzle Collection Vol. 2 (J)"
+
+#: pm2hw\gui\util.py:
+msgid "misc.filetypes.all"
+msgstr "All files"
+
+msgid "misc.filetypes.min"
+msgstr "Pokemon mini ROMs"
+
+#: pm2hw\linkers\base.py:
+msgid "log.wait.cannot.buffer"
+msgstr "This device cannot buffer slow operations and may cause delays"

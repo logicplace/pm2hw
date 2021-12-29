@@ -1,13 +1,15 @@
 import struct
-from typing import NamedTuple, Optional
+from typing import TYPE_CHECKING, NamedTuple
 
-from .base import BaseFtdiLinker, BaseLinker, BaseReader, BaseSstCard, BytesOrTransformer, Transform, linkers
-from .logger import verbose
-from .exceptions import DeviceNotSupportedError
+from .base import dummy_progress
+from .base_sst import BaseSstCard
+from ..base import BaseReader
+from ..logger import progress, verbose
+from ..locales import natural_size
+from ..exceptions import DeviceNotSupportedError
 
-DEV_DESC = b"Dual RS232 A"
-# DEV_DESC = b"USB SerialConverter A"
-# DEV_DESC = b"FT2232H MiniModule A"
+if TYPE_CHECKING:
+	from ..linkers.base import BaseLinker
 
 class CFIBlockRegion(NamedTuple):
 	n_blocks: int
@@ -35,7 +37,7 @@ class CFIQueryStruct(NamedTuple):
 	vcc_max: int              # BCD Volts: BCD 100mv
 	vpp_min: int              # Volts: BCD 100mv
 	vpp_max: int              # Volts: BCD 100mv
-	typical_timeouts: bytes  # (See JESD68-01)
+	typical_timeouts: bytes   # (See JESD68-01)
 
 	device_size: int                         # 2^n bytes
 	interface_code_description: int          # (See JEP137)
@@ -55,66 +57,11 @@ class CFIQueryStruct(NamedTuple):
 	def get_size(self):
 		return 1 << self.device_size
 
-class DittoFlash(BaseFtdiLinker):
-	name = "DittoFlash"
-	clock_divisor = 1
-
-	PWR = BaseFtdiLinker.GPIOL0
-	PWR_READ = BaseFtdiLinker.GPIOL3
-
-	ftdi_port_state = BaseFtdiLinker.TMS_CS
-	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
-
-	def init(self):
-		super().init()
-
-		# Set CS to low, start programming operation
-		self.port_state(0)
-
-		return self.detect_card()
-
-	def cleanup(self):
-		self.port_state(on=self.PWR)
-
-	def detect_card(self):
-		""" Detect which card is connected """
-		self.card = card = DittoMiniRev3(self)
-		card.get_device_info()
-		return card
-
-	# def read(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None):
-	# 	""" Write commands to the card and read the response """
-	# 	self.send(data, wait=wait)
-	# 	buf, do_transform = self.prepare_read(size, transform)
-	# 	if self._buffering:
-	# 		self._buffer += buf
-	# 	else:
-	# 		self.write_out(buf)
-	# 	return self.reader(self.handle, size, transform if do_transform else None)
-
-	# def prepare_read(self, size: int, transform: Optional[Transform] = None):
-	# 	size_bytes = (size - 1).to_bytes(2, "little")
-	# 	if transform == self.lsb_first:
-	# 		return b"\x2c" + size_bytes, False
-	# 	return b"\x24" + size_bytes, True
-
-	def prepare_write(self, data: BytesOrTransformer, transform: Optional[Transform] = None):
-		if callable(data):
-			data = data(transform or self.noop)
-		return b"\x11" + (len(data) - 1).to_bytes(2, "little") + data
-
-	def prepare_wait(self, secs: int) -> bytes:
-		# No idea how long it takes but the other code writes
-		# four 0x80 commands for a program byte command.
-		# TODO: Make this acceptable
-		if secs == DittoMiniRev3.T_BP:
-			cmd = bytes([0x80, self.ftdi_port_state, self.ftdi_port_direction])
-			return cmd * 4
-		return b""
-
 # There is no Rev 1 or 2, though
 class DittoMiniRev3(BaseSstCard):
-	def __init__(self, linker: BaseLinker):
+	name = "DITTO mini"
+
+	def __init__(self, linker: "BaseLinker"):
 		super().__init__(linker)
 		self.buffer_sdp = (
 			self.prepare_write_packet(0xAAA, 0xaa)
@@ -162,20 +109,25 @@ class DittoMiniRev3(BaseSstCard):
 		)
 
 		self.memory = size_bytes = cfiqs.get_size()
-		self.block_size = max(block_regions, key=lambda x: x.block_size).get_size()
+
+		# TODO: make this configurable?
+		# note, seems to read about 5s faster with the bigger size; write much faster with smaller tho
+		self.block_size = min(block_regions, key=lambda x: x.block_size).get_size()
 
 		self.cfiqs = cfiqs
 		self.block_regions = block_regions
 
 		# TODO: Dump the rest of the fields
-		verbose("Flash CFI Magic Header: {}", cfiqs.magic_qry.decode())
-		verbose("Flash CFI Reported device size: {:d} bytes ({:d} MiB)", size_bytes, size_bytes // 1024 ** 2)
-		verbose("Number of block regions: {:d}", cfiqs.number_of_erase_block_regions)
+		verbose("Flash CFI Magic Header: {header}", header=cfiqs.magic_qry.decode())
+		verbose(
+			"Flash CFI Reported device size: {bytes:d} bytes ({size})",
+			bytes=size_bytes, size=natural_size(size_bytes))
+		verbose("Number of block regions: {br:d}", br=cfiqs.number_of_erase_block_regions)
 		for i, block_region in enumerate(block_regions):
-			verbose("  Block region #{:d}", i+1)
-			verbose("    Block size: {:d} bytes", block_region.get_size())
-			verbose("    Blocks in region: {:d}", block_region.n_blocks + 1)
-		verbose("Using block size: {:d} bytes", self.block_size)
+			verbose("  Block region #{i:d}", i=i+1)
+			verbose("    Block size: {bytes:d} bytes", bytes=block_region.get_size())
+			verbose("    Blocks in region: {blocks:d}", blocks=block_region.n_blocks + 1)
+		verbose("Using block size: {bytes:d} bytes", bytes=self.block_size)
 
 	def prepare_sdp_prefixed(self, data: int, addr: int = 0xAAA):
 		return super().prepare_sdp_prefixed(data, addr)
@@ -204,7 +156,7 @@ class DittoMiniRev3(BaseSstCard):
 		).to_bytes(4, "big")
 
 	def read_info(self, addr: int, size: int):
-		reader: BaseReader = self.linker.read(
+		reader: BaseReader = self.linker.read_data(
 			b"".join(
 				self.prepare_read_packet(a)
 				for a in range(addr, addr + size)
@@ -213,35 +165,41 @@ class DittoMiniRev3(BaseSstCard):
 		)
 		return reader.read()
 
-	def read_data(self, addr: int, size: int):
-		assert size <= self.block_size
-		read_size = 512
-		end = addr + size
-		return b"".join(
-			self.linker.read_data(
-				b"".join(
-					self.prepare_read_packet(a)
-					for a in range(a, a + s)
-				),
-				s,
-				transform=self.linker.lsb_first
-			).read()
-			for a, s in zip(
-				range(addr, end, read_size),
-				[read_size] * (size // read_size) + [size % read_size or read_size]
+	def read_data(self, addr: int, size: int, *, prog: progress = dummy_progress):
+		for start, bsize in self.blocks(addr, size):
+			read_size = 512
+			end = start + bsize
+			ret = b"".join(
+				self.linker.read_data(
+					b"".join(
+						self.prepare_read_packet(a)
+						for a in range(a, a + s)
+					),
+					s,
+					transform=self.linker.lsb_first
+				).read()
+				for a, s in zip(
+					range(start, end, read_size),
+					[read_size] * (bsize // read_size) + [bsize % read_size or read_size]
+				)
 			)
-		)
+			prog.add(bsize)
+			yield ret
 
-	# def write_data(self, addr: int, data: bytes):
-	# 	size = len(data)
-	# 	assert size <= self.block_size
-	# 	return self.linker.send(
-	# 		(
-	# 			lambda tr: self.prepare_write_packet(a, tr(d))
-	# 			for a, d in zip(range(addr, addr + size), data)
-	# 		),
-	# 		transform=self.linker.lsb_first
-	# 	)
+	# def write_data(self, addr: int, data: bytes, *, prog: progress = dummy_progress):
+	# 	for (start, bsize), block in zip(
+	# 		self.blocks(addr, len(data)),
+	# 		chunked(self.block_size, data)
+	# 	):
+	# 		ret = self.linker.send(
+	# 			(
+	# 				lambda tr: self.prepare_write_packet(a, tr(d))
+	# 				for a, d in zip(range(start, start + bsize), block)
+	# 			),
+	# 			transform=self.linker.lsb_first
+	# 		)
+	# 		prog.add(bsize)
+	# 		yield ret
 
 	# Chip commands
 	T_BP = 10e-6  # μs
@@ -253,14 +211,14 @@ class DittoMiniRev3(BaseSstCard):
 
 	def sst_sector_erase(self, addr: int):
 		self.linker.send(
-			self.prepare_sdp_prefixed(0x80),
+			self.prepare_sdp_prefixed(0x80)
 			+ self.prepare_sdp_prefixed(0x50, addr),
 			wait=0.025  # ms
 		)
 
 	def sst_block_erase(self, addr: int):
 		self.linker.send(
-			self.prepare_sdp_prefixed(0x80),
+			self.prepare_sdp_prefixed(0x80)
 			+ self.prepare_sdp_prefixed(0x30, addr),
 			wait=0.025  # ms
 		)
@@ -304,4 +262,3 @@ class DittoMiniRev3(BaseSstCard):
 			wait=self.T_IDA
 		)
 	
-linkers[DEV_DESC] = DittoFlash
