@@ -1,7 +1,7 @@
 [project]
 name = "pm2hw"
 # Also update in pm2hw\gui\components\help.py
-version = "0.0.1"
+version = "0.0.2"
 description = "Utility to read and write to all Pokemon mini hardware"
 readme = "README.md"
 license = {file = "LICENSE"}
