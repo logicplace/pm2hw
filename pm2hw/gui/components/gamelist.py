@@ -1,3 +1,9 @@
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 from typing import List, Optional, cast
 from functools import partial
 
@@ -5,12 +11,12 @@ import tkinter as tk
 from tkinter import ttk
 import weakref
 
-from pm2hw_icons import graphic
 from ..i18n import _, localized_game_name
 from .linker import Linker
-from .library import Entry, Library, BaseRomEntry
+from .library import Entry, Library, BaseRomEntry, graphic
 from ...info import games
 from ...config import config
+
 
 class ROM(BaseRomEntry):
 	def __init__(self, parent: "GameList", *args):

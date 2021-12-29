@@ -1,3 +1,6 @@
+# Any copyright is dedicated to the Public Domain.
+# https://creativecommons.org/publicdomain/zero/1.0/
+
 from .base import ROM, Boxing, Game, GameMode, Feature, BoxType, Status, Version
 from .gcn_pchannel import PokemonChannelJP
 

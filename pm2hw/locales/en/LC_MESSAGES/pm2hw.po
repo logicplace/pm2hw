@@ -293,6 +293,9 @@ msgstr "How to _use"
 msgid "window.menu.help.about"
 msgstr "_About"
 
+msgid "window.preferences.title"
+msgstr "pm2hw - Preferences"
+
 msgid "window.title"
 msgstr "pm2hw - Pokémon mini Flashing Utility"
 
@@ -325,6 +328,9 @@ msgstr "pm2hw - A flashing utility for the Pokémon mini\n"
 "Python version: {py_version}\n"
 "Tcl version: {tcl_version}\n"
 "Tkinter version: {tk_version} ({tk_windowing})"
+
+msgid "help.plugin.not-installed"
+msgstr "not installed"
 
 msgid "help.topic.welcome.title"
 msgstr "Introduction"
@@ -519,7 +525,7 @@ msgstr "# <str name=help.topic.basics.title/>\n"
 " can play arbitrary PM ROMs on GameCube through the Pokémon"
 " Channel emulator.\n\n"
 "### Features and information\n"
-"* Divide by 0 exception handling not seen in hardware.\n"
+"* Divide by 0 exception flag not seen in hardware.\n"
 "* TODO: broken features in the emulator.\n"
 "* No infrared support obviously!\n\n"
 "### Support in pm2hw\n"
@@ -821,6 +827,19 @@ msgstr "{name} does not support erasing"
 
 msgid "status.flash.unsupported"
 msgstr "{name} does not support flashing"
+
+#: pm2hw\gui\components\preferences.py:
+msgid "preferences.language.title"
+msgstr "Select language"
+
+msgid "preferences.language.interface"
+msgstr "Interface"
+
+msgid "preferences.language.release"
+msgstr "Game release"
+
+msgid "preferences.theme.title"
+msgstr "Select theme"
 
 #: pm2hw\gui\components\status.py:
 msgid "status.dumping.in-progress"

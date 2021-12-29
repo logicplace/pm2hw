@@ -1,7 +1,15 @@
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 import tkinter as tk
 from tkinter import ttk
 from functools import partial
 from typing import  Dict, List, Tuple
+
+from pm2hw.gui.components.preferences import PreferencesDialog
 
 from . import themes
 from .i18n import _, TStringVar
@@ -119,6 +127,11 @@ with Menu(root) as m:
 		)
 		main.add_command(
 			label=_("window.menu.main.preferences"),
+			command=partial(
+				PreferencesDialog,
+				root,
+				title=str(_("window.preferences.title"))
+			)
 		)
 		main.add_separator()
 		main.add_command(

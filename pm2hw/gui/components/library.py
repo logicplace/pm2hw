@@ -1,3 +1,9 @@
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 import os
 import glob
 import weakref
@@ -8,14 +14,18 @@ from threading import Lock
 import tkinter as tk
 from tkinter import ttk, font, filedialog
 
-from pm2hw_icons import graphic
 from ..i18n import _, TStringVar
-from ..util import filetypes_min
+from ..util import WeakMethod, filetypes_min
 from ...info import games
 from ...config import config
 from ...logger import warn
 from ...locales import natural_size
 
+try:
+	from pm2hw_icons import graphic
+except ImportError:
+	def graphic(fn: str):
+		return ""
 
 def item_updater(library: "Library", iid: str):
 	library = weakref.ref(library)
@@ -239,7 +249,9 @@ class BaseRomEntry(Entry):
 		pass
 
 	def render_rom_details(self, target: ttk.Frame, info: games.ROM):
-		frame = DetailPane(target, text=_("info.rom.details.header"))
+		var = TStringVar(_("info.rom.details.header"))
+		frame = DetailPane(target, textvariable=var)
+		frame.label_var = var
 
 		def lhs(name):
 			return (_)(name, key=f"info.rom.details.{name}")
@@ -277,9 +289,12 @@ class BaseRomEntry(Entry):
 class DetailPane(ttk.LabelFrame):
 	current_row = 0
 
-	def __init__(self, *args, **kw):
-		if "text" in kw:
-			# TODO: variable
+	def __init__(self, *args, textvariable=None, **kw):
+		if "textvariable" in kw:
+			var = kw.pop("textvariable")
+			var.on_update(WeakMethod(self.configure), as_text_kwarg=True)
+			kw["text"] = var.get()
+		elif "text" in kw:
 			kw["text"] = str(kw["text"])
 		super().__init__(*args, **kw)
 		self.columnconfigure(1, weight=1)

@@ -1,3 +1,6 @@
+# Any copyright is dedicated to the Public Domain.
+# https://creativecommons.org/publicdomain/zero/1.0/
+
 (b"MZ2J", "ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ2"), [
 	{
 		"name": "ポケモンパズルミニ２",

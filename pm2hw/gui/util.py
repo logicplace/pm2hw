@@ -1,11 +1,19 @@
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+import weakref
 from threading import Thread
 
-from .i18n import _
-
-filetypes_min = (
-	(_("misc.filetypes.min"), "*.min"),
-	(_("misc.filetypes.all"), "*"),
-)
+@property
+def filetypes_min():
+	from .i18n import _
+	return (
+		(_("misc.filetypes.min"), "*.min"),
+		(_("misc.filetypes.all"), "*"),
+	)
 
 # https://gist.github.com/awesomebytes/0483e65e0884f05fb95e314c4f2b3db8
 def threaded(fn):
@@ -15,3 +23,10 @@ def threaded(fn):
         thread.start()
         return thread
     return wrapper
+
+
+class WeakMethod(weakref.WeakMethod):
+	def __call__(self, *args, **kw):
+		fun = super().__call__()
+		if fun is not None:
+			return fun(*args, **kw)

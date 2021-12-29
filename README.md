@@ -1,18 +1,37 @@
 # pm2hw
 
+[![PyPI version](https://img.shields.io/pypi/v/pm2hw.svg)](https://pypi.python.org/pypi/pm2hw/)
+[![PyPI status](https://img.shields.io/pypi/status/pm2hw.svg)](https://pypi.python.org/pypi/pm2hw/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/pm2hw.svg)](https://pypi.python.org/pypi/pm2hw/)
+![Platforms](https://img.shields.io/badge/platforms-windows%20linux%20macOS-green.svg)
+[![GitHub license](https://img.shields.io/github/license/logicplace/pm2hw.svg)](https://github.com/logicplace/pm2hw/blob/master/LICENSE)
+[![Discord](https://img.shields.io/discord/549770771963314216.svg?color=7289da&label=Pokemon-mini.net&logo=discord)](https://discord.gg/rAgt26Wknw)
+
 A flasher for all Pokemon mini Flash Cards (that I can actually test).
 
-This is a work in progress, Ditto support is a bit slow and PokeUSB will come soon.
+This is a work in progress, PokeUSB will come soon.
 
 ## Installation
 
-TODO
+### Windows
+
+The system has been tested on Windows 10 with Python 3.9
+
+1. Download and install the [FTD2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/) for Windows (Desktop).
+2. Install pm2hw: `py -m pip install pm2hw`
+
+### Linux/MacOS X
+
+The system has not been tested on these OSes, but it should work.
+
+1. Download and install the [FTD2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/) for Linux or Mac OS X as appropriate.
+2. Install pm2hw: `python3 -m pip install pm2hw`
 
 ## Usage
 
-```sh
-python -m pm2hw --help
-```
+* CLI: `python -m pm2hw --help`
+* Open GUI: `python -m pm2hw.gui`
+  * Navigate to Help -> How to Use
 
 ## Comparison
 
@@ -30,3 +49,5 @@ All pm2hw tests run on Python 3.9.6
 | Utility           | Read    | Write    |
 | ----------------- | -------:| --------:|
 | pm2hw (Win10)     | 33.732s | 191.411s |
+
+Note: times are faster now! But I don't have the data or my card on me right now

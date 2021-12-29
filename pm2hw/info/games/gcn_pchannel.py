@@ -1,3 +1,6 @@
+# Any copyright is dedicated to the Public Domain.
+# https://creativecommons.org/publicdomain/zero/1.0/
+
 from .base import Game, ROM, Boxing, Status
 from .pm_lunch import LunchTimeJP, LunchTimeEN1, LunchTimeEN2
 

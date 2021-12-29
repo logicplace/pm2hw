@@ -1,4 +1,10 @@
 import tkinter as tk
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 from tkinter import font, ttk
 from typing import ClassVar, Dict
 
@@ -14,7 +20,8 @@ class MetaTheme(type):
 			else:
 				dct["parent"] = None
 		ret = super().__new__(cls, name, bases, dct)
-		themes[dct["name"]] = ret
+		if dct["name"]:
+			themes[dct["name"]] = ret
 		return ret
 
 class BaseTheme(metaclass=MetaTheme):
@@ -242,6 +249,25 @@ class BaseTheme(metaclass=MetaTheme):
 		"error.Console.RichText": {
 			"configure": {
 				"foreground": "#600",
+			}
+		},
+		"OrderedListItem.TFrame": {
+			"configure": {
+				"borderwidth": 2,
+				"relief": tk.RAISED,
+			}
+		},
+		"OrderedListItem.TButton": {
+			"configure": {
+				"anchor": tk.CENTER,
+				"borderwidth": 0,
+				"height": 8,
+				"relief": tk.FLAT,
+			}
+		},
+		"OrderedListItem.TLabel": {
+			"configure": {
+				"font": "BaseFont",
 			}
 		},
 	}

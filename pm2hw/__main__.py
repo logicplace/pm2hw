@@ -1,3 +1,9 @@
+# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
 import sys
 import argparse
 from io import BytesIO
@@ -129,7 +135,7 @@ def connect(args):
 
 	return flashables, time()
 
-def main(args):
+def _main(args):
 	if args.verbose:
 		logger.set_level([logger.VERBOSE, logger.DEBUG, logger.PROTOCOL][min(args.verbose - 1, 2)])
 
@@ -194,37 +200,44 @@ def main(args):
 	else:
 		parser.print_help()
 
-try:
-	args = parser.parse_args()
-	# Normalize globals
-	args.all = args.all_global or args.all
-	args.linker = args.linker_global or args.linker
-	args.profile = args.profile_global or args.profile
-	args.verbose += args.verbose_global
 
-	if args.profile:	
-		import cProfile
-		from pstats import Stats
+def main():
+	try:
+		args = parser.parse_args()
+		# Normalize globals
+		args.all = args.all_global or args.all
+		args.linker = args.linker_global or args.linker
+		args.profile = args.profile_global or args.profile
+		args.verbose += args.verbose_global
 
-		with cProfile.Profile() as pr:
-			flashables = main(args)
-		if flashables:
-			if len(flashables) == 1:
-				classname = type(flashables[0]).__name__
-				name = f"{classname}-{args.cmd}"
+		if args.profile:	
+			import cProfile
+			from pstats import Stats
+
+			with cProfile.Profile() as pr:
+				flashables = _main(args)
+			if flashables:
+				if len(flashables) == 1:
+					classname = type(flashables[0]).__name__
+					name = f"{classname}-{args.cmd}"
+				else:
+					name = f"multiple-linkers-{args.cmd}"
 			else:
-				name = f"multiple-linkers-{args.cmd}"
+				name = "main"
+			stats = Stats(pr)
+			stats.strip_dirs()
+			stats.sort_stats("time")
+			stats.dump_stats(name + ".prof")
 		else:
-			name = "main"
-		stats = Stats(pr)
-		stats.strip_dirs()
-		stats.sort_stats("time")
-		stats.dump_stats(name + ".prof")
-	else:
-		main(args)
-except DeviceError as err:
-	error(_("cli.error.device"), errmsg=str(err))
-	sys.exit(1)
-except Exception as err:
-	exception(_("cli.error.exception"), err)
-	sys.exit(2)
+			_main(args)
+		return 0
+	except DeviceError as err:
+		error(_("cli.error.device"), errmsg=str(err))
+		return 1
+	except Exception as err:
+		exception(_("cli.error.exception"), err)
+		return 2
+
+
+if __name__ == "__main__":
+	sys.exit(main())
