@@ -11,6 +11,13 @@
 			"module": "pm2hw.gui"
 		},
 		{
+			"name": "Build dist",
+			"type": "python",
+			"request": "launch",
+			"module": "whey",
+			"justMyCode": false
+		},
+		{
 			"name": "Dump whatever's connected",
 			"type": "python",
 			"request": "launch",
