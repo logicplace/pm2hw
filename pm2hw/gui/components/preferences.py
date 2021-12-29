@@ -17,6 +17,7 @@ from pm2hw.gui import i18n
 
 class PreferencesDialog(simpledialog.Dialog):
 	def body(self, master: tk.Frame):
+		self.applied = False
 		frm = ttk.Frame(master)
 		frm.grid(column=0, row=0, sticky=tk.NSEW)
 
@@ -96,12 +97,14 @@ class PreferencesDialog(simpledialog.Dialog):
 		return bool(self.active_lgs.items())
 
 	def apply(self):
+		self.applied = True
 		save_config()
 
 	def cancel(self, event=None):
-		i18n.change_language(*self.initial_lgs)
-		config["general"]["box-languages"] = self.initial_releases
-		select_theme(self.initial_theme)
+		if not self.applied:
+			i18n.change_language(*self.initial_lgs)
+			config["general"]["box-languages"] = self.initial_releases
+			select_theme(self.initial_theme)
 		super().cancel(event)
 
 

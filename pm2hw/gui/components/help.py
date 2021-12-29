@@ -29,7 +29,7 @@ def open_about(root: tk.Tk):
 		str(_("help.about.message").format(
 		authors="Sapphire Becker",
 		license="Mozilla Public License, version 2.0",
-		version="0.0.1",
+		version="0.0.3",
 		icons_version=icons_version,
 		py_version=version,
 		tcl_version=tk.TclVersion,
