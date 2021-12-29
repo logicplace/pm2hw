@@ -205,10 +205,10 @@ def main():
 	try:
 		args = parser.parse_args()
 		# Normalize globals
-		args.all = args.all_global or args.all
-		args.linker = args.linker_global or args.linker
-		args.profile = args.profile_global or args.profile
-		args.verbose += args.verbose_global
+		args.all = args.all_global or getattr(args, "all", False)
+		args.linker = args.linker_global or getattr(args, "linker", False)
+		args.profile = args.profile_global or getattr(args, "profile", False)
+		args.verbose = args.verbose_global + getattr(args, "verbose", 0)
 
 		if args.profile:	
 			import cProfile

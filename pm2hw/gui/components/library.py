@@ -212,11 +212,13 @@ class Library(ttk.Frame):
 
 class BaseRomEntry(Entry):
 	def render_to(self, target: ttk.Frame):
-		self.title_var = TStringVar(self.title)
-		ttk.Label(target,
-			textvariable=self.title_var,
+		title_var = TStringVar(self.title)
+		label = ttk.Label(target,
+			textvariable=title_var,
 			font=font.nametofont("GameInfoTitleFont")
-		).pack()
+		)
+		label.title_var = title_var
+		label.pack()
 		if self.preview:
 			lbl = ttk.Label(target)
 			lbl["image"] = self.pi_preview = tk.PhotoImage(
@@ -251,7 +253,6 @@ class BaseRomEntry(Entry):
 	def render_rom_details(self, target: ttk.Frame, info: games.ROM):
 		var = TStringVar(_("info.rom.details.header"))
 		frame = DetailPane(target, textvariable=var)
-		frame.label_var = var
 
 		def lhs(name):
 			return (_)(name, key=f"info.rom.details.{name}")
@@ -290,10 +291,9 @@ class DetailPane(ttk.LabelFrame):
 	current_row = 0
 
 	def __init__(self, *args, textvariable=None, **kw):
-		if "textvariable" in kw:
-			var = kw.pop("textvariable")
-			var.on_update(WeakMethod(self.configure), as_text_kwarg=True)
-			kw["text"] = var.get()
+		if textvariable is not None:
+			textvariable.on_update(WeakMethod(self.configure), as_text_kwarg=True)
+			kw["text"] = textvariable.get()
 		elif "text" in kw:
 			kw["text"] = str(kw["text"])
 		super().__init__(*args, **kw)

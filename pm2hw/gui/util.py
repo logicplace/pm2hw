@@ -25,8 +25,11 @@ def threaded(fn):
     return wrapper
 
 
-class WeakMethod(weakref.WeakMethod):
+class WeakMethod:
+	def __init__(self, o):
+		self._m = weakref.WeakMethod(o)
+
 	def __call__(self, *args, **kw):
-		fun = super().__call__()
+		fun = self._m()
 		if fun is not None:
 			return fun(*args, **kw)

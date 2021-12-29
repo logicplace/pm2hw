@@ -13,24 +13,29 @@ This is a work in progress, PokeUSB will come soon.
 
 ## Installation
 
+It would be best to install this via `pipx` rather than plain pip; but of course, both are possible.
+
 ### Windows
 
 The system has been tested on Windows 10 with Python 3.9
 
 1. Download and install the [FTD2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/) for Windows (Desktop).
-2. Install pm2hw: `py -m pip install pm2hw`
+2. Install pipx if it's not installed: `py -m pip install pipx --user`  
+   Note you will very likely need to add the folder to your PATH variable (it will warn you post-install).
+3. Install pm2hw: `pipx install pm2hw`
 
 ### Linux/MacOS X
 
 The system has not been tested on these OSes, but it should work.
 
 1. Download and install the [FTD2XX drivers](https://ftdichip.com/drivers/d2xx-drivers/) for Linux or Mac OS X as appropriate.
-2. Install pm2hw: `python3 -m pip install pm2hw`
+2. Install pipx if it's not installed: `python3 -m pip install pipx --user`
+3. Install pm2hw: `pipx install pm2hw`
 
 ## Usage
 
-* CLI: `python -m pm2hw --help`
-* Open GUI: `python -m pm2hw.gui`
+* CLI: `pm2hw --help`
+* Open GUI: `pm2hw-gui`
   * Navigate to Help -> How to Use
 
 ## Comparison
