@@ -151,10 +151,10 @@ class ColorizedTheme(BaseTheme):
 			}),
 			ovr("Menu.entry", {
 				"configure": {
-					"activebackground": self.selected.bg,
+					# "activebackground": self.selected.bg,
 					"activeforeground": self.selected.fg,
 					"background": self.outside.bg,
-					"foreground": self.outside.fg,
+					# "foreground": self.outside.fg,
 					"selectcolor": self.outside.fg,
 				}
 			}),

@@ -1,7 +1,7 @@
 [project]
 name = "pm2hw"
-# Also update in pm2hw\gui\components\help.py
-version = "0.0.3"
+# Also update in pm2hw\__init__.py
+version = "0.0.6"
 description = "Utility to read and write to all Pokemon mini hardware"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -9,6 +9,7 @@ keywords = ["Pokemon mini", "flasher", "linker", "flash cart"]
 dependencies = [
 	"appdirs",
 	"ftd2xx",
+	"mistune",
 	"pyusb",
 ]
 dynamic = ["classifiers", "requires-python"]

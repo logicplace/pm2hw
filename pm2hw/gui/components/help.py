@@ -16,6 +16,7 @@ from .status import _make_status
 from .gamelist import GameList, ROM
 from ..widgets import RichText, ScrollFrame
 from ..i18n import _
+from ... import __version__ as main_version
 from ...linkers import BaseLinker
 
 try:
@@ -29,7 +30,7 @@ def open_about(root: tk.Tk):
 		str(_("help.about.message").format(
 		authors="Sapphire Becker",
 		license="Mozilla Public License, version 2.0",
-		version="0.0.3",
+		version=main_version,
 		icons_version=icons_version,
 		py_version=version,
 		tcl_version=tk.TclVersion,

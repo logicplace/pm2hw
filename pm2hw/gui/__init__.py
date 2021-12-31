@@ -4,18 +4,24 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import os
 import tkinter as tk
+import traceback
 from tkinter import ttk
 from functools import partial
 from typing import  Dict, List, Tuple
 
-from pm2hw.gui.components.preferences import PreferencesDialog
+import appdirs
 
 from . import themes
 from .i18n import _, TStringVar
 from .widgets import Menu, RichText, ScrollFrame
-from .components import add_progress, make_status, open_about, refresh_linkers, set_status, GameList, HelpDialog
-from .. import logger
+from .components import (
+	add_progress, make_status, open_about, refresh_linkers, set_status,
+	GameList, HelpDialog, PreferencesDialog
+)
+from .. import __version__, logger
+from ..config import config
 
 logger.view = "gui"
 
@@ -27,7 +33,7 @@ title_var.on_update(root.winfo_toplevel().title, now=True)
 root.columnconfigure(0, weight=1)
 root.rowconfigure(0, weight=1)
 
-themes.init(root, "base")
+themes.init(root, config["GUI"].get("theme", "base"))
 
 pw1 = ttk.PanedWindow(root, orient=tk.VERTICAL)
 pw2 = ttk.PanedWindow(root, orient=tk.HORIZONTAL)
@@ -105,7 +111,6 @@ def update_log_entries(value):
 	log_pane.delete("1.0", tk.END)
 	progress_bars.clear()
 	for record in log_entries:
-		print(type(record.msg._msg))
 		insert_log_entry(record)
 	log_pane.yview_moveto(pos)
 
@@ -117,45 +122,59 @@ log_handler = logger.Handler(logger.INFO, raw_handler=add_log_entry)
 log_handler.set_formatter(logger.nice_formatter)
 logger.add_handler(log_handler)
 
+error_log_dir = appdirs.user_log_dir("pm2hw", None, __version__)
+error_log_dn = os.path.join(error_log_dir, "error.log")
+os.makedirs(error_log_dir, exist_ok=True)
+def error_log_writer(s):
+	with open(error_log_dn, "at", encoding="UTF-8") as f:
+		f.write(s)
+		f.write("\n")
+error_handler = logger.Handler(logger.WARN, handler=error_log_writer)
+logger.add_handler(error_handler)
+
+def log_exception(self, exc, val, tb):
+	stack_info = traceback.format_tb(tb)
+	logger.exception(str(val), val, stack_info=stack_info)
+
+tk.Tk.report_callback_exception = log_exception
+
 # TODO: remember window settings in config
 
 with Menu(root) as m:
-	with Menu(m, label=_("window.menu.main")) as main:
+	with Menu(m, labelvar=TStringVar(_("window.menu.main"))) as main:
 		main.add_command(
-			label=_("window.menu.main.refresh"),
+			labelvar=TStringVar(_("window.menu.main.refresh")),
 			command=partial(refresh_linkers, game_list)
 		)
 		main.add_command(
-			label=_("window.menu.main.preferences"),
-			command=partial(
-				PreferencesDialog,
+			labelvar=TStringVar(_("window.menu.main.preferences")),
+			command=lambda: PreferencesDialog(
 				root,
 				title=str(_("window.preferences.title"))
 			)
 		)
 		main.add_separator()
 		main.add_command(
-			label=_("window.menu.main.exit"),
+			labelvar=TStringVar(_("window.menu.main.exit")),
 			command=root.destroy
 		)
 
-	with Menu(m, label=_("window.menu.view")) as view:
+	with Menu(m, labelvar=TStringVar(_("window.menu.view"))) as view:
 		# view.add_command(label=_("window.menu.view.multicart"))
 		view.add_checkbutton(
-			label=_("window.menu.view.log"),
+			labelvar=TStringVar(_("window.menu.view.log")),
 			variable=log_toggler
 		)
 
-	with Menu(m, label=_("window.menu.help")) as help:
+	with Menu(m, labelvar=TStringVar(_("window.menu.help"))) as help:
 		help.add_command(
-			label=_("window.menu.help.howto"),
-			command=partial(
-				HelpDialog,
+			labelvar=TStringVar(_("window.menu.help.howto")),
+			command=lambda: HelpDialog(
 				root,
 				title=str(_("window.help.title"))
 			)
 		)
-		help.add_command(label=_("window.menu.help.about"), command=partial(open_about, root))
+		help.add_command(labelvar=TStringVar(_("window.menu.help.about")), command=partial(open_about, root))
 
 def auto_refresh():
 	refresh_linkers(game_list)

@@ -17,7 +17,7 @@ from pm2hw.gui import i18n
 
 class PreferencesDialog(simpledialog.Dialog):
 	def body(self, master: tk.Frame):
-		self.applied = False
+		self._applied = False
 		frm = ttk.Frame(master)
 		frm.grid(column=0, row=0, sticky=tk.NSEW)
 
@@ -91,21 +91,24 @@ class PreferencesDialog(simpledialog.Dialog):
 		config["general"]["box-languages"] = box_languages
 
 	def update_theme(self, event: tk.Event):
-		select_theme(self.theme_select.get())
+		name = self.theme_select.get()
+		select_theme(name)
+		config["GUI"]["theme"] = name
 
 	def validate(self):
 		return bool(self.active_lgs.items())
 
 	def apply(self):
-		self.applied = True
+		self._applied = True
 		save_config()
 
 	def cancel(self, event=None):
-		if not self.applied:
+		super().cancel(event)
+		if not self._applied:
 			i18n.change_language(*self.initial_lgs)
 			config["general"]["box-languages"] = self.initial_releases
 			select_theme(self.initial_theme)
-		super().cancel(event)
+			config["GUI"]["theme"] = self.initial_theme
 
 
 class OrderedList(ttk.Frame):

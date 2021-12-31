@@ -13,6 +13,8 @@ from .linkers import BaseLinker, linkers
 from .locales import _
 from .exceptions import *
 
+__version__ = "0.0.6"
+
 def get_connected_linkers(**kwargs):
 	# Get D2xx linkers
 	num_devices = ftd2xx.createDeviceInfoList()

@@ -1,4 +1,5 @@
 appdirs
 ftd2xx
+mistune
 pyusb
 # Optional: asciimatics
