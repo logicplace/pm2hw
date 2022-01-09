@@ -11,9 +11,11 @@ from io import BytesIO
 from time import time
 from typing import List
 
+from pm2hw.info.games.base import ROM
+
 from . import get_connected_linkers, logger, BaseFlashable
 from .info import games
-from .config import config
+from .config import config, save as save_config
 from .logger import log, error, exception, progress, verbose, LogRecord
 from .locales import _, natural_size
 from .exceptions import DeviceError
@@ -103,7 +105,7 @@ erase_cmd.add_argument("-p", "--partial", metavar="{size,offset:size}",
 info_cmd = subparsers.add_parser("info", aliases=["i"],
 	help=_("cli.help.command.info"))
 group = add_common_flags(info_cmd)
-group.add_argument("rom", metavar="file",
+group.add_argument("rom", metavar="file", nargs="?",
 	help=_("cli.help.param.info.rom"))
 
 config_cmd = subparsers.add_parser("config",
@@ -113,7 +115,9 @@ group.add_argument("-s", "--set", action="store_true",
 	help=_("cli.help.param.config.set"))
 group.add_argument("-g", "--get", action="store_true",
 	help=_("cli.help.param.config.get"))
-config_cmd.add_argument("settings", nargs="+",
+group.add_argument("-l", "--list", action="store_true",
+	help=_("cli.help.param.config.list"))
+config_cmd.add_argument("settings", nargs="*",
 	help=_("cli.help.param.config.settings"))
 
 def connect(args):
@@ -217,10 +221,11 @@ def _main(args):
 		return flashables
 	elif args.cmd in {"i", "info"}:
 		def print_info_line(name, rhs):
-			log(
-				"{lhs}: {rhs}",
-				lhs=(_)(name, key=f"info.rom.details.{name}"),
-				rhs=rhs
+			print(
+				"{lhs}: {rhs}".format(
+					lhs=(_)(name, key=f"info.rom.details.{name}"),
+					rhs=rhs
+				)
 			)
 
 		def rhs(value, pfx):
@@ -228,7 +233,9 @@ def _main(args):
 				return (_)(value.value, key=f"{pfx}.{value.name}")
 			return (_)(value, key=f"{pfx}.{value}")
 
-		def print_info(info):
+		def print_info(info: ROM):
+			print_info_line("code", info.acode)
+			print_info_line("internal", info.internal)
 			if info.game:
 				if info.game.developer:
 					print_info_line("developer", rhs(info.game.developer, "game.developer"))
@@ -251,14 +258,17 @@ def _main(args):
 				print_info_line(version.of, version.number)
 			if info.crc32 >= 0:
 				print_info_line("crc32", f"{info.crc32:08x}")
+			# TODO: select release based on config
 
 		if args.rom:
 			with open(args.rom, "rb") as f:
 				info = games.lookup(f, check_crc=True)
-				# TODO: select release based on config
 				print_info(info)
-		elif args.linker or args.all:
-			...
+		else:
+			flashables, start = connect(args)
+			for f in flashables:
+				info = games.lookup(f)
+				print_info(info)
 	elif args.cmd == "config":
 		if args.set:
 			for x in args.settings:
@@ -271,12 +281,16 @@ def _main(args):
 						print(_("cli.config.setting.unknown").format(x))
 				else:
 					print(_("cli.config.setting.set.bad-format").format(x))
+			save_config()
 		elif args.get:
 			for x in args.settings:
 				if x in {"language", "box-languages"}:
 					print(f"{x}:", config.get("general", x))
 				else:
 					print(_("cli.config.setting.unknown").format(x))
+		elif args.list:
+			for x in ["language", "box-languages"]:
+				print(f"{x}:", config.get("general", x))
 	else:
 		parser.print_help()
 
