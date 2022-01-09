@@ -7,10 +7,14 @@
 import sys
 import argparse
 from io import BytesIO
+from enum import Enum
 from time import time
 from typing import List
 
 from . import get_connected_linkers, logger, BaseFlashable
+from .info import games
+from .info.games.base import ROM
+from .config import config, save as save_config
 from .logger import log, error, exception, progress, verbose, LogRecord
 from .locales import _, natural_size
 from .exceptions import DeviceError
@@ -61,7 +65,8 @@ def add_common_flags(cmd: argparse.ArgumentParser):
 	cmd.add_argument("-v", "--verbose", action="count", default=0, help=argparse.SUPPRESS)
 	cmd.add_argument("--profile", action="store_true", help=argparse.SUPPRESS)
 	cmd.add_argument("-c", "--clock", type=int, metavar="div", default=1,
-		help="cli.help.param.clock")
+		help=_("cli.help.param.clock"))
+	return group
 
 subparsers = parser.add_subparsers(dest="cmd", title="actions")
 
@@ -96,7 +101,23 @@ add_common_flags(erase_cmd)
 erase_cmd.add_argument("-p", "--partial", metavar="{size,offset:size}",
 	help=_("cli.help.param.erase.partial"))
 
-# TODO: info-gathering command(s)
+info_cmd = subparsers.add_parser("info", aliases=["i"],
+	help=_("cli.help.command.info"))
+group = add_common_flags(info_cmd)
+group.add_argument("rom", metavar="file", nargs="?",
+	help=_("cli.help.param.info.rom"))
+
+config_cmd = subparsers.add_parser("config",
+	help=_("cli.help.command.config"))
+group = config_cmd.add_mutually_exclusive_group(required=True)
+group.add_argument("-s", "--set", action="store_true",
+	help=_("cli.help.param.config.set"))
+group.add_argument("-g", "--get", action="store_true",
+	help=_("cli.help.param.config.get"))
+group.add_argument("-l", "--list", action="store_true",
+	help=_("cli.help.param.config.list"))
+config_cmd.add_argument("settings", nargs="*",
+	help=_("cli.help.param.config.settings"))
 
 def connect(args):
 	log(_("cli.connect.search"))
@@ -197,6 +218,78 @@ def _main(args):
 		if len(flashables) > 1:
 			log(_("cli.erase.complete"), secs=time() - start)
 		return flashables
+	elif args.cmd in {"i", "info"}:
+		def print_info_line(name, rhs):
+			print(
+				"{lhs}: {rhs}".format(
+					lhs=(_)(name, key=f"info.rom.details.{name}"),
+					rhs=rhs
+				)
+			)
+
+		def rhs(value, pfx):
+			if isinstance(value, Enum):
+				return (_)(value.value, key=f"{pfx}.{value.name}")
+			return (_)(value, key=f"{pfx}.{value}")
+
+		def print_info(info: ROM):
+			print_info_line("code", info.acode)
+			print_info_line("internal", info.internal)
+			if info.game:
+				if info.game.developer:
+					print_info_line("developer", rhs(info.game.developer, "game.developer"))
+				if info.game.genre:
+					print_info_line("genre", rhs(info.game.genre, "game.genre"))
+			if info.size:
+				print_info_line("size", natural_size(info.size, "bits"))
+			if info.modes:
+				print_info_line("players", "{}~{}".format(*info.players))
+				# TODO: detailed play mode info
+			if info.features:
+				# TODO: localized lists
+				print_info_line("features", ", ".join(
+					rhs(x, "info.rom.details.features")
+					for x in info.features
+				))
+			if info.save_slots:
+				print_info_line("save slots", str(info.save_slots))
+			for version in info.versions:
+				print_info_line(version.of, version.number)
+			if info.crc32 >= 0:
+				print_info_line("crc32", f"{info.crc32:08x}")
+			# TODO: select release based on config
+
+		if args.rom:
+			with open(args.rom, "rb") as f:
+				info = games.lookup(f, check_crc=True)
+				print_info(info)
+		else:
+			flashables, start = connect(args)
+			for f in flashables:
+				info = games.lookup(f)
+				print_info(info)
+	elif args.cmd == "config":
+		if args.set:
+			for x in args.settings:
+				if "=" in x:
+					attr, value = x.split("=")
+					if attr in {"language", "box-languages"}:
+						# TODO: validate
+						config.set("general", attr, value)
+					else:
+						print(_("cli.config.setting.unknown").format(x))
+				else:
+					print(_("cli.config.setting.set.bad-format").format(x))
+			save_config()
+		elif args.get:
+			for x in args.settings:
+				if x in {"language", "box-languages"}:
+					print(f"{x}:", config.get("general", x))
+				else:
+					print(_("cli.config.setting.unknown").format(x))
+		elif args.list:
+			for x in ["language", "box-languages"]:
+				print(f"{x}:", config.get("CLI", x))
 	else:
 		parser.print_help()
 

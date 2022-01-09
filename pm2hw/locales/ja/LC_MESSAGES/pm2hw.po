@@ -25,6 +25,12 @@ msgid "exception.device.open.failed"
 msgstr "デバイスをオープンできませんでした"
 
 #: pm2hw\__main__.py:
+msgid "cli.config.setting.unknown"
+msgstr "その設定は存在しません"
+
+msgid "cli.config.setting.set.bad-format"
+msgstr "設定の代入文は間違いました。name=valueとシンタックスを使ってください"
+
 msgid "cli.connect.connected"
 msgstr "接続成功！{name}を見つかりました"
 
@@ -85,6 +91,9 @@ msgstr "ポケモンミニについてのハードウェアに読み書きます
 #  msgid "cli.flash.complete"
 #  msgstr ""
 
+#  msgid "cli.help.command.config"
+#  msgstr ""
+
 #  msgid "cli.help.command.dump"
 #  msgstr ""
 
@@ -94,10 +103,28 @@ msgstr "ポケモンミニについてのハードウェアに読み書きます
 #  msgid "cli.help.command.flash"
 #  msgstr ""
 
+#  msgid "cli.help.command.info"
+#  msgstr ""
+
 #  msgid "cli.help.param.all"
 #  msgstr ""
 
 #  msgid "cli.help.param.clock"
+#  msgstr ""
+
+#  msgid "cli.help.param.config.get"
+#  msgstr ""
+
+#  msgid "cli.help.param.config.list"
+#  msgstr ""
+
+#  msgid "cli.help.param.config.set"
+#  msgstr ""
+
+#  msgid "cli.help.param.config.settings"
+#  msgstr ""
+
+#  msgid "cli.help.param.info.rom"
 #  msgstr ""
 
 #  msgid "cli.help.param.linker"
@@ -363,8 +390,14 @@ msgstr "CLIの概要"
 #  msgstr ""
 
 #: pm2hw\gui\components\library.py:
+msgid "info.rom.details.code"
+msgstr "内部コード"
+
 msgid "info.rom.details.header"
 msgstr "ロム情報"
+
+msgid "info.rom.details.internal"
+msgstr "内部名"
 
 msgid "info.rom.details.name"
 msgstr "名"
