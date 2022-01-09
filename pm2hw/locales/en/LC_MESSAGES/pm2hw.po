@@ -25,6 +25,12 @@ msgid "exception.device.open.failed"
 msgstr "Failed opening the device!"
 
 #: pm2hw\__main__.py:
+msgid "cli.config.setting.unknown"
+msgstr "Config option unknown"
+
+msgid "cli.config.setting.set.bad-format"
+msgstr "The assignment statement is formatted incorrectly. Please use the form name=value"
+
 msgid "cli.connect.connected"
 msgstr "Connected! Discovered a {name}"
 
@@ -85,6 +91,9 @@ msgstr "...write failed"
 msgid "cli.flash.complete"
 msgstr "Flashing complete! Completed in {secs:.3f}"
 
+msgid "cli.help.command.config"
+msgstr "Modify or retrieve settings from the config file."
+
 msgid "cli.help.command.dump"
 msgstr "Dump from cart."
 
@@ -94,11 +103,29 @@ msgstr "Erase a flash cart."
 msgid "cli.help.command.flash"
 msgstr "Flash to cart."
 
+msgid "cli.help.command.info"
+msgstr "Print out info about a ROM file or the contents of a connected cartridge."
+
 msgid "cli.help.param.all"
 msgstr "Perform the action against all connected linkers."
 
 msgid "cli.help.param.clock"
 msgstr "Set clock divider (higher=slower). Valid value range depends on card."
+
+msgid "cli.help.param.config.get"
+msgstr "Get the value of a config option by name."
+
+msgid "cli.help.param.config.list"
+msgstr "List all available config options and their values."
+
+msgid "cli.help.param.config.set"
+msgstr "Set the value of one or more config options."
+
+msgid "cli.help.param.config.settings"
+msgstr "The name or the form name=value for each config option."
+
+msgid "cli.help.param.info.rom"
+msgstr "The full path to a ROM file."
 
 msgid "cli.help.param.linker"
 msgstr "Specify a linker by name. Fail if that linker is not connected."
@@ -716,8 +743,14 @@ msgid "help.topic.reference.content"
 msgstr "# <str name=help.topic.reference.title/>\n"
 
 #: pm2hw\gui\components\library.py:
+msgid "info.rom.details.code"
+msgstr "Internal code"
+
 msgid "info.rom.details.header"
 msgstr "ROM Details"
+
+msgid "info.rom.details.internal"
+msgstr "Internal name"
 
 msgid "info.rom.details.name"
 msgstr "Name"
