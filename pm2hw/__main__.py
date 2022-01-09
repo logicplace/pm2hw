@@ -4,17 +4,16 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-from enum import Enum
 import sys
 import argparse
 from io import BytesIO
+from enum import Enum
 from time import time
 from typing import List
 
-from pm2hw.info.games.base import ROM
-
 from . import get_connected_linkers, logger, BaseFlashable
 from .info import games
+from .info.games.base import ROM
 from .config import config, save as save_config
 from .logger import log, error, exception, progress, verbose, LogRecord
 from .locales import _, natural_size
@@ -290,7 +289,7 @@ def _main(args):
 					print(_("cli.config.setting.unknown").format(x))
 		elif args.list:
 			for x in ["language", "box-languages"]:
-				print(f"{x}:", config.get("general", x))
+				print(f"{x}:", config.get("CLI", x))
 	else:
 		parser.print_help()
 
