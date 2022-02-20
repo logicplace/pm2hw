@@ -54,9 +54,12 @@ python-implementations = ["CPython", "PyPy"]
 [tool.whey.builders]
 sdist = "whey_mixin_sdist"
 wheel = "whey_mixin_wheel"
-#binary = "whey_mixin_binary"
+binary = "whey_mixin_exe"
 
 [tool.whey.mixin]
 hooks = [
 	"build_hooks:GettextMixin.build_messages"
 ]
+
+[tool.whey.mixin.exe]
+class = "build_hooks:ExeBuilder"

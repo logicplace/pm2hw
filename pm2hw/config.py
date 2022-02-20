@@ -8,7 +8,15 @@ import os
 from locale import getdefaultlocale
 from configparser import ConfigParser
 
-import appdirs
+try:
+	from appdirs import user_config_dir
+except ImportError:
+	# Portable version
+	import sys
+	def user_config_dir(appname=None, appauthor=None, version=None, roaming: bool = False):
+		# Ignore all args, use the same dir
+		return os.path.dirname(sys.argv[0])
+
 
 default_language = getdefaultlocale()[0]
 
@@ -32,7 +40,7 @@ config = ConfigParser(
 		"lines": getlines,
 	}
 )
-config_dir = appdirs.user_config_dir("pm2hw", False, roaming=False)
+config_dir = user_config_dir("pm2hw", False, roaming=False)
 config_file = os.path.join(config_dir, "pm2hw.cfg")
 
 def reload():
