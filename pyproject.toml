@@ -1,7 +1,7 @@
 [project]
 name = "pm2hw"
 # Also update in pm2hw\__init__.py
-version = "0.0.6"
+version = "0.0.7"
 description = "Utility to read and write to all Pokemon mini hardware"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -46,6 +46,13 @@ base-classifiers = [
 	"Topic :: System :: Emulators",
 ]
 
+additional-files = [
+    "include pm2hw_icons/__init__.py",
+    "include pm2hw_icons/add_file.gif",
+    "include pm2hw_icons/add_folder.gif",
+    "include pm2hw_icons/remove_file.gif",
+]
+
 # TODO: only tested on CPython 3.9 for Windows so far
 platforms = ["Windows", "macOS", "Linux"]
 python-versions = ["3.7", "3.8", "3.9", "3.10"]
@@ -54,9 +61,12 @@ python-implementations = ["CPython", "PyPy"]
 [tool.whey.builders]
 sdist = "whey_mixin_sdist"
 wheel = "whey_mixin_wheel"
-#binary = "whey_mixin_binary"
+binary = "whey_mixin_exe"
 
 [tool.whey.mixin]
 hooks = [
 	"build_hooks:GettextMixin.build_messages"
 ]
+
+[tool.whey.mixin.exe]
+class = "build_hooks:PyInstallerBuilder"

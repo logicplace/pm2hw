@@ -141,7 +141,7 @@ class ColorizedTheme(BaseTheme):
 			}),
 			ovr("Menu", {
 				"configure": {
-					"activebackground": self.selected.bg,
+					# "activebackground": self.selected.bg,
 					"activeforeground": self.selected.fg,
 					"background": self.outside.bg,
 					"disabledforeground": self.disabled,
