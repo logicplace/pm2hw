@@ -29,6 +29,11 @@ class PokeFlash(BaseFtdiLinker):
 	ftdi_port_state = PWR | BaseFtdiLinker.TMS_CS
 	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
 
+	configuration = [
+		# TODO: move strings
+		(("-c", "--clock"), "Clock divisor", "cli.help.param.clock", int, clock_divisor),
+	]
+
 	def init(self):
 		super().init()
 

@@ -20,12 +20,19 @@ DEV_DESC = b"Dual RS232 A"
 class DittoFlash(BaseFtdiLinker):
 	name = "DITTO mini Flasher"
 	clock_divisor = 1
+	wait_between_writes = False
 
 	PWR = BaseFtdiLinker.GPIOL0
 	PWR_READ = BaseFtdiLinker.GPIOL3
 
 	ftdi_port_state = BaseFtdiLinker.TMS_CS
 	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
+
+	configuration = [
+		# TODO: move strings
+		(("-c", "--clock"), "Clock divisor", "cli.help.param.clock", int, clock_divisor),
+		(("", "--wait-after-write"), "Wait after write", "Force linker to wait after sending data to be written to the cart", bool, wait_between_writes),
+	]
 
 	def init(self):
 		super().init()
@@ -67,13 +74,14 @@ class DittoFlash(BaseFtdiLinker):
 		return b"\x11" + (len(data) - 1).to_bytes(2, "little") + data
 
 	def prepare_wait(self, secs: int) -> bytes:
-		# No idea how long it takes but the other code writes
-		# four 0x80 commands for a program byte command.
-		# TODO: Make this acceptable
-		from ..carts.dittomini import DittoMiniRev3
-		if secs == DittoMiniRev3.T_BP:
-			cmd = bytes([0x80, self.ftdi_port_state, self.ftdi_port_direction])
-			return cmd * 4
+		if self.wait_between_writes:
+			# No idea how long it takes but the other code writes
+			# four 0x80 commands for a program byte command.
+			# TODO: Make this acceptable
+			from ..carts.dittomini import DittoMiniRev3
+			if secs == DittoMiniRev3.T_BP:
+				cmd = bytes([0x80, self.ftdi_port_state, self.ftdi_port_direction])
+				return cmd * 4
 		return b""
 
 linkers[DEV_DESC] = DittoFlash

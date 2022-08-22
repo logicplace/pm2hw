@@ -166,6 +166,9 @@ class BaseFtdiLinker(BaseLinker):
 			for p in chunked(packet_size, data)
 		)
 
+	def write_out(self, data: bytes):
+		return super().write_out(data + b"\x87")
+
 	def read_data(self, data: BytesOrSequence, size: int, *, wait: int = 0, transform: Optional[Transform] = None) -> BaseReader:
 		""" Write commands to the card and read the response """
 		if not data:
