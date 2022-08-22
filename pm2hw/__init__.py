@@ -13,7 +13,7 @@ from .linkers import BaseLinker, linkers
 from .locales import _
 from .exceptions import *
 
-__version__ = "0.0.6"
+__version__ = "0.0.7"
 
 def get_connected_linkers(**kwargs):
 	# Get D2xx linkers
