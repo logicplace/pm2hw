@@ -5,7 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from time import sleep
-from typing import TYPE_CHECKING, ClassVar, Dict, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Tuple, Type, Union
 
 from ..base import (
 	Transform, BytesOrSequence, BytesOrTransformer, BytesishOrSequence,
@@ -27,6 +27,8 @@ class BaseLinker(BaseFlashable):
 	serial: str
 	card: Optional["BaseCard"] = None
 	clock_speed: int  # MHz
+
+	configuration: List[Tuple[Tuple[str, str], str, str, Type, Any]] = []
 
 	reader: ClassVar[Type[BaseReader]] = BaseReader
 

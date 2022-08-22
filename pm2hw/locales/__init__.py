@@ -5,6 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import os
+import re
 import gettext
 from typing import Literal, Optional
 
@@ -121,3 +122,35 @@ def natural_size(size: int, out: Literal["bits", "bytes"] = "bytes"):
 	if si2 >= 3:
 		return f"~{isi2} M{suffix}"
 	return f"~{isi1} K{suffix}"
+
+
+def _m(m, *args):
+	return {a: m for a in args}
+
+
+natural_size_format = re.compile(r"(\d+) *(\S+)")
+units_to_multiplier = {
+	**_m(1, "bit", "bits"),
+	**_m(8, "byte", "bytes"),
+	**_m(1000, "kilobit", "kilobits"),
+	**_m(1024, "kbit", "kbits", "kibibit", "kibibits"),
+	**_m(1000 * 8, "kb", "kilobyte", "kilobytes"),
+	**_m(1024 * 8, "k", "kib", "kbyte", "kbytes", "kibibyte", "kibibytes"),
+	**_m(1000 ** 2, "megabit", "megabits"),
+	**_m(1024 ** 2, "mbit", "mbits", "mebibit", "mebibits"),
+	**_m(1000 ** 2 * 8, "mb", "megabyte", "megabytes"),
+	**_m(1024 ** 2 * 8, "m", "mib", "mbyte", "mbytes", "mebibyte", "mebibytes"),
+}
+
+
+def parse_natural_size(s):
+	n, units = natural_size_format.match(s).groups()
+	units = units.lower()
+	if units in units_to_multiplier:
+		ret = int(n) * units_to_multiplier[units]
+		tmp = ret / 8
+		ret //= 8
+		if tmp != ret:
+			raise ValueError("number of bits must be divisible by 8")
+		return ret
+	raise ValueError(f"unknown units {units}")

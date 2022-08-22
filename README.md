@@ -60,24 +60,26 @@ All tests run on Python 3.10.5. Write times do not include verification (add the
 
 Normal users don't need this it's just for maintainers!!
 
+```sh
+# TODO: This should use pipx but that's broken on my machine rn
+
+# Install build deps
+py -m pip install whey whey-mixin Babel
+```
+
 ### pypi wheel
 
 ```sh
 # Windows
-py -m pip wheel .
+py -m whey -w
 
 # Other
-python3 -m pip wheel .
+python3 -m pip whey -w
 ```
 
 ### Windows exe
 
 ```ps1
-# TODO: This should use pipx but that's broken on my machine rn
-
-# Install build deps
-py -m pip install whey whey-mixin Babel
-
 # Download and install UPX onto your path from https://github.com/upx/upx/releases/
 # Install to a more permanent location and update your system environment variables
 # to not have to re-add to path etc...

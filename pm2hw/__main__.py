@@ -16,7 +16,7 @@ from .info import games
 from .info.games.base import ROM
 from .config import config, save as save_config
 from .logger import log, error, exception, progress, verbose, LogRecord
-from .locales import _, natural_size
+from .locales import _, natural_size, parse_natural_size
 from .exceptions import DeviceError
 
 logger.view = "cli"
@@ -119,6 +119,15 @@ group.add_argument("-l", "--list", action="store_true",
 config_cmd.add_argument("settings", nargs="*",
 	help=_("cli.help.param.config.settings"))
 
+
+def parse_partial(x):
+	if ":" in x:
+		offset, size = x.split(":", 1)
+		return parse_natural_size(offset), parse_natural_size(size)
+	else:
+		return 0, parse_natural_size(x)
+
+
 def connect(args):
 	log(_("cli.connect.search"))
 	linkers = get_connected_linkers()
@@ -189,9 +198,13 @@ def _main(args):
 		flashables, start = connect(args)
 		log(_("cli.dump.intro"))
 		for i, flashable in enumerate(flashables):
-			# TODO: multithreaded, partial
+			# TODO: multithreaded
+			kwargs = {}
+			if args.partial:
+				kwargs["offset"], kwargs["size"] = parse_partial(args.partial)
+
 			if args.dest == "-":
-				flashable.dump(sys.stdout.buffer)
+				flashable.dump(sys.stdout.buffer, **kwargs)
 			else:
 				kw = {"i": i, "linker": getattr(flashable, "linker", flashable).name}
 				for search, key, addr, size, enc in [
@@ -205,7 +218,7 @@ def _main(args):
 						except UnicodeDecodeError:
 							kw[key] = "x" * size
 				with open(args.dest.format(**kw), "wb") as f:
-					flashable.dump(f)
+					flashable.dump(f, **kwargs)
 		if len(flashables) > 1:
 			log(_("cli.dump.complete"), secs=time() - start)
 		return flashables
@@ -213,8 +226,11 @@ def _main(args):
 		flashables, start = connect(args)
 		log(_("cli.erase.intro"))
 		for i, flashable in enumerate(flashables):
-			# TODO: multithreaded, partial
-			flashable.erase()
+			# TODO: multithreaded
+			kwargs = {}
+			if args.partial:
+				kwargs["offset"], kwargs["size"] = parse_partial(args.partial)
+			flashable.erase(**kwargs)
 		if len(flashables) > 1:
 			log(_("cli.erase.complete"), secs=time() - start)
 		return flashables
