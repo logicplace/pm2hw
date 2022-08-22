@@ -87,6 +87,9 @@ class tstr(str):
 
 _ = tstr
 
+def __(s):
+	return str(_(s))
+
 
 def natural_size(size: int, out: Literal["bits", "bytes"] = "bytes"):
 	""" Convert size in bytes to a more human-readable number. """

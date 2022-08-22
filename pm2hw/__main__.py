@@ -16,7 +16,7 @@ from .info import games
 from .info.games.base import ROM
 from .config import config, save as save_config
 from .logger import log, error, exception, progress, verbose, LogRecord
-from .locales import _, natural_size, parse_natural_size
+from .locales import __ as _, natural_size, parse_natural_size
 from .exceptions import DeviceError
 
 logger.view = "cli"
