@@ -40,19 +40,51 @@ The system has not been tested on these OSes, but it should work.
 
 ## Comparison
 
-All pm2hw tests run on Python 3.9.6
+All tests run on Python 3.10.5. Write times do not include verification (add the read time for that).
 
 ### PokeCard 512 v2
 
-| Utility           | Read   | Write  |
-| ----------------- | ------:| ------:|
-| PokeFlash (Win10) | 1.883s | 4.509s |
-| pm2hw (Win10)     | 2.529s | 6.031s |
+| Utility           | Read   | Write   |
+| ----------------- | ------:| -------:|
+| PokeFlash (Win10) | 1.344s | 10.109s |
+| pm2hw (Win10)     | 1.481s | 14.771s |
 
 ### Ditto mini
 
-| Utility           | Read    | Write    |
-| ----------------- | -------:| --------:|
-| pm2hw (Win10)     | 33.732s | 191.411s |
+| Utility             | Read 512 KiB | Read 2 MiB | Write 512 KiB | Write 2 MiB |
+| ------------------- | ------------:| ----------:| -------------:| -----------:|
+| Ditto Flash (Win10) | 7.610s       |            | 16.497s       |             |
+| pm2hw (Win10)       | 7.370s       | 29.209s    | 18.706s       | 20.331s     |
 
-Note: times are faster now! But I don't have the data or my card on me right now
+## Building
+
+Normal users don't need this it's just for maintainers!!
+
+### pypi wheel
+
+```sh
+# Windows
+py -m pip wheel .
+
+# Other
+python3 -m pip wheel .
+```
+
+### Windows exe
+
+```ps1
+# TODO: This should use pipx but that's broken on my machine rn
+
+# Install build deps
+py -m pip install whey whey-mixin Babel
+
+# Download and install UPX onto your path from https://github.com/upx/upx/releases/
+# Install to a more permanent location and update your system environment variables
+# to not have to re-add to path etc...
+Invoke-WebRequest 'https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip' -OutFile 'upx.zip'
+Expand-Archive -Path 'upx.zip' -DestinationPath '.'
+$env:PATH = "$env:PATH;$(pwd)\upx-3.96-win64"
+
+# Build exe
+py -m whey -b
+```
