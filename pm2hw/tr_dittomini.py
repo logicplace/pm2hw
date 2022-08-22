@@ -1,4 +1,3 @@
-from pm2hw.pokecard import revert_byte
 import struct
 from time import sleep, time
 from typing import BinaryIO, NamedTuple
@@ -7,7 +6,7 @@ import ftd2xx
 from ftd2xx.defines import OPEN_BY_DESCRIPTION
 
 from .base import BaseOriginal
-from .logger import debug, verbose
+from .logger import protocol_data, verbose
 from .exceptions import clarify, DeviceError, DeviceNotSupportedError
 
 DEV_DESC = b"Dual RS232 A"
@@ -73,7 +72,7 @@ class CFIQueryStruct(NamedTuple):
 class DittoMini(BaseOriginal):
 	clock_divisor = 1
 	ftdi_port_state = 0x18
-	block_size = 0
+	block_size = 999999999999999
 
 	def __init__(self, clock_divisor: int = 1):
 		assert 1 <= clock_divisor <= 100
@@ -165,7 +164,7 @@ class DittoMini(BaseOriginal):
 			# File is >256kb - do chip erase
 			start = time()
 			self.flash_chiperase()
-			while self.read_cart(0, 1) != 0xff and time() - start < 20:
+			while self.read_cart(0, 1) != b'\xff' and time() - start < 20:
 				pass
 		else:
 			# File is <256kb - erase each sector to save time
@@ -185,7 +184,7 @@ class DittoMini(BaseOriginal):
 				pass
 
 	def write(self, data: bytes):
-		debug("{}", data)
+		protocol_data(">", data)
 		self.handle.write(data)
 
 	def read_in(self, addr: int, size: int):
@@ -193,7 +192,7 @@ class DittoMini(BaseOriginal):
 		self.cs_high()
 		sleep(0.25)
 		self.cs_low()
-		return self.read_cart(addr, size)#, b"\x2c")
+		return self.read_cart(addr, size, reverse=True)#, b"\x2c")
 
 	def __del__(self):
 		# Cleanup & End
@@ -256,7 +255,9 @@ class DittoMini(BaseOriginal):
 		num_bytes = handle.getQueueStatus()
 		while num_bytes:
 			# read chunks of 'input buffer size'
-			num_bytes -= len(handle.read(BLOCKSIZE))
+			tmp = handle.read(BLOCKSIZE)
+			protocol_data("<", tmp)
+			num_bytes -= len(tmp)
 
 		# Sync with MPSSE
 		#
@@ -281,6 +282,7 @@ class DittoMini(BaseOriginal):
 
 		# read the input queue
 		dat_buffer = handle.read(2)
+		protocol_data("<", dat_buffer)
 
 		if dat_buffer != b"\xfa\xab":
 			raise DeviceError("MPSSE Sync Failed")
@@ -319,7 +321,7 @@ class DittoMini(BaseOriginal):
 
 		for block_region in block_regions:
 			current_size = block_region.block_size << 8;
-			if current_size > self.block_size:
+			if current_size < self.block_size:
 				self.block_size = current_size
 
 		self.cfiqs = cfiqs
@@ -352,7 +354,7 @@ class DittoMini(BaseOriginal):
 	def flash_writebyte(self, addr: int, data: int):
 		if data == 0xff: return b""
 		buf = self.prep_aa55xx(0xa0)
-		buf += self.prepare_cart(addr, revert_byte(data))
+		buf += self.prepare_cart(addr, bit_reverse(data))
 		buf += self.prepare_wait(N_WAIT_CYCLES)
 		return buf
 
@@ -416,6 +418,7 @@ class DittoMini(BaseOriginal):
 		#   cmdBuffer = bytes([0x8f, waitcycles, 0x00])
 
 		# CS low setzen
+		return b''
 		assert 0 <= waitcycles <= 0xff
 		self.ftdi_port_state &= PROG_ON_MASK
 		return bytes([
@@ -434,7 +437,9 @@ class DittoMini(BaseOriginal):
 	def read_queued(self):
 		# NOTE: Same as pokecard but was not used for pokecard
 		size = self.handle.getQueueStatus()
-		return self.handle.read(size)
+		ret = self.handle.read(size)
+		protocol_data("<", ret)
+		return ret
 
 	def write_out(self, buffer: bytes):
 		# NOTE: Same as pokecard
@@ -444,7 +449,7 @@ class DittoMini(BaseOriginal):
 		# NOTE: Same as pokecard
 		self.write_out(pfx + self.prep_aa55xx(dat, waitcycles, addr=addr))
 
-	def read_cart(self, addr: int, n_bytes: int, *, pfx: bytes = b""):
+	def read_cart(self, addr: int, n_bytes: int, *, pfx: bytes = b"", reverse = False):
 		# Read bytes from the cart
 		if n_bytes <= 0: return b""
 
@@ -493,7 +498,12 @@ class DittoMini(BaseOriginal):
 			self.wait_for(size)
 
 			# read the input queue
-			dat_buffer += self.handle.read(size)
+			tmp = self.handle.read(size)
+			protocol_data("<", tmp)
+			if reverse:
+				dat_buffer += bytes(bit_reverse(x) for x in tmp)
+			else:
+				dat_buffer += tmp
 
 		return dat_buffer
 
