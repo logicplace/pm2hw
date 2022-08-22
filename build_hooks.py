@@ -49,7 +49,7 @@ class PyInstallerBuilder(GettextMixin, builder.AbstractBuilder):
 			PyInstaller.building.makespec.main(
 				["main.py"],
 				name=n,
-				excludes=["appdirs"],
+				excludes=["appdirs", "pm2hw_icons"],
 				datas=[(str(self.build_dir / name / "locales"), "pm2hw/locales")],
 				onefile=True,
 				console=console,

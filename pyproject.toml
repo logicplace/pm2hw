@@ -47,6 +47,7 @@ base-classifiers = [
 ]
 
 additional-files = [
+    "include pm2hw_icons/__init__.py",
     "include pm2hw_icons/add_file.gif",
     "include pm2hw_icons/add_folder.gif",
     "include pm2hw_icons/remove_file.gif",

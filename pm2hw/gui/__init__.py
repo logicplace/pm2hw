@@ -4,6 +4,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+import sys
+
+if getattr(sys, "frozen", False):
+	from pathlib import Path
+	me = Path(sys.executable).absolute().parent
+	sys.path.append(str(me))
+
 import os
 import tkinter as tk
 import traceback
