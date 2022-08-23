@@ -55,38 +55,3 @@ All tests run on Python 3.10.5. Write times do not include verification (add the
 | ------------------- | ------------:| ----------:| -------------:| -----------:|
 | Ditto Flash (Win10) | 7.610s       |            | 16.497s       |             |
 | pm2hw (Win10)       | 7.370s       | 29.209s    | 18.706s       | 20.331s     |
-
-## Building
-
-Normal users don't need this it's just for maintainers!!
-
-```sh
-# TODO: This should use pipx but that's broken on my machine rn
-
-# Install build deps
-py -m pip install whey whey-mixin Babel
-```
-
-### pypi wheel
-
-```sh
-# Windows
-py -m whey -w
-
-# Other
-python3 -m pip whey -w
-```
-
-### Windows exe
-
-```ps1
-# Download and install UPX onto your path from https://github.com/upx/upx/releases/
-# Install to a more permanent location and update your system environment variables
-# to not have to re-add to path etc...
-Invoke-WebRequest 'https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip' -OutFile 'upx.zip'
-Expand-Archive -Path 'upx.zip' -DestinationPath '.'
-$env:PATH = "$env:PATH;$(pwd)\upx-3.96-win64"
-
-# Build exe
-py -m whey -b
-```
