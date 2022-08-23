@@ -28,8 +28,17 @@ msgstr "Failed opening the device!"
 msgid "cli.config.setting.unknown"
 msgstr "Config option unknown"
 
+msgid "cli.config.setting.help.language"
+msgstr "Ordered list of preferred language to use for application text"
+
+msgid "cli.config.setting.help.box-languages"
+msgstr "Ordered list of preferred releases for boxes and manuals"
+
 msgid "cli.config.setting.set.bad-format"
 msgstr "The assignment statement is formatted incorrectly. Please use the form name=value"
+
+msgid "cli.config.setting.set.bad-value"
+msgstr "The value assigned is invalid. Expected type: {expected}"
 
 msgid "cli.connect.connected"
 msgstr "Connected! Discovered a {name}"
@@ -109,11 +118,11 @@ msgstr "Print out info about a ROM file or the contents of a connected cartridge
 msgid "cli.help.param.all"
 msgstr "Perform the action against all connected linkers."
 
-msgid "cli.help.param.clock"
-msgstr "Set clock divider (higher=slower). Valid value range depends on card."
-
 msgid "cli.help.param.config.get"
 msgstr "Get the value of a config option by name."
+
+msgid "cli.help.param.config.help"
+msgstr "Get help information for an option or show this help message and exit"
 
 msgid "cli.help.param.config.list"
 msgstr "List all available config options and their values."
@@ -1029,6 +1038,24 @@ msgstr "All files"
 msgid "misc.filetypes.min"
 msgstr "Pokemon mini ROMs"
 
+#: pm2hw\linkers\*.py:
+msgid "opt.clock.name"
+msgstr "Clock divisor"
+
 #: pm2hw\linkers\base.py:
 msgid "log.wait.cannot.buffer"
 msgstr "This device cannot buffer slow operations and may cause delays"
+
+#: pm2hw\linkers\dittomini.py:
+msgid "opt.clock.help.dittomini"
+msgstr "Set clock divider (higher=slower). Must be between 1 and 100."
+
+msgid "opt.wait-after-write.name"
+msgstr "Wait after write"
+
+msgid "opt.wait-after-write.help"
+msgstr "Force linker to wait after sending data to be written to the cart."
+
+#: pm2hw\linkers\pokecard.py:
+msgid "opt.clock.help.pokecard2.1"
+msgstr "Set clock divider (higher=slower). Must be between 0 and 64."

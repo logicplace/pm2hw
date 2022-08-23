@@ -5,7 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from time import sleep
-from typing import TYPE_CHECKING, Any, ClassVar, Dict, List, Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Any, ClassVar, Dict, Optional, Tuple, Type, Union
 
 from ..base import (
 	Transform, BytesOrSequence, BytesOrTransformer, BytesishOrSequence,
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 LinkerID = Union[str, Tuple[int, int]]
-linkers: Dict[LinkerID, type] = {}
+linkers: Dict[LinkerID, Type["BaseLinker"]] = {}
 
 
 class BaseLinker(BaseFlashable):
@@ -28,7 +28,7 @@ class BaseLinker(BaseFlashable):
 	card: Optional["BaseCard"] = None
 	clock_speed: int  # MHz
 
-	configuration: List[Tuple[Tuple[str, str], str, str, Type, Any]] = []
+	configuration: Dict[str, Tuple[str, str, Type, Any]] = {}
 
 	reader: ClassVar[Type[BaseReader]] = BaseReader
 
@@ -45,6 +45,10 @@ class BaseLinker(BaseFlashable):
 	def init(self) -> BaseFlashable:
 		""" Inititalize the connection to the linker """
 		raise NotImplementedError
+
+	def reload_config(self):
+		""" Reload settings from config """
+		pass
 
 	def cleanup(self):
 		""" Run any cleanup """

@@ -11,6 +11,7 @@ from ftd2xx import FTD2XX
 
 from .base import BaseLinker
 from ..base import chunked, Transform, BytesOrSequence, BaseReader
+from ..config import config
 from ..logger import protocol
 from ..locales import _
 from ..exceptions import clarify, DeviceError
@@ -34,13 +35,13 @@ class BaseFtdiLinker(BaseLinker):
 	ftdi_port_state: int
 	ftdi_port_direction: ClassVar[int] = TSK_SK | TDI_DO | TMS_CS
 
-	def __init__(self, handle: FTD2XX, clock_divisor: Optional[int] = None, **kwargs):
+	def __init__(self, handle: FTD2XX):
 		super().__init__(handle)
 		self.serial = handle.getDeviceInfo()["serial"]
-		if clock_divisor is not None:
-			self.clock_divisor = clock_divisor
 
 	def init(self):
+		self.reload_config()
+
 		handle = self.handle
 		protocol(_("log.ftdi.title"))
 
@@ -88,6 +89,13 @@ class BaseFtdiLinker(BaseLinker):
 
 		with clarify(_("exception.ftdi.mpsse.spi.failed")):
 			self.configure_mpsse_for_spi()
+
+	def reload_config(self):
+		self.clock_divisor = config.getint(
+			type(self).__name__,
+			"clock-divisor",
+			fallback=self.configuration["clock-divisor"][3],
+		)
 
 	def sync_to_mpsse(self):
 		# https://www.ftdichip.com/Support/Documents/AppNotes/AN_108_Command_Processor_for_MPSSE_and_MCU_Host_Bus_Emulation_Modes.pdf

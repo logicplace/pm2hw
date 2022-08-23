@@ -15,7 +15,7 @@ from .exceptions import *
 
 __version__ = "0.0.7"
 
-def get_connected_linkers(**kwargs):
+def get_connected_linkers():
 	# Get D2xx linkers
 	num_devices = ftd2xx.createDeviceInfoList()
 	devices: List[BaseLinker] = []
@@ -25,7 +25,7 @@ def get_connected_linkers(**kwargs):
 			dev = ftd2xx.open(i)
 		linker_cls = linkers.get(dev.description)
 		if linker_cls:
-			devices.append(linker_cls(dev, **kwargs))
+			devices.append(linker_cls(dev))
 		else:
 			dev.close()
 

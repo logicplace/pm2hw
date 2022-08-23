@@ -16,6 +16,7 @@ from .info import games
 from .info.games.base import ROM
 from .config import config, save as save_config
 from .logger import log, error, exception, progress, verbose, LogRecord
+from .linkers import extra_options
 from .locales import __ as _, natural_size, parse_natural_size
 from .exceptions import DeviceError
 
@@ -64,8 +65,6 @@ def add_common_flags(cmd: argparse.ArgumentParser):
 	group.add_argument("-a", "--all", action="store_true", help=argparse.SUPPRESS)
 	cmd.add_argument("-v", "--verbose", action="count", default=0, help=argparse.SUPPRESS)
 	cmd.add_argument("--profile", action="store_true", help=argparse.SUPPRESS)
-	cmd.add_argument("-c", "--clock", type=int, metavar="div", default=1,
-		help=_("cli.help.param.clock"))
 	return group
 
 subparsers = parser.add_subparsers(dest="cmd", title="actions")
@@ -108,7 +107,7 @@ group.add_argument("rom", metavar="file", nargs="?",
 	help=_("cli.help.param.info.rom"))
 
 config_cmd = subparsers.add_parser("config",
-	help=_("cli.help.command.config"))
+	help=_("cli.help.command.config"), add_help=False)
 group = config_cmd.add_mutually_exclusive_group(required=True)
 group.add_argument("-s", "--set", action="store_true",
 	help=_("cli.help.param.config.set"))
@@ -116,9 +115,12 @@ group.add_argument("-g", "--get", action="store_true",
 	help=_("cli.help.param.config.get"))
 group.add_argument("-l", "--list", action="store_true",
 	help=_("cli.help.param.config.list"))
+group.add_argument("-h", "--help", action="store_true",
+	help=_("cli.help.param.config.help"))
 config_cmd.add_argument("settings", nargs="*",
 	help=_("cli.help.param.config.settings"))
 
+from .locales import _
 
 def parse_partial(x):
 	if ":" in x:
@@ -285,6 +287,7 @@ def _main(args):
 				info = games.lookup(f)
 				print_info(info)
 	elif args.cmd == "config":
+		x: str
 		if args.set:
 			for x in args.settings:
 				if "=" in x:
@@ -292,20 +295,74 @@ def _main(args):
 					if attr in {"language", "box-languages"}:
 						# TODO: validate
 						config.set("general", attr, value)
+					elif "." in attr:
+						cat, name = attr.split(".", 1)
+						fmt = extra_options.get(cat, {}).get(name)
+						ok, expected = False, ""
+						if fmt is not None:
+							# Linker option
+							typing = fmt[2]
+							if typing is int:
+								try:
+									int(value)
+									ok = True
+								except ValueError:
+									expected="int"
+							elif typing is bool:
+								ok = value in config.BOOLEAN_STATES
+								expected = "boolean"
+							elif typing is str:
+								ok = True
+
+						if ok:
+							config.set(cat, name, value)
+						elif expected:
+							print(_("cli.config.setting.set.bad-value").format(setting=x, expected=expected))
+						else:
+							print(_("cli.config.setting.unknown").format(setting=x))
 					else:
-						print(_("cli.config.setting.unknown").format(x))
+						print(_("cli.config.setting.unknown").format(setting=x))
 				else:
-					print(_("cli.config.setting.set.bad-format").format(x))
+					print(_("cli.config.setting.set.bad-format").format(setting=x))
 			save_config()
 		elif args.get:
 			for x in args.settings:
 				if x in {"language", "box-languages"}:
 					print(f"{x}:", config.get("general", x))
+				elif "." in x:
+					cat, name = x.split(".", 1)
+					if name in extra_options.get(cat, {}):
+						# Linker option
+						print(f"{x}:", config.get(cat, name))
+					else:
+						print(_("cli.config.setting.unknown").format(setting=x))
 				else:
-					print(_("cli.config.setting.unknown").format(x))
+					print(_("cli.config.setting.unknown").format(setting=x))
 		elif args.list:
 			for x in ["language", "box-languages"]:
 				print(f"{x}:", config.get("CLI", x))
+			for ln, opts in extra_options.items():
+				for opt, fmt in opts.items():
+					default = fmt[3]
+					print(f"{ln}.{opt}:", config.get(ln, opt, fallback=default))
+		elif args.help:
+			if args.settings:
+				for x in args.settings:
+					if x in {"language", "box-languages"}:
+						print(f"{x}:", _(f"cli.config.setting.help.{x}"))
+					elif "." in x:
+						cat, name = x.split(".", 1)
+						fmt = extra_options.get(cat, {}).get(name)
+						if fmt is not None:
+							# Linker option
+							desc, default = fmt[1::2]
+							print(f"{x}:", desc, f"(Default: {default})")
+						else:
+							print(_("cli.config.setting.unknown").format(setting=x))
+					else:
+						print(_("cli.config.setting.unknown").format(setting=x))
+			else:
+				config_cmd.print_help()
 	else:
 		parser.print_help()
 

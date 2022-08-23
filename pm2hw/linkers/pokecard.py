@@ -14,6 +14,7 @@ from typing import Optional
 from .base import linkers
 from .base_ftdi import BaseFtdiLinker
 from ..base import BytesOrTransformer, Transform
+from ..locales import _
 from ..exceptions import DeviceError
 
 DEV_DESC = b"Dual RS232-HS B"  # "FT2232H MiniModule A"
@@ -29,10 +30,9 @@ class PokeFlash(BaseFtdiLinker):
 	ftdi_port_state = PWR | BaseFtdiLinker.TMS_CS
 	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
 
-	configuration = [
-		# TODO: move strings
-		(("-c", "--clock"), "Clock divisor", "cli.help.param.clock", int, clock_divisor),
-	]
+	configuration = {
+		"clock-divisor": (_("opt.clock.name"), _("opt.clock.help.pokecard2.1"), int, clock_divisor),
+	}
 
 	def init(self):
 		super().init()
