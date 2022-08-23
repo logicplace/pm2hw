@@ -49,6 +49,8 @@ class BaseCard(BaseFlashable):
 
 	def flash(self, stream: BinaryIO, *, erase: bool = True):
 		""" Flash a ROM to the card """
+		self.linker.reload_config()
+
 		# Get file size
 		stream.seek(0, SEEK_END)
 		size = stream.tell()
@@ -72,6 +74,8 @@ class BaseCard(BaseFlashable):
 
 	def verify(self, stream: BinaryIO) -> bool:
 		""" Verify the ROM on the card is correct """
+		self.linker.reload_config()
+
 		stream.seek(0, SEEK_END)
 		size = stream.tell()
 		prog = progress(
@@ -109,6 +113,8 @@ class BaseCard(BaseFlashable):
 
 	def dump(self, stream: BinaryIO, *, offset: int = 0, size: int = 0):
 		""" Dump a ROM from the card """
+		self.linker.reload_config()
+
 		prog = progress(
 			progress.config.get_message("dump"),
 			size or self.memory,
@@ -119,6 +125,8 @@ class BaseCard(BaseFlashable):
 			stream.write(data)
 
 	def erase(self, *, offset: int = 0, size: int = 0):
+		self.linker.reload_config()
+
 		prog = progress(
 			progress.config.get_message("erase"),
 			size,

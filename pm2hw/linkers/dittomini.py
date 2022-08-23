@@ -12,6 +12,8 @@ from typing import Optional
 from .base import linkers
 from .base_ftdi import BaseFtdiLinker
 from ..base import BytesOrTransformer, Transform
+from ..config import config
+from ..locales import _
 
 DEV_DESC = b"Dual RS232 A"
 # DEV_DESC = b"USB SerialConverter A"
@@ -20,7 +22,7 @@ DEV_DESC = b"Dual RS232 A"
 class DittoFlash(BaseFtdiLinker):
 	name = "DITTO mini Flasher"
 	clock_divisor = 1
-	wait_between_writes = False
+	wait_after_write = False
 
 	PWR = BaseFtdiLinker.GPIOL0
 	PWR_READ = BaseFtdiLinker.GPIOL3
@@ -28,11 +30,10 @@ class DittoFlash(BaseFtdiLinker):
 	ftdi_port_state = BaseFtdiLinker.TMS_CS
 	ftdi_port_direction = PWR | BaseFtdiLinker.ftdi_port_direction
 
-	configuration = [
-		# TODO: move strings
-		(("-c", "--clock"), "Clock divisor", "cli.help.param.clock", int, clock_divisor),
-		(("", "--wait-after-write"), "Wait after write", "Force linker to wait after sending data to be written to the cart", bool, wait_between_writes),
-	]
+	configuration = {
+		"clock-divisor": (_("opt.clock.name"), _("opt.clock.help.dittomini"), int, clock_divisor),
+		"wait-after-write": (_("opt.wait-after-write.name"), _("opt.wait-after-write.help"), bool, wait_after_write),
+	}
 
 	def init(self):
 		super().init()
@@ -41,6 +42,14 @@ class DittoFlash(BaseFtdiLinker):
 		self.port_state(0)
 
 		return self.detect_card()
+
+	def reload_config(self):
+		super().reload_config()
+		self.wait_after_write = config.getboolean(
+			"DittoFlash",
+			"wait-after-write",
+			fallback=DittoFlash.wait_after_write,
+		)
 
 	def cleanup(self):
 		self.port_state(on=self.PWR)

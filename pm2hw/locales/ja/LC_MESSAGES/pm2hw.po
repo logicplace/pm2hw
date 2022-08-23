@@ -28,8 +28,17 @@ msgstr "デバイスをオープンできませんでした"
 msgid "cli.config.setting.unknown"
 msgstr "その設定は存在しません"
 
+#  msgid "cli.config.setting.help.language"
+#  msgstr ""
+
+#  msgid "cli.config.setting.help.box-languages"
+#  msgstr ""
+
 msgid "cli.config.setting.set.bad-format"
 msgstr "設定の代入文は間違いました。name=valueとシンタックスを使ってください"
+
+#  msgid "cli.config.setting.set.bad-value"
+#  msgstr ""
 
 msgid "cli.connect.connected"
 msgstr "接続成功！{name}を見つかりました"
@@ -109,10 +118,10 @@ msgstr "ポケモンミニについてのハードウェアに読み書きます
 #  msgid "cli.help.param.all"
 #  msgstr ""
 
-#  msgid "cli.help.param.clock"
+#  msgid "cli.help.param.config.get"
 #  msgstr ""
 
-#  msgid "cli.help.param.config.get"
+#  msgid "cli.help.param.config.help"
 #  msgstr ""
 
 #  msgid "cli.help.param.config.list"
@@ -187,29 +196,30 @@ msgstr "[DEFAULT]\n"
 "message.0={card.name}に書いたデータを確認中\n"
 
 # TODO http://tokiwa-west.co.jp/twadmin/wp-content/uploads/2015/04/FTD2XX.pdf
-msgid "log.ftdi.characters.disable"
-msgstr ""
+# http://suz-avr.sblo.jp/category/1142172-1.html
+#  msgid "log.ftdi.characters.disable"
+#  msgstr ""
 
-msgid "log.ftdi.controller.reset"
-msgstr ""
+#  msgid "log.ftdi.controller.reset"
+#  msgstr ""
 
-msgid "log.ftdi.latency.set"
-msgstr ""
+#  msgid "log.ftdi.latency.set"
+#  msgstr ""
 
-msgid "log.ftdi.mpsse.enable"
-msgstr ""
+#  msgid "log.ftdi.mpsse.enable"
+#  msgstr ""
 
-msgid "log.ftdi.reset"
-msgstr ""
+#  msgid "log.ftdi.reset"
+#  msgstr ""
 
-msgid "log.ftdi.title"
-msgstr ""
+#  msgid "log.ftdi.title"
+#  msgstr ""
 
-msgid "log.ftdi.transfer.size.set"
-msgstr ""
+#  msgid "log.ftdi.transfer.size.set"
+#  msgstr ""
 
-msgid "log.ftdi.transfer.timeout.set"
-msgstr ""
+#  msgid "log.ftdi.transfer.timeout.set"
+#  msgstr ""
 
 msgid "log.verify.failed"
 msgstr "確認失敗"
@@ -675,6 +685,24 @@ msgstr "All files"
 msgid "misc.filetypes.min"
 msgstr "ポケモンミニのロム"
 
+#: pm2hw\linkers\*.py:
+#  msgid "opt.clock.name"
+#  msgstr ""
+
 #: pm2hw\linkers\base.py:
 #  msgid "log.wait.cannot.buffer"
 #  msgstr ""
+
+#: pm2hw\linkers\dittomini.py:
+msgid "opt.clock.help.dittomini"
+msgstr "クロックに対して分周する値を設定する。1以上100以下の値でOK."
+
+#  msgid "opt.wait-after-write.name"
+#  msgstr ""
+
+msgid "opt.wait-after-write.help"
+msgstr "カードに書き込むデータの分を送信した後でリンカーに待たせる。"
+
+#: pm2hw\linkers\pokecard.py:
+msgid "opt.clock.help.pokecard2.1"
+msgstr "クロックに対して分周する値を設定する。0以上64以下の値でOK."

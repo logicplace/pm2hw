@@ -6,16 +6,19 @@
 
 import tkinter as tk
 from tkinter import ttk, simpledialog
-from typing import List
+from typing import Dict, List, Tuple
 
 from ..i18n import TStringVar
 from ..util import WeakMethod
 from ..themes import themes, select_theme
 from ...config import config, save as save_config
 from ...locales import _, available_languages
+from ...linkers import extra_options, linkers_by_classname
 from pm2hw.gui import i18n
 
 class PreferencesDialog(simpledialog.Dialog):
+	opt_vars: Dict[Tuple[str, dict], tk.Variable]
+
 	def body(self, master: tk.Frame):
 		self._applied = False
 		frm = ttk.Frame(master)
@@ -49,6 +52,43 @@ class PreferencesDialog(simpledialog.Dialog):
 
 		lg_frm.pack(side=tk.TOP, expand=True, fill=tk.X)
 		theme_frm.pack(side=tk.TOP, expand=True, fill=tk.X)
+
+		opt_vars = self.opt_vars = {}
+
+		for ln, opts in extra_options.items():
+			linker_frm = ttk.LabelFrame(frm, text=linkers_by_classname[ln].name)
+			for i, (opt_id, (opt_name, opt_desc, typing, default)) in enumerate(opts.items()):
+				row = i * 2
+				fn = {
+					bool: config.getboolean,
+					int: config.getint,
+					str: config.get,
+				}[typing]
+				cur = fn(ln, opt_id, fallback=default)
+
+				var = TStringVar(opt_name)
+				lbl = ttk.Label(linker_frm, textvariable=var)
+				lbl.var = var
+				lbl.grid(column=0, row=row, sticky=tk.NW)
+
+				if typing is bool:
+					var = tk.BooleanVar(frm, value=cur)
+					field = ttk.Checkbutton(linker_frm, variable=var)
+				else:
+					var = tk.StringVar(frm, value=cur)
+					kwargs = {}
+					if typing is int:
+						kwargs["validatecommand"] = (self.register(self.validate_int), '%P')
+					field = ttk.Entry(linker_frm, textvariable=var, **kwargs)
+
+				opt_vars[ln, opt_id] = var
+				field.grid(column=1, row=row, sticky=tk.NW)
+
+				var = TStringVar(opt_desc)
+				lbl = ttk.Label(linker_frm, textvariable=var)
+				lbl.var = var
+				lbl.grid(column=0, row=row + 1, columnspan=2, sticky=tk.NW)
+			linker_frm.pack(side=tk.TOP, expand=True, fill=tk.X)
 
 	def add_language_selector(self, parent: ttk.LabelFrame):
 		top = OrderedList(parent, rows=2)
@@ -98,8 +138,21 @@ class PreferencesDialog(simpledialog.Dialog):
 	def validate(self):
 		return bool(self.active_lgs.items())
 
+	def validate_int(self, i):
+		try:
+			int(i)
+			return True
+		except ValueError:
+			return False
+
 	def apply(self):
 		self._applied = True
+		for (ln, opt), var in self.opt_vars.items():
+			value = var.get()
+			print(ln, opt, value)
+			if isinstance(value, bool):
+				value = "true" if value else "false"
+			config.set(ln, opt, value)
 		save_config()
 
 	def cancel(self, event=None):

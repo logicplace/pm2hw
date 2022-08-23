@@ -5,6 +5,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import os
+import sys
 from locale import getdefaultlocale
 from configparser import ConfigParser
 
@@ -15,7 +16,10 @@ except ImportError:
 	import sys
 	def user_config_dir(appname=None, appauthor=None, version=None, roaming: bool = False):
 		# Ignore all args, use the same dir
-		return os.path.dirname(sys.argv[0])
+		if getattr(sys, "frozen", False):
+			return os.path.dirname(sys.executable)
+		else:
+			return os.path.dirname(sys.argv[0])
 
 
 default_language = getdefaultlocale()[0]
