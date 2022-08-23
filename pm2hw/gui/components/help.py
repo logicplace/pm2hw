@@ -103,8 +103,8 @@ class HelpDialog(simpledialog.Dialog):
 		]:
 			self.add_topic(
 				topic,
-				_(f"help.topic.{topic}.title"),
-				_(f"help.topic.{topic}.content"),
+				(_)(f"help.topic.{topic}.title"),
+				(_)(f"help.topic.{topic}.content"),
 				parent=parent
 			)
 

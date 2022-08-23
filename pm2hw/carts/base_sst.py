@@ -99,7 +99,7 @@ class BaseSstCard(BaseCard):
 	def sst_byte_program(self, addr: int, data: int, **kwargs):
 		# Byte-Program op completes in 14~20 μs on SST39VF040
 		# and 10 μs on SST39VF1681
-		if data == 0xff and self.erased[0] < addr < self.erased[1]:
+		if data == 0xff and self.erased[0] <= addr < self.erased[1]:
 			return  # Nothing to do
 		self.linker.send(
 			self.prepare_sdp_prefixed(0xa0)

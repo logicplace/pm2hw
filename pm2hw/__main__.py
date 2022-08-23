@@ -349,7 +349,7 @@ def _main(args):
 			if args.settings:
 				for x in args.settings:
 					if x in {"language", "box-languages"}:
-						print(f"{x}:", _(f"cli.config.setting.help.{x}"))
+						print(f"{x}:", (_)(f"cli.config.setting.help.{x}"))
 					elif "." in x:
 						cat, name = x.split(".", 1)
 						fmt = extra_options.get(cat, {}).get(name)
