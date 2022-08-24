@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 from .util import WeakMethod
 from .. import locales
 from ..config import config
-from ..locales import _, available_languages, base, split_ietf_tag
+from ..locales import _, __, available_languages, base, split_ietf_tag
 from ..info.games import ROM
 
 

@@ -32,8 +32,6 @@ class GettextMixin:
 
 
 class PyInstallerBuilder(GettextMixin, builder.AbstractBuilder):
-	# TODO: understand these systems better
-
 	@property
 	def default_build_dir(self) -> "PathPlus":
 		"""
@@ -94,11 +92,11 @@ class PyInstallerBuilder(GettextMixin, builder.AbstractBuilder):
 	build = build_exe
 
 
-# class SDistBuilder(GettextMixin, builder.SDistBuilder):
-# 	def call_additional_hooks(self):
-# 		self.build_messages()
+class SDistBuilder(GettextMixin, builder.SDistBuilder):
+	def call_additional_hooks(self):
+		self.build_messages()
 
 
-# class WheelBuilder(GettextMixin, builder.WheelBuilder):
-# 	def call_additional_hooks(self):
-# 		self.build_messages()
+class WheelBuilder(GettextMixin, builder.WheelBuilder):
+	def call_additional_hooks(self):
+		self.build_messages()

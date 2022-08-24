@@ -83,7 +83,7 @@ class DittoFlash(BaseFtdiLinker):
 		return b"\x11" + (len(data) - 1).to_bytes(2, "little") + data
 
 	def prepare_wait(self, secs: int) -> bytes:
-		if self.wait_between_writes:
+		if self.wait_after_write:
 			# No idea how long it takes but the other code writes
 			# four 0x80 commands for a program byte command.
 			# TODO: Make this acceptable

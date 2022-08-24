@@ -51,6 +51,7 @@ additional-files = [
     "include pm2hw_icons/add_file.gif",
     "include pm2hw_icons/add_folder.gif",
     "include pm2hw_icons/remove_file.gif",
+    "include LICENSE",
 ]
 
 # TODO: only tested on CPython 3.9 for Windows so far

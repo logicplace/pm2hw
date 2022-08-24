@@ -7,9 +7,8 @@
 import weakref
 from threading import Thread
 
-@property
 def filetypes_min():
-	from .i18n import _
+	from .i18n import __ as _
 	return (
 		(_("misc.filetypes.min"), "*.min"),
 		(_("misc.filetypes.all"), "*"),

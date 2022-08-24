@@ -153,7 +153,7 @@ class Linker(BaseRomEntry):
 		out = filedialog.asksaveasfile(
 			mode="wb",
 			defaultextension=".min",
-			filetypes=filetypes_min,
+			filetypes=filetypes_min(),
 			# TODO: initialdir
 			title=_("select-location.linker.dump")
 		)
@@ -190,7 +190,7 @@ class Linker(BaseRomEntry):
 
 		fn = filedialog.askopenfilename(
 			defaultextension=".min",
-			filetypes=filetypes_min,
+			filetypes=filetypes_min(),
 			# TODO: initialdir
 			title=_("select-location.linker.flash")
 		)
