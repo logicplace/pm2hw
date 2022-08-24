@@ -312,13 +312,13 @@ msgstr "Failed device reading test:\n"
 "Bytes wrong for both reads: {completely_wrong}\n"
 "Bytes wrong for one read: {partially_wrong}\n"
 "Bytes probably written wrong: {consistently_wrong}\n"
-"Total: {errors} {percent:.2f}%"
+"Total: {errors} ({percent:.2f}%)"
 
 msgid "exception.device.test.write.failed"
 msgstr "Failed device writing test!"
 
 msgid "exception.device.test.write.failed.details"
-msgstr "Failed device writing test. Wrote {errors} byte wrong {percent:.2f}%"
+msgstr "Failed device writing test. Wrote {errors} byte wrong ({percent:.2f}%)"
 
 msgid "exception.device.unsupported"
 msgstr "Device not supported"
