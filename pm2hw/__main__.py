@@ -120,6 +120,9 @@ group.add_argument("-h", "--help", action="store_true",
 config_cmd.add_argument("settings", nargs="*",
 	help=_("cli.help.param.config.settings"))
 
+test_cmd = subparsers.add_parser("test",
+	help=_("cli.help.command.test"))
+
 from .locales import _
 
 def parse_partial(x):
@@ -227,7 +230,7 @@ def _main(args):
 	elif args.cmd in {"e", "erase"}:
 		flashables, start = connect(args)
 		log(_("cli.erase.intro"))
-		for i, flashable in enumerate(flashables):
+		for flashable in flashables:
 			# TODO: multithreaded
 			kwargs = {}
 			if args.partial:
@@ -363,6 +366,14 @@ def _main(args):
 						print(_("cli.config.setting.unknown").format(setting=x))
 			else:
 				config_cmd.print_help()
+	elif args.cmd == "test":
+		flashables, start = connect(args)
+		log(_("cli.test.intro"))
+		for flashable in flashables:
+			flashable.test()
+		if len(flashables) > 1:
+			log(_("cli.test.complete"), secs=time() - start)
+		return flashables
 	else:
 		parser.print_help()
 

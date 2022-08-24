@@ -15,6 +15,7 @@ from ..locales import _
 class BaseSstCard(BaseCard):
 	packet_size = 4
 	erased = (0, 0)
+	erased_byte = 0xff
 
 	# method, size (bytes), speed (seconds)
 	# Order by shortest size first

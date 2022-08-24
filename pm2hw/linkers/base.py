@@ -94,6 +94,8 @@ class BaseLinker(BaseFlashable):
 				sleep(wait)
 		elif wait and prepare_wait:
 			prepared_wait = prepare_wait(wait)
+			if not prepare_wait and not self._buffering:
+				sleep(wait)
 
 			def write_and_wait(buf: bytes):
 				self._write_out_or_buffer(buf + prepared_wait)

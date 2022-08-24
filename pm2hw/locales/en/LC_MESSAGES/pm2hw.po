@@ -115,6 +115,9 @@ msgstr "Flash to cart."
 msgid "cli.help.command.info"
 msgstr "Print out info about a ROM file or the contents of a connected cartridge."
 
+msgid "cli.help.command.test"
+msgstr "Run tests against the cart to see if it's ok (will erase contents)."
+
 msgid "cli.help.param.all"
 msgstr "Perform the action against all connected linkers."
 
@@ -185,6 +188,12 @@ msgstr "Don't verify the contents after flashing."
 msgid "cli.help.param.flash.roms"
 msgstr "Flash the given file or use - to read from stdin."
 
+msgid "cli.test.intro"
+msgstr "Running tests..."
+
+msgid "cli.test.complete"
+msgstr "Tests completed in {secs:.3f}"
+
 #: pm2hw\base.py:
 msgid "log.blocks.over"
 msgstr "Requested to access more than the available size, truncating request."
@@ -234,6 +243,15 @@ msgstr "* set RequestTransferSize In={in} Out={out} (bytes)"
 
 msgid "log.ftdi.transfer.timeout.set"
 msgstr "* set TransferTimeout Read={read} Write={write} (ms)"
+
+msgid "log.test.success"
+msgstr "  ...tests ok"
+
+msgid "log.test.read.start"
+msgstr "Beginning read test..."
+
+msgid "log.test.write.start"
+msgstr "Beginning write test..."
 
 msgid "log.verify.failed"
 msgstr "Verification failed"
@@ -286,11 +304,27 @@ msgstr "Device took too long to queue data."
 " Wanted {size} but queued {queued}"
 
 #: pm2hw\exceptions.py:
+msgid "exception.device.test.read.failed"
+msgstr "Failed device reading test!"
+
+msgid "exception.device.test.read.failed.details"
+msgstr "Failed device reading test:\n"
+"Bytes wrong for both reads: {completely_wrong}\n"
+"Bytes wrong for one read: {partially_wrong}\n"
+"Bytes probably written wrong: {consistently_wrong}\n"
+"Total: {errors} {percent:.2f}%"
+
+msgid "exception.device.test.write.failed"
+msgstr "Failed device writing test!"
+
+msgid "exception.device.test.write.failed.details"
+msgstr "Failed device writing test. Wrote {errors} byte wrong {percent:.2f}%"
+
 msgid "exception.device.unsupported"
 msgstr "Device not supported"
 
 msgid "exception.device.unsupported.details"
-msgstr "{0}:\n"
+msgstr "{err}:\n"
 "Manufacturer code: {manufacturer:02X}\n"
 "Device code: {device:02X}\n"
 "Extended code: {extended:02X}"
@@ -535,7 +569,7 @@ msgstr "# <str name=help.topic.basics.title/>\n"
 "  * Chip: [ATMEGA162-16DIP](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-2513-8-bit-AVR-Microntroller-ATmega162_Datasheet.pdf)\n"
 "* Linker: [PokeUSB 1.2](http://mrblinky.net/pm/PokeUSB/index.htm)\n"
 "  * Connector: USB 2.0(?) Type B\n"
-"  * Chip: [ATMEGA162-16PI]\n\n"
+"  * Chip: [ATMEGA162-16PI](https://ww1.microchip.com/downloads/en/DeviceDoc/2466S.pdf)\n\n"
 "### JustBurn's Flashcart\n"
 "Did this not have a better name?\n\n"
 "#### Features and information\n"
@@ -723,7 +757,7 @@ msgstr "# <str name=help.topic.flashing.title/>\n"
 " button there.\n\n"
 "From the CLI, run the following command:\n\n"
 "```sh\n"
-"pm2hw --flash FILENAME\n"
+"pm2hw flash FILENAME\n"
 "```\n\n"
 "For more information on the CLI usage, see [here](reference).\n"
 
@@ -741,7 +775,7 @@ msgstr "# <str name=help.topic.dumping.title/>\n"
 " flash cart later.\n\n"
 "From the CLI, run the following command:\n\n"
 "```sh\n"
-"pm2hw --dump FILENAME\n"
+"pm2hw dump FILENAME\n"
 "```\n\n"
 "For more information on the CLI usage, see [here](reference).\n"
 

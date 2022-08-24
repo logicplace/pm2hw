@@ -4,12 +4,13 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+from io import BytesIO
 from os import SEEK_SET, SEEK_CUR, SEEK_END
 from typing import TYPE_CHECKING, BinaryIO, ClassVar, Iterator, Optional, Tuple
 
 from ..logger import error, log, progress, verbose, warn
 from ..locales import _, natural_size
-from ..exceptions import DeviceError
+from ..exceptions import DeviceError, DeviceTestReadingError, DeviceTestWritingError
 from ..base import BaseFlashable
 
 if TYPE_CHECKING:
@@ -26,6 +27,7 @@ class BaseCard(BaseFlashable):
 	memory: int  # Size available in bytes
 	block_size: int
 	packet_size: ClassVar[int]
+	erased_byte: ClassVar[int]  # fill byte when erased
 	_cursor = 0
 
 	def __init__(self, linker: "BaseLinker"):
@@ -66,7 +68,7 @@ class BaseCard(BaseFlashable):
 			progress.config.get_message("flash"),
 			size,
 			card=self,
-			fn=stream.name
+			fn=getattr(stream, "name", _("RAM"))
 		)
 
 		# Programming
@@ -133,6 +135,71 @@ class BaseCard(BaseFlashable):
 			card=self
 		)
 		self.erase_data(offset, size or self.memory, prog=prog)
+
+	def test(self):
+		""" Run some tests on the card """
+		import random
+
+		## Read test
+		log(_("log.test.read.start"))
+		# Start with a blank slate
+		self.erase()
+
+		# Read in twice
+		buff1 = BytesIO()
+		buff2 = BytesIO()
+		self.dump(buff1)
+		self.dump(buff2)
+
+		# Compare
+		completely_wrong = 0
+		partially_wrong = 0
+		consistently_wrong = 0
+		for a, b in zip(buff1.getbuffer(), buff2.getbuffer()):
+			if a != b:
+				if self.erased_byte in (a, b):
+					partially_wrong += 1
+				else:
+					completely_wrong += 1
+			elif a != self.erased_byte:
+				consistently_wrong += 1
+
+		# Clean up
+		buff1.close()
+		buff2.close()
+		
+		# Raise any error
+		if completely_wrong + partially_wrong + consistently_wrong:
+			raise DeviceTestReadingError(
+				self.memory,
+				completely_wrong,
+				partially_wrong,
+				consistently_wrong,
+			)
+
+		## Write test
+		log(_("log.test.write.start"))
+		buff1 = BytesIO(random.randbytes(self.memory))
+		self.flash(buff1)
+
+		buff2 = BytesIO()
+		self.dump(buff2)
+
+		# Verify
+		errors = 0
+		for a, b in zip(buff1.getbuffer(), buff2.getbuffer()):
+			if a != b:
+				errors += 1
+
+		# Clean up
+		buff1.close()
+		buff2.close()
+		
+		# Raise any error
+		if errors:
+			raise DeviceTestWritingError(self.memory, errors)
+
+		log(_("log.test.success"))
 
 	# Methods you must implement
 	def get_device_info(self) -> Tuple[int, int, Optional[int]]:

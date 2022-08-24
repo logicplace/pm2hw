@@ -90,6 +90,7 @@ class BaseFlashable:
 		buff1 = stream.read()
 		buff2 = BytesIO()
 		self.dump(buff2)
+		buff2.seek(0)
 		return buff1 == buff2.read()
 
 	def dump(self, stream: BinaryIO, *, offset: int = 0, size: int = 0):
@@ -98,6 +99,10 @@ class BaseFlashable:
 
 	def erase(self, *, offset: int = 0, size: int = 0):
 		""" Erase the contents of the card """
+		raise NotImplementedError
+
+	def test(self):
+		""" Run some tests on the card """
 		raise NotImplementedError
 
 	def read(self, size: int) -> bytes:

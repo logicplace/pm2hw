@@ -7,13 +7,14 @@
 # This code has been adapted from hm05 which is licensed under MIT License and
 # Copyright (c) 2021 Miguel Ángel Pérez Martínez
 
+import time
 import struct
 from typing import TYPE_CHECKING, NamedTuple
 
 from .base import dummy_progress
 from .base_sst import BaseSstCard
 from ..base import BaseReader
-from ..logger import progress, verbose
+from ..logger import debug, progress, verbose
 from ..locales import natural_size
 from ..exceptions import DeviceNotSupportedError
 
@@ -78,9 +79,21 @@ class DittoMiniRev3(BaseSstCard):
 		)
 
 	def get_device_info(self):
-		self.sst_software_id_entry()
-		manuf, devc, _, devcex = self.read_info(0, 4)
+		# Some extra steps for faulty cards
+		start = time.perf_counter()
+		real = self.read_info(0, 4)
+		test = real
+		while test == real:
+			self.sst_software_id_entry()
+			manuf, devc, _, devcex = test = self.read_info(0, 4)
 		self.sst_exit()
+		dev_info = test
+		test = self.read_info(0, 4)
+		while test == dev_info:
+			time.sleep(0.001)
+			self.sst_exit()
+			test = self.read_info(0, 4)
+		debug(f"Reading software ID took {time.perf_counter() - start:.3f}s")
 
 		if (manuf, devc) == (0xbf, 0xc8):
 			# http://ww1.microchip.com/downloads/en/devicedoc/25040a.pdf
@@ -90,8 +103,8 @@ class DittoMiniRev3(BaseSstCard):
 			self.read_cfi_query_struct()
 
 			self.erase_modes = (
-				(self.sst_sector_erase, 4 * 1024, 0.025),
-				(self.sst_block_erase, 64 * 1024, 0.025),
+				(self.sst_sector_erase, 4 * 1024, self.T_ERASE),
+				(self.sst_block_erase, 64 * 1024, self.T_ERASE),
 				(self.sst_chip_erase, self.memory, 0.050)
 			)
 		else:
@@ -214,6 +227,7 @@ class DittoMiniRev3(BaseSstCard):
 	T_BP = 10e-6  # μs
 	T_IDA = 160e-9  # ns
 	T_SCE = 0.050  # ms
+	T_ERASE = 0.025  # ms
 
 	def sst_byte_program(self, addr: int, data: int):
 		super().sst_byte_program(addr, self.linker.lsb_first(data))
@@ -222,14 +236,14 @@ class DittoMiniRev3(BaseSstCard):
 		self.linker.send(
 			self.prepare_sdp_prefixed(0x80)
 			+ self.prepare_sdp_prefixed(0x50, addr),
-			wait=0.025  # ms
+			wait=self.T_ERASE
 		)
 
 	def sst_block_erase(self, addr: int):
 		self.linker.send(
 			self.prepare_sdp_prefixed(0x80)
 			+ self.prepare_sdp_prefixed(0x30, addr),
-			wait=0.025  # ms
+			wait=self.T_ERASE
 		)
 
 	def sst_erase_suspend(self):

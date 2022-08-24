@@ -277,7 +277,7 @@ class progress(SubtypedMessage):
 
 	def update(self, value: int):
 		self.current = value
-		self.percent = value * 100 / self.end
+		self.percent = value * 100 / self.end if self.end else 0
 		self.updated = time.time()
 		logger.handle(self.record)
 
