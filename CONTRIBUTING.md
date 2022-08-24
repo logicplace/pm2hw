@@ -3,20 +3,16 @@
 ## Building
 
 ```sh
-# TODO: This should use pipx but that's broken on my machine rn
-
 # Install build deps
-py -m pip install whey whey-mixin Babel
+pipx install whey
+pipx inject whey whey-mixin Babel
 ```
 
 ### pypi wheel
 
 ```sh
-# Windows
-py -m whey -ws
-
-# Other
-python3 -m pip whey -ws
+# via pipx
+whey -ws
 ```
 
 ### Windows exe
@@ -30,7 +26,7 @@ Expand-Archive -Path 'upx.zip' -DestinationPath '.'
 $env:PATH = "$env:PATH;$(pwd)\upx-3.96-win64"
 
 # Build exe
-py -m whey -b
+whey -b
 ```
 
 ## Style
