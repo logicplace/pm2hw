@@ -270,6 +270,12 @@ class BaseTheme(metaclass=MetaTheme):
 				"font": "BaseFont",
 			}
 		},
+		"HelpNumber.TLabel": {
+			"configure": {
+				"font": "RichTextH1Font",
+				"foreground": "#400",
+			}
+		},
 	}
 
 	root: tk.Tk

@@ -73,6 +73,7 @@ class Library(ttk.Frame):
 
 	def __init__(self, master, *, theight=None, disabled=False, **kw):
 		super().__init__(master, **kw)
+		self.frames = weakref.WeakValueDictionary()
 		self.vars = {}
 		self.entries = {}
 		self.disabled = disabled
@@ -110,13 +111,15 @@ class Library(ttk.Frame):
 				file=graphic("add_folder.gif")
 			),
 		]
-		for cmd, im in zip([
-			self.remove_entry,
-			self.add_file,
-			self.add_folder
+		for (name, cmd), im in zip([
+			("remove", self.remove_entry),
+			("add-file", self.add_file),
+			("add-folder", self.add_folder)
 		], ai):
 			kw = {} if disabled else {"command": cmd}
-			ttk.Button(tree_actions, image=im, **kw).pack(side=tk.RIGHT)
+			btn = ttk.Button(tree_actions, image=im, **kw)
+			btn.pack(side=tk.RIGHT)
+			self.frames[name] = btn
 
 		self.tree.grid(column=0, row=0, sticky=tk.NSEW)
 		scroll_y.grid(column=1, row=0, sticky="nes")
@@ -212,13 +215,16 @@ class Library(ttk.Frame):
 
 class BaseRomEntry(Entry):
 	def render_to(self, target: ttk.Frame):
+		target.frames = weakref.WeakValueDictionary()
 		title_var = TStringVar(self.title)
-		label = ttk.Label(target,
+		lbl = ttk.Label(target,
 			textvariable=title_var,
 			font=font.nametofont("GameInfoTitleFont")
 		)
-		label.title_var = title_var
-		label.pack()
+		lbl.title_var = title_var
+		lbl.pack()
+		target.frames["title"] = lbl
+
 		if self.preview:
 			lbl = ttk.Label(target)
 			lbl["image"] = self.pi_preview = tk.PhotoImage(
@@ -226,6 +232,7 @@ class BaseRomEntry(Entry):
 				file=graphic(self.preview)
 			)
 			lbl.pack()
+			target.frames["preview"] = lbl
 		
 		self.render_buttons_to(target)
 		self.render_details_to(target)
@@ -234,6 +241,7 @@ class BaseRomEntry(Entry):
 		frm = ttk.Frame(target)
 		frm.columnconfigure(0, weight=1)
 		frm.pack()
+		target.frames["buttons"] = frm
 		return frm
 
 	def add_button(self, frm: ttk.Frame, text: str, command=None, disabled=False):
@@ -285,6 +293,7 @@ class BaseRomEntry(Entry):
 		if info.crc32 >= 0:
 			frame.add(lhs("crc32"), f"{info.crc32:08x}")
 		frame.pack()
+		target.frames["details"] = frame
 
 
 class DetailPane(ttk.LabelFrame):

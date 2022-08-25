@@ -25,6 +25,7 @@ class ColorizedTheme(BaseTheme):
 	outside: ClassVar[Color]
 	inside: ClassVar[Color]
 	inset: ClassVar[Color]
+	highlight: ClassVar[Color]
 	console: ClassVar[Color]
 	selected: ClassVar[Color]
 	link: ClassVar[LinkColor]
@@ -122,6 +123,14 @@ class ColorizedTheme(BaseTheme):
 				"configure": {
 					"background": self.outside.bg,
 					"foreground": self.outside.fg,
+					"highlightbackground": self.outside.bg,
+				}
+			}),
+			ovr("HelpNumber.TLabel", {
+				"configure": {
+					"font": "RichTextH1Font",
+					"background": self.outside.bg,
+					"foreground": self.highlight.fg,
 					"highlightbackground": self.outside.bg,
 				}
 			}),

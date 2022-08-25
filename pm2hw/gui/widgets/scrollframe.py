@@ -64,6 +64,7 @@ class ScrollFrame(ttk.Frame):
 			0, 0,
 			window=self,
 			anchor=tk.NW,
+			tags="main"
 		)
 		self.cget = partial(self.canvas.itemcget, self.canvas_window)
 		self.config = self.configure = partial(self.canvas.itemconfigure, self.canvas_window)

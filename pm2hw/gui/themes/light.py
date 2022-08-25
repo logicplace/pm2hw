@@ -13,6 +13,7 @@ class LightTheme(ColorizedTheme):
 	outside = Color("#f0f0f0", "#000")
 	inside = Color("#e5e0e0", "#000")
 	inset = Color("#ccc", "#000")
+	highlight = Color("#d00", "#dd0")
 	console = Color("#d0dddd", "#000")
 	selected = Color("#3390ff", "#eee")
 	link = LinkColor("#06c", visited="#551a8b")
