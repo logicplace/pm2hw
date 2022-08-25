@@ -20,7 +20,8 @@ from ... import __version__ as main_version
 from ...linkers import BaseLinker
 
 try:
-	from pm2hw_icons import __version__ as icons_version
+	from ..resources import get_current_resource_version
+	icons_version = str(get_current_resource_version())
 except ImportError:
 	icons_version = _("help.plugin.not-installed")
 

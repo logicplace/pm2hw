@@ -13,7 +13,8 @@ import weakref
 
 from ..i18n import _, localized_game_name
 from .linker import Linker
-from .library import Entry, Library, BaseRomEntry, graphic
+from .library import Entry, Library, BaseRomEntry
+from ..resources import graphic
 from ...info import games
 from ...config import config
 

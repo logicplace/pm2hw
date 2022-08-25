@@ -364,7 +364,10 @@ msgid "window.menu.help"
 msgstr "_Help"
 
 msgid "window.menu.help.howto"
-msgstr "How to _use"
+msgstr "_Documentation"
+
+msgid "window.menu.help.check-for-updates"
+msgstr "Check for _updates"
 
 msgid "window.menu.help.about"
 msgstr "_About"
@@ -1070,6 +1073,60 @@ msgstr "Togepi's Adventure (J) (Preview)"
 
 msgid "library.list.rom.MZ2J.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ2.CA5A4E7B"
 msgstr "Pokémon Puzzle Collection Vol. 2 (J)"
+
+#: pm2hw\gui\resources.py:
+msgid "help.update.resourcePack.title"
+msgstr "Update resource pack"
+
+msgid "help.update.resourcePack.message"
+msgstr "A resource pack update is available.\n"
+"You have: {current}\n"
+"Latest version: {latest}\n"
+"Would you like to update?"
+
+msgid "help.update.core.title"
+msgstr "Update software"
+
+msgid "help.update.core.message.ask"
+msgstr "A software update is available.\n"
+"You have: {current}\n"
+"Latest version: {latest}\n"
+"Would you like to update?"
+
+msgid "help.update.core.message.show"
+msgstr "A software update is available.\n"
+"You have: {current}\n"
+"Latest version: {latest}"
+
+msgid "help.update.no-update.title"
+msgstr "Up-to-date"
+
+msgid "help.update.no-update.message"
+msgstr "No updates were found."
+
+msgid "log.update.intro"
+msgstr "Checking for updates..."
+
+msgid "log.update.resourcePack.found"
+msgstr "Resource pack update found"
+
+msgid "log.update.resourcePack.success"
+msgstr "Resource pack updated successfully"
+
+msgid "log.update.resourcePack.failed"
+msgstr "Resource pack update failed"
+
+msgid "log.update.core.found"
+msgstr "Software update found"
+
+msgid "log.update.core.success"
+msgstr "Software update downloaded successfully"
+
+msgid "log.update.core.failed"
+msgstr "Software update failed"
+
+msgid "log.update.no-update.found"
+msgstr "No updates found"
 
 #: pm2hw\gui\util.py:
 msgid "misc.filetypes.all"

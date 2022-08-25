@@ -21,11 +21,7 @@ from ...config import config
 from ...logger import warn
 from ...locales import natural_size
 
-try:
-	from pm2hw_icons import graphic
-except ImportError:
-	def graphic(fn: str):
-		return ""
+from ..resources import graphic
 
 def item_updater(library: "Library", iid: str):
 	library = weakref.ref(library)

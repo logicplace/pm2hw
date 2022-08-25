@@ -16,9 +16,11 @@ from .status import prepare_progress, set_status
 from .library import BaseRomEntry
 from ..i18n import _, localized_game_name
 from ..util import filetypes_min, threaded
-from ... import get_connected_linkers, BaseLinker, BaseFlashable
+from ... import get_connected_linkers
+from ...base import BaseFlashable
 from ...info import games
 from ...logger import error, exception, log, verbose
+from ...linkers import BaseLinker
 from ...exceptions import DeviceError, DeviceNotSupportedError
 
 if TYPE_CHECKING:
