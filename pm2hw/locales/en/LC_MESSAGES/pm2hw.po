@@ -82,6 +82,9 @@ msgstr "Erasing complete! Completed in {secs:.3f}"
 msgid "cli.error.device"
 msgstr "A device error occurred: {errmsg}"
 
+msgid "cli.linker.device.not-found"
+msgstr "specified linker not found"
+
 msgid "cli.error.exception"
 msgstr "An error occurred"
 
@@ -187,6 +190,9 @@ msgstr "Don't verify the contents after flashing."
 
 msgid "cli.help.param.flash.roms"
 msgstr "Flash the given file or use - to read from stdin."
+
+msgid "cli.linker.intro"
+msgstr "Supported linkers:"
 
 msgid "cli.test.intro"
 msgstr "Running tests..."

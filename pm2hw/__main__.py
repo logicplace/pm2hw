@@ -19,6 +19,7 @@ from .logger import log, error, exception, progress, verbose, LogRecord
 from .linkers import extra_options
 from .locales import __ as _, natural_size, parse_natural_size
 from .exceptions import DeviceError
+from pm2hw import linkers
 
 logger.view = "cli"
 last_progress = time()
@@ -50,7 +51,7 @@ handler.set_formatter(logger.nice_formatter)
 parser = argparse.ArgumentParser("pm2hw", description=_("cli.description"))
 
 group = parser.add_mutually_exclusive_group()
-group.add_argument("-l", "--linker", metavar="name", dest="linker_global",
+group.add_argument("-l", "--linker", metavar="name", dest="linker_global", nargs="?",
 	help=_("cli.help.param.linker"))
 group.add_argument("-a", "--all", action="store_true", dest="all_global",
 	help=_("cli.help.param.all"))
@@ -138,6 +139,16 @@ def connect(args):
 	linkers = get_connected_linkers()
 	if not linkers:
 		raise DeviceError(_("cli.connect.no-linkers"))
+	elif args.linker:
+		looking_for = args.linker.lower()
+		found = None
+		for l in linkers:
+			if type(l).__name__.lower() == looking_for:
+				found = l
+				break
+		if not found:
+			raise DeviceError(_("cli.linker.device.not-found"))
+		linkers = [found]
 	elif len(linkers) > 1 and not args.all:
 		valid_choices = ["a", "A"]
 		print(_("cli.connect.select-linker.title"), file=sys.stderr)
@@ -374,6 +385,10 @@ def _main(args):
 		if len(flashables) > 1:
 			log(_("cli.test.complete"), secs=time() - start)
 		return flashables
+	elif args.linker is not None:
+		print(_("cli.linker.intro"))
+		for l in linkers.values():
+			print(f"* {l.__name__.lower()} - {l.name}")
 	else:
 		parser.print_help()
 
