@@ -49,6 +49,7 @@
 (b"MPTJ", "ﾊﾟｰﾃｨﾐﾆ"), [
 	{
 		"name": "ポケモン パーティミニ",
+		# https://www.nintendo.co.jp/nom/0205/01/index.html
 	},
 	{
 		"name": "Pokémon Party Mini - Baseline Judge (J) (Gamecube)",

@@ -6,11 +6,6 @@
 
 import sys
 
-if getattr(sys, "frozen", False):
-	from pathlib import Path
-	me = Path(sys.executable).absolute().parent
-	sys.path.append(str(me))
-
 import os
 import tkinter as tk
 import traceback
@@ -25,20 +20,8 @@ from .components import (
 	add_progress, make_status, open_about, refresh_linkers, set_status,
 	GameList, HelpDialog, PreferencesDialog
 )
-from .. import __version__, logger
-from ..config import config
-
-
-try:
-	from appdirs import user_log_dir
-except ImportError:
-	# Portable version
-	import sys
-	def user_log_dir(appname=None, appauthor=None, version=None, opinion: bool = True):
-		base = os.path.join(os.path.dirname(sys.argv[0]), "logs")
-		if version:
-			return os.path.join(base, version)
-		return base
+from .. import logger
+from ..config import config, log_dir as error_log_dir
 
 
 logger.view = "gui"
@@ -140,7 +123,6 @@ log_handler = logger.Handler(logger.INFO, raw_handler=add_log_entry)
 log_handler.set_formatter(logger.nice_formatter)
 logger.add_handler(log_handler)
 
-error_log_dir = user_log_dir("pm2hw", None, __version__)
 error_log_dn = os.path.join(error_log_dir, "error.log")
 os.makedirs(error_log_dir, exist_ok=True)
 def error_log_writer(s):

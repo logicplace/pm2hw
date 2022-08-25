@@ -5,21 +5,29 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import os
-import sys
 from locale import getdefaultlocale
+from pathlib import Path
 from configparser import ConfigParser
 
+from .. import __version__ as pm2hw_version
+
 try:
-	from appdirs import user_config_dir
+	import appdirs
+	config_dir = Path(appdirs.user_config_dir("pm2hw", False, roaming=False))
+	log_dir = Path(appdirs.user_log_dir("pm2hw", None, pm2hw_version))
+	resource_dir = Path(appdirs.user_data_dir("pm2hw", None))
 except ImportError:
-	# Portable version
+	# Portable version, use the same dir
 	import sys
-	def user_config_dir(appname=None, appauthor=None, version=None, roaming: bool = False):
-		# Ignore all args, use the same dir
-		if getattr(sys, "frozen", False):
-			return os.path.dirname(sys.executable)
-		else:
-			return os.path.dirname(sys.argv[0])
+	base = Path(
+		sys.executable
+		if getattr(sys, "frozen", False) else
+		sys.argv[0]
+	).parent
+
+	config_dir = base
+	log_dir = base / "logs" / pm2hw_version
+	resource_dir = base / "resources"
 
 
 default_language = getdefaultlocale()[0]
@@ -44,7 +52,7 @@ config = ConfigParser(
 		"lines": getlines,
 	}
 )
-config_dir = user_config_dir("pm2hw", False, roaming=False)
+
 config_file = os.path.join(config_dir, "pm2hw.cfg")
 
 def reload():
