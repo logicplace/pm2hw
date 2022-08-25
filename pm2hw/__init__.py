@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 def get_connected_linkers():
 	# Get D2xx linkers

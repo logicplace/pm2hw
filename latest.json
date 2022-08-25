@@ -1,8 +1,8 @@
 {
 	"components": {
 		"core": {
-			"version": "0.0.7",
-			"windows": "https://github.com/logicplace/pm2hw/releases/download/v0.0.7/pm2hw-0.0.7-win64.zip"
+			"version": "0.0.8",
+			"windows": "https://github.com/logicplace/pm2hw/releases/download/v0.0.8/pm2hw-0.0.8-win64.zip"
 		},
 		"resourcePack": {
 			"version": "0.0.2",
