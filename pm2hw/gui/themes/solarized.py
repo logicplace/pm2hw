@@ -24,6 +24,7 @@ class SolarizedDarkTheme(SolarizedTheme):
 	outside = Color("#002b36", text)
 	inside = Color("#073642", text)
 	inset = Color("#073642", "#2aa198")
+	highlight = Color("#d33682", "#6c71c4")
 	console = Color("#002b36", text)
 
 class SolarizedLightTheme(SolarizedTheme):
@@ -33,6 +34,7 @@ class SolarizedLightTheme(SolarizedTheme):
 	outside = Color("#fdf6e3", text)
 	inside = Color("#eee8d5", text)
 	inset = Color("#eee8d5", "#2aa198")
+	highlight = Color("#dc322f", "#b58900")
 	console = Color("#fdf6e3", text)
 
 	overrides = {

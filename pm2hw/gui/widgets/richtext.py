@@ -340,6 +340,7 @@ class RichTextRenderer(BaseRenderer):
 		self.target.window_create(start, window=window)
 		end = self.index = self.target.index(f"{start} + 1c")
 		self.target.tag_add("widget", start, end)
+		self.target.update()
 		return start, self.text("\n")[1]
 
 	# BaseRenderer methods
