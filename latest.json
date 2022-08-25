@@ -5,7 +5,8 @@
 			"windows": "https://github.com/logicplace/pm2hw/releases/download/v0.0.7/pm2hw-0.0.7-win64.zip"
 		},
 		"resourcePack": {
-			"version": "0.0.1"
+			"version": "0.0.2",
+			"url": "https://github.com/logicplace/pm2hw/releases/download/rsc-v0.0.2/resource_pack-0.0.2.zip"
 		}
 	}
 }
