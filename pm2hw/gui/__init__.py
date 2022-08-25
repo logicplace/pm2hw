@@ -4,16 +4,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-import sys
-
 import os
+import sys
 import tkinter as tk
 import traceback
 from tkinter import ttk
 from functools import partial
 from typing import  Dict, List, Tuple
 
-from . import themes
+from . import themes, resources
 from .i18n import _, TStringVar
 from .widgets import Menu, RichText, ScrollFrame
 from .components import (
@@ -25,6 +24,7 @@ from ..config import config, log_dir as error_log_dir
 
 
 logger.view = "gui"
+
 
 root = tk.Tk()
 
@@ -174,12 +174,28 @@ with Menu(root) as m:
 				title=str(_("window.help.title"))
 			)
 		)
+		help.add_command(
+			labelvar=TStringVar(_("window.menu.help.check-for-updates")),
+			command=resources.prompt_update
+		)
+		help.add_separator()
 		help.add_command(labelvar=TStringVar(_("window.menu.help.about")), command=partial(open_about, root))
 
 def auto_refresh():
 	refresh_linkers(game_list)
 	root.after(5000, auto_refresh)
 auto_refresh()
+
+# Check if update script exists and delete
+if getattr(sys, "frozen", False):
+	from pathlib import Path
+	script: Path = Path(sys.executable).absolute() / "update.ps1"
+	try:
+		script.unlink()
+	except FileNotFoundError:
+		resources.prompt_update(False)
+else:
+	resources.prompt_update(False)
 
 # from .linker import DittoFlash
 # from .. import BaseLinker

@@ -42,6 +42,7 @@ class Semver:
 		mo = SEMVER.match(x.strip())
 		if not mo:
 			raise ValueError(f"bad semantic version {x}")
+		self.original = mo.group(0)
 		self.ver, self.prerelease, self.build = mo.groups()
 
 	def __eq__(self, other):
@@ -88,5 +89,8 @@ class Semver:
 				# Shorter (in terms of parts) pre-release is earlier
 				return len(a) < len(b)
 
-		return False		
+		return False
+
+	def __str__(self):
+		return self.original	
 		
