@@ -38,8 +38,8 @@ class WeakMethod:
 AN = r"[\da-z-]+(?:\.[\da-z-]+)*"
 SEMVER = re.compile(rf"^(\d+(?:\.\d+)*)(?:-({AN}))?(?:\+({AN}))?$", re.I)
 class Semver:
-	def __init__(self, x):
-		mo = SEMVER.match(x)
+	def __init__(self, x: str):
+		mo = SEMVER.match(x.strip())
 		if not mo:
 			raise ValueError(f"bad semantic version {x}")
 		self.ver, self.prerelease, self.build = mo.groups()

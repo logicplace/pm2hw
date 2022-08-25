@@ -9,7 +9,7 @@ from locale import getdefaultlocale
 from pathlib import Path
 from configparser import ConfigParser
 
-from .. import __version__ as pm2hw_version
+from . import __version__ as pm2hw_version
 
 try:
 	import appdirs

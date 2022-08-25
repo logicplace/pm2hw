@@ -14,19 +14,23 @@ def graphic(fn, *, rel=resource_dir):
 	p: Path = rel / fn
 	return p if p.exists() else ""
 
-def check_for_updates():
-	global latest_result
-	from .. import __version__ as pm2hw_version
-	pm2hw_semver = Semver(pm2hw_version)
- 
+def get_current_resource_version():
 	rsc_version = resource_dir / "version.txt"
-	rsc_semver = Semver(
+	return Semver(
 		rsc_version.read_text()
 		if rsc_version.exists() else
 		"0.0.1"
 	)
 
-	with urllib.request.urlopen(VERSION_URL) as f:
+def check_for_updates():
+	global latest_result
+	from .. import __version__ as pm2hw_version
+	pm2hw_semver = Semver(pm2hw_version)
+ 
+	rsc_semver = get_current_resource_version()
+
+	# urllib.request.urlopen(VERSION_URL)
+	with open("latest.json") as f:
 		res: dict = json.loads(f.read())
 		latest_result = res
 
@@ -41,11 +45,12 @@ def check_for_updates():
 	}
 
 def install_resource_update():
-	import zipfile
+	import io, zipfile
 	if not latest_result:
 		check_for_updates()
 
-	url = latest_result["components"]["resourcePack"]["url"]
-	with urllib.request.urlopen(url) as f:
-		z = zipfile.ZipFile(f, "r")
-		z.extractall(resource_dir)
+	rp = latest_result["components"]["resourcePack"]
+	if get_current_resource_version() < Semver(rp["version"]):
+		with urllib.request.urlopen(rp["url"]) as f:
+			z = zipfile.ZipFile(io.BytesIO(f.read()), "r")
+			z.extractall(resource_dir)
