@@ -16,7 +16,11 @@ from ..locales import _, __, available_languages, base, split_ietf_tag
 from ..info.games import ROM
 
 
-string_vars = (weakref.WeakSet["TStringVar"] if TYPE_CHECKING else weakref.WeakSet)()
+string_vars = (
+	weakref.WeakValueDictionary[str, "TStringVar"]
+	if TYPE_CHECKING else
+	weakref.WeakValueDictionary
+)() 
 
 
 class TStringVar(tk.StringVar):
@@ -25,10 +29,14 @@ class TStringVar(tk.StringVar):
 		self._cb_name = ""
 		if isinstance(value, _):
 			value, name = str(value), value.key
+			n, i = name, 2
+			while name in string_vars:
+				name = f"{n}#{i}"
+				i += 1
 		else:
 			name = None
 		super().__init__(master, value, name)
-		string_vars.add(self)
+		string_vars[name] = self
 
 	def __hash__(self):
 		return hash(self._name)
@@ -79,7 +87,7 @@ def change_language(*langs: str):
 		languages=split_ietf_tag(*langs)
 	)
 	config["general"]["language"] = ",".join(langs)
-	for s in string_vars:
+	for s in string_vars.values():
 		s.update()
 
 def localized_game_name(rom: ROM, fallback: str = ""):
