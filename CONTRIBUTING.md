@@ -5,7 +5,7 @@
 ```sh
 # Install build deps
 pipx install whey
-pipx inject whey whey-mixin Babel
+pipx inject whey whey-mixin Babel $(cat requirements.txt)
 ```
 
 ### pypi wheel
@@ -24,6 +24,9 @@ whey -ws
 Invoke-WebRequest 'https://github.com/upx/upx/releases/download/v3.96/upx-3.96-win64.zip' -OutFile 'upx.zip'
 Expand-Archive -Path 'upx.zip' -DestinationPath '.'
 $env:PATH = "$env:PATH;$(pwd)\upx-3.96-win64"
+
+# Additional deps
+pipx inject whey PyInstaller
 
 # Build exe
 whey -b
