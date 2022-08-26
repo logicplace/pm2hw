@@ -11,7 +11,8 @@ from enum import Enum
 from time import time
 from typing import List
 
-from . import get_connected_linkers, logger, BaseFlashable
+from . import get_connected_linkers, logger, linkers
+from .base import BaseFlashable
 from .info import games
 from .info.games.base import ROM
 from .config import config, save as save_config
@@ -19,7 +20,6 @@ from .logger import log, error, exception, progress, verbose, LogRecord
 from .linkers import extra_options
 from .locales import __ as _, natural_size, parse_natural_size
 from .exceptions import DeviceError
-from pm2hw import linkers
 
 logger.view = "cli"
 last_progress = time()
@@ -48,7 +48,18 @@ logger.nice_formatter.default_shortlevelname = {
 logger.nice_formatter.default_shortlevelname_format = "{}: "
 handler.set_formatter(logger.nice_formatter)
 
-parser = argparse.ArgumentParser("pm2hw", description=_("cli.description"))
+class BreakingHelpFormatter(argparse.HelpFormatter):
+	def _split_lines(self, text: str, width: int):
+		import textwrap
+		return [
+			y
+			for x in text.splitlines()
+			for y in textwrap.wrap(x, width)
+		]
+
+common = {"formatter_class": BreakingHelpFormatter}
+
+parser = argparse.ArgumentParser("pm2hw", description=_("cli.description"), **common)
 
 group = parser.add_mutually_exclusive_group()
 group.add_argument("-l", "--linker", metavar="name", dest="linker_global", nargs="?",
@@ -71,7 +82,7 @@ def add_common_flags(cmd: argparse.ArgumentParser):
 subparsers = parser.add_subparsers(dest="cmd", title="actions")
 
 flash_cmd = subparsers.add_parser("flash", aliases=["f"],
-	help=_("cli.help.command.flash"))
+	help=_("cli.help.command.flash"), **common)
 add_common_flags(flash_cmd)
 # flash_cmd.add_argument("-m", "--multicart", metavar="id", default="",
 # 	help=_("cli.help.param.flash.multicart"))
@@ -83,7 +94,7 @@ flash_cmd.add_argument("roms", metavar="file", # nargs=argparse.ONE_OR_MORE,
 	help=_("cli.help.param.flash.roms"))
 
 dump_cmd = subparsers.add_parser("dump", aliases=["d"],
-	help=_("cli.help.command.dump"))
+	help=_("cli.help.command.dump"), **common)
 add_common_flags(dump_cmd)
 # group = parser.add_mutually_exclusive_group()
 # group.add_argument("-s", "--split-all", action="store_true",
@@ -96,19 +107,19 @@ dump_cmd.add_argument("dest", metavar="file", nargs="?", default="{i:02d}-{code}
 	help=_("cli.help.param.dump.dest"))
 
 erase_cmd = subparsers.add_parser("erase", aliases=["e"],
-	help=_("cli.help.command.erase"))
+	help=_("cli.help.command.erase"), **common)
 add_common_flags(erase_cmd)
 erase_cmd.add_argument("-p", "--partial", metavar="{size,offset:size}",
 	help=_("cli.help.param.erase.partial"))
 
 info_cmd = subparsers.add_parser("info", aliases=["i"],
-	help=_("cli.help.command.info"))
+	help=_("cli.help.command.info"), **common)
 group = add_common_flags(info_cmd)
 group.add_argument("rom", metavar="file", nargs="?",
 	help=_("cli.help.param.info.rom"))
 
 config_cmd = subparsers.add_parser("config",
-	help=_("cli.help.command.config"), add_help=False)
+	help=_("cli.help.command.config"), add_help=False, **common)
 group = config_cmd.add_mutually_exclusive_group(required=True)
 group.add_argument("-s", "--set", action="store_true",
 	help=_("cli.help.param.config.set"))
@@ -122,7 +133,7 @@ config_cmd.add_argument("settings", nargs="*",
 	help=_("cli.help.param.config.settings"))
 
 test_cmd = subparsers.add_parser("test",
-	help=_("cli.help.command.test"))
+	help=_("cli.help.command.test"), **common)
 
 from .locales import _
 
