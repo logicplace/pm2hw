@@ -5,5 +5,6 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from .menu import Menu
+from .dialog import Dialog
 from .richtext import RichText
 from .scrollframe import ScrollFrame

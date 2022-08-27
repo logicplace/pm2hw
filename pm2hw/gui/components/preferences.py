@@ -8,18 +8,19 @@ import tkinter as tk
 from tkinter import ttk, simpledialog
 from typing import Dict, List, Tuple
 
-from ..i18n import TStringVar
+from ..i18n import TStringVar, change_language
 from ..util import WeakMethod
 from ..themes import themes, select_theme
+from ..widgets import Dialog
 from ...config import config, save as save_config
 from ...locales import _, available_languages
 from ...linkers import extra_options, linkers_by_classname
-from pm2hw.gui import i18n
 
-class PreferencesDialog(simpledialog.Dialog):
+class PreferencesDialog(Dialog):
 	opt_vars: Dict[Tuple[str, dict], tk.Variable]
 
 	def body(self, master: tk.Frame):
+		super().body(master)
 		self._applied = False
 		frm = ttk.Frame(master)
 		frm.grid(column=0, row=0, sticky=tk.NSEW)
@@ -72,8 +73,9 @@ class PreferencesDialog(simpledialog.Dialog):
 				lbl.grid(column=0, row=row, sticky=tk.NW)
 
 				if typing is bool:
-					var = tk.BooleanVar(frm, value=cur)
-					field = ttk.Checkbutton(linker_frm, variable=var)
+					var = tk.BooleanVar(master, value=cur)
+					# TODO: why does ttk always show as unchecked?
+					field = tk.Checkbutton(linker_frm, variable=var)
 				else:
 					var = tk.StringVar(frm, value=cur)
 					kwargs = {}
@@ -124,7 +126,7 @@ class PreferencesDialog(simpledialog.Dialog):
 	def update_language(self, event: tk.Event):
 		lgs = list(event.widget.values())
 		if lgs:
-			i18n.change_language(*lgs)
+			change_language(*lgs)
 
 	def update_release_order(self, event: tk.Event):
 		box_languages = ", ".join(event.widget.values())
@@ -149,16 +151,15 @@ class PreferencesDialog(simpledialog.Dialog):
 		self._applied = True
 		for (ln, opt), var in self.opt_vars.items():
 			value = var.get()
-			print(ln, opt, value)
 			if isinstance(value, bool):
 				value = "true" if value else "false"
-			config.set(ln, opt, value)
+			config.set(ln, opt, str(value))
 		save_config()
 
 	def cancel(self, event=None):
 		super().cancel(event)
 		if not self._applied:
-			i18n.change_language(*self.initial_lgs)
+			change_language(*self.initial_lgs)
 			config["general"]["box-languages"] = self.initial_releases
 			select_theme(self.initial_theme)
 			config["GUI"]["theme"] = self.initial_theme
