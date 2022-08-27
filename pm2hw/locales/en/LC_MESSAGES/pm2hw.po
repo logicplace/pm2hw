@@ -360,6 +360,27 @@ msgstr "_Multicart"
 msgid "window.menu.view.log"
 msgstr "_Log"
 
+msgid "window.menu.view.log.show"
+msgstr "_Show pane"
+
+msgid "window.menu.view.log.info"
+msgstr "_Info"
+
+msgid "window.menu.view.log.verbose"
+msgstr "_Verbose"
+
+msgid "window.menu.view.log.debug"
+msgstr "_Debug"
+
+msgid "window.menu.view.log.warn"
+msgstr "_Warning"
+
+msgid "window.menu.view.log.error"
+msgstr "_Error"
+
+msgid "window.menu.view.log.protocol"
+msgstr "Open _protocol viewer"
+
 msgid "window.menu.help"
 msgstr "_Help"
 
@@ -374,6 +395,9 @@ msgstr "_About"
 
 msgid "window.preferences.title"
 msgstr "pm2hw - Preferences"
+
+msgid "window.protocol.title"
+msgstr "pm2hw - Protocol viewer"
 
 msgid "window.title"
 msgstr "pm2hw - Pokémon mini Flashing Utility"

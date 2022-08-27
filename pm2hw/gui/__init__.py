@@ -17,7 +17,7 @@ from .i18n import _, TStringVar
 from .widgets import Menu, RichText, ScrollFrame
 from .components import (
 	add_progress, make_status, open_about, refresh_linkers, set_status,
-	GameList, HelpDialog, PreferencesDialog
+	GameList, HelpDialog, PreferencesDialog, ProtocolDialog
 )
 from .. import logger
 from ..config import config, log_dir as error_log_dir
@@ -49,7 +49,7 @@ pw2.add(info.top, weight=1)
 
 log_pane = RichText(
 	pw1, height=8, state="readonly", orient=tk.VERTICAL,
-	style="Console.RichText", style_tags=("info", "warning", "error")
+	style="Console.RichText", style_tags=("info", "warning", "error", "critical")
 )
 
 pw1.add(pw2, weight=1)
@@ -75,6 +75,19 @@ def toggle_log_pane(varname, idx, mode):
 			pw1.remove(log_pane.top)
 log_toggler.trace_add("write", toggle_log_pane)
 
+log_message_togglers: Dict[int, tk.BooleanVar] = {}
+_lmt = log_message_togglers
+log_message_toggler_info = _lmt[logger.INFO] = tk.BooleanVar(root, True)
+log_message_toggler_verbose = _lmt[logger.VERBOSE] = tk.BooleanVar(root, False)
+log_message_toggler_debug = _lmt[logger.DEBUG] = tk.BooleanVar(root, False)
+log_message_toggler_warn = _lmt[logger.WARNING] = tk.BooleanVar(root, True)
+log_message_toggler_error = _lmt[logger.ERROR] = _lmt[logger.CRITICAL] = tk.BooleanVar(root, True)
+def filter_log_entries(varname, idx, mode):
+	update_log_entries()
+
+for x in log_message_togglers.values():
+	x.trace_add("write", filter_log_entries)
+
 log_entries: List[logger.LogRecord] = []
 progress_bars: Dict[logger.progress, Tuple[str, str]] = {}
 
@@ -85,6 +98,9 @@ def add_log_entry(record: logger.LogRecord):
 	log_pane.see(tk.END)
 
 def insert_log_entry(record: logger.LogRecord):
+	if record.levelno in log_message_togglers and not log_message_togglers[record.levelno].get():
+		return
+
 	msg = log_handler.format(record)
 	tag = record.levelname.lower()
 	if isinstance(record.msg, logger.progress):
@@ -105,9 +121,10 @@ def insert_log_entry(record: logger.LogRecord):
 	else:
 		log_pane.insert(tk.END, f"\n{msg}", tag)
 
-def update_log_entries(value):
-	# Language changed
-	logger.progress.config.load(value, force=True)
+def update_log_entries(value=None):
+	# Language or visibility changed
+	if value:
+		logger.progress.config.load(value, force=True)
 	pos, _ = log_pane.yview()
 	log_pane.delete("1.0", tk.END)
 	progress_bars.clear()
@@ -118,8 +135,8 @@ def update_log_entries(value):
 progress_config = TStringVar(_("log.progress"))
 progress_config.on_update(update_log_entries)
 
-logger.set_level(logger.INFO)
-log_handler = logger.Handler(logger.INFO, raw_handler=add_log_entry)
+logger.set_level(logger.DEBUG)
+log_handler = logger.Handler(logger.DEBUG, raw_handler=add_log_entry)
 log_handler.set_formatter(logger.nice_formatter)
 logger.add_handler(log_handler)
 
@@ -161,10 +178,50 @@ with Menu(root) as m:
 
 	with Menu(m, labelvar=TStringVar(_("window.menu.view"))) as view:
 		# view.add_command(label=_("window.menu.view.multicart"))
-		view.add_checkbutton(
-			labelvar=TStringVar(_("window.menu.view.log")),
-			variable=log_toggler
-		)
+		with Menu(view, labelvar=TStringVar(_("window.menu.view.log"))) as log:
+			log.add_checkbutton(
+				labelvar=TStringVar(_("window.menu.view.log.show")),
+				variable=log_toggler,
+			)
+			log.add_separator()
+			log.add_checkbutton(
+				labelvar=TStringVar(_("window.menu.view.log.info")),
+				variable=log_message_toggler_info,
+			)
+			log.add_checkbutton(
+				labelvar=TStringVar(_("window.menu.view.log.verbose")),
+				variable=log_message_toggler_verbose,
+			)
+			log.add_checkbutton(
+				labelvar=TStringVar(_("window.menu.view.log.debug")),
+				variable=log_message_toggler_debug,
+			)
+			log.add_checkbutton(
+				labelvar=TStringVar(_("window.menu.view.log.warn")),
+				variable=log_message_toggler_warn,
+			)
+			log.add_checkbutton(
+				labelvar=TStringVar(_("window.menu.view.log.error")),
+				variable=log_message_toggler_error,
+			)
+			log.add_separator()
+			log.add_command(
+				labelvar=TStringVar(_("window.menu.view.log.protocol")),
+				command=lambda: ProtocolDialog(
+					root,
+					title=str(_("window.protocol.title"))
+				)
+			)
+			# log.add_separator()
+			# log.add_command(label="Test proto", command=partial(logger.protocol, "test"))
+			# log.add_command(label="Test data", command=partial(logger.protocol, "<", data=b"test"))
+			# log.add_command(label="Test log", command=partial(logger.log, "test"))
+			# log.add_command(label="Test info", command=partial(logger.info, "test"))
+			# log.add_command(label="Test verbose", command=partial(logger.verbose, "test"))
+			# log.add_command(label="Test debug", command=partial(logger.debug, "test"))
+			# log.add_command(label="Test warn", command=partial(logger.warning, "test"))
+			# log.add_command(label="Test error", command=partial(logger.error, "test"))
+			# log.add_command(label="Test critical", command=partial(logger.critical, "test"))
 
 	with Menu(m, labelvar=TStringVar(_("window.menu.help"))) as help:
 		help.add_command(

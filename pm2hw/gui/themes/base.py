@@ -251,6 +251,44 @@ class BaseTheme(metaclass=MetaTheme):
 				"foreground": "#600",
 			}
 		},
+		"critical.Console.RichText": {
+			"configure": {
+				"foreground": "#600",
+			}
+		},
+		"HexView.RichText": {
+			"configure": {
+				"font": "RichTextConsoleFont",
+				"wrap": tk.NONE,
+				"tabs": "1m",
+			}
+		},
+		"cell-even.HexView.RichText": {
+			"configure": {
+				"borderwidth": 1,
+				"relief": tk.RAISED,
+			}
+		},
+		"cell-odd.HexView.RichText": {
+			"configure": {
+				"borderwidth": 1,
+				"relief": tk.RIDGE,
+			}
+		},
+		"header-even.HexView.RichText": {
+			"configure": {
+				"font": "RichTextBoldConsoleFont",
+				"borderwidth": 1,
+				"relief": tk.RAISED,
+			}
+		},
+		"header-odd.HexView.RichText": {
+			"configure": {
+				"font": "RichTextBoldConsoleFont",
+				"borderwidth": 1,
+				"relief": tk.RIDGE,
+			}
+		},
 		"OrderedListItem.TFrame": {
 			"configure": {
 				"borderwidth": 2,
@@ -378,6 +416,11 @@ class BaseTheme(metaclass=MetaTheme):
 	RichTextConsoleFont = {
 		"family": ["Consolas", "Courier New"],
 		"size": 12,
+	}
+	RichTextBoldConsoleFont = {
+		"family": ["Consolas", "Courier New"],
+		"size": 12,
+		"weight": font.BOLD,
 	}
 	RichTextH1Font = {
 		"family": "Arial",
