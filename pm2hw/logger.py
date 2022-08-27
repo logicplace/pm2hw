@@ -41,17 +41,17 @@ def get_level_from_name(name: str):
 view = "cli"
 logger = logging.getLogger(logger_name)
 
-class SubtypedMessage:
-	def __init__(self, msg: str, subtype: str):
-		self._msg = msg
-		self._subtype = subtype.upper()
+class SubtypedMessage(str):
+	_subtype: str
+
+	def __new__(cls, msg: str, subtype: str):
+		ret = super().__new__(cls, msg)
+		ret._subtype = subtype.upper()
+		return ret
 
 	@property
 	def subtype(self):
 		return self._subtype
-
-	def __str__(self):
-		return str(self._msg)
 
 class Formatter(logging.Formatter):
 	default_time_format = "%H:%M:%S"
@@ -197,7 +197,7 @@ def add_log_only_handler():
 def protocol(msg, data=None, **kwargs):
 	if is_enabled_for(PROTOCOL):
 		if data:
-			msg = " ".join((msg, *(f"{b:02x}" for b in data)))
+			msg = SubtypedMessage(" ".join((msg, *(f"{b:02x}" for b in data))), "DATA")
 		else:
 			msg = msg.format(**kwargs)
 		logger.log(PROTOCOL, msg)

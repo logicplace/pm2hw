@@ -87,8 +87,8 @@ class Menu(tk.Menu):
 			# TODO: might be a problem if menus are destroyed
 			var.trace_add("write", partial(self._updater, var))
 			self.label_vars[self.count] = var  # TODO: insufficient for dynamic menus
+			opts["label"], opts["underline"] = self._get_underline(var.get())
 		self.count += 1
-		opts["label"], opts["underline"] = self._get_underline(var.get())
 		super().add(itemType, **opts, **cfg)
 
 	def replace(self, index, itemType, cnf: dict, *, label: str = "", **kw):
