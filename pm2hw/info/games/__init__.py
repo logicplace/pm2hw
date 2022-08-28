@@ -30,7 +30,11 @@ for game in games:
 # TODO: check for whether start contains BIOS or junk or header
 
 def lookup_all(f: BinaryIO):
-	f.seek(0x021ac)
+	f.seek(0x021a4)
+	nintendo = f.read(8)
+	if nintendo != b"NINTENDO":
+		return []
+
 	code = f.read(4)
 	name = f.read(12).rstrip(b"\0").decode("shift-jis", errors="replace")
 	# TODO: check for and use header if it exists
@@ -45,6 +49,9 @@ def lookup_all(f: BinaryIO):
 
 def lookup(f: BinaryIO, check_crc: bool = False):
 	infos = lookup_all(f)
+	if not infos:
+		return None
+
 	code = infos[0].code
 	name = infos[0].internal
 

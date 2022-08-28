@@ -305,12 +305,18 @@ def _main(args):
 		if args.rom:
 			with open(args.rom, "rb") as f:
 				info = games.lookup(f, check_crc=True)
-				print_info(info)
+				if info:
+					print_info(info)
+				else:
+					error(_("cli.info.bad-rom"))
 		else:
 			flashables, start = connect(args)
 			for f in flashables:
 				info = games.lookup(f)
-				print_info(info)
+				if info:
+					print_info(info)
+				else:
+					error(_("cli.info.empty-cart"))
 	elif args.cmd == "config":
 		x: str
 		if args.set:

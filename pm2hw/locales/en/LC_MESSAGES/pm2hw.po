@@ -191,6 +191,12 @@ msgstr "Don't verify the contents after flashing."
 msgid "cli.help.param.flash.roms"
 msgstr "Flash the given file or use - to read from stdin."
 
+msgid "cli.info.bad-rom"
+msgstr "Not a valid Pokémon mini ROM file."
+
+msgid "cli.info.empty-cart"
+msgstr "No valid ROM detected."
+
 msgid "cli.linker.intro"
 msgstr "Supported linkers:"
 
