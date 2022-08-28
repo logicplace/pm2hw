@@ -14,7 +14,7 @@ from tkinter.font import Font
 from .linker import DittoFlash
 from .status import _make_status
 from .gamelist import GameList, ROM
-from ..widgets import RichText, ScrollFrame
+from ..widgets import Dialog, RichText, ScrollFrame
 from ..i18n import _
 from ... import __version__ as main_version
 from ...linkers import BaseLinker
@@ -67,8 +67,9 @@ class DummyROM(ROM):
 				return info
 		return games.ROM(games.Status.unidentified, code, name, crc)
 
-class HelpDialog(simpledialog.Dialog):
+class HelpDialog(Dialog):
 	def body(self, master: tk.Frame):
+		super().body(master)
 		self.topics: Dict[str, RichText] = {}
 		self.html_handlers = {
 			"a": self.link_handler,

@@ -101,6 +101,12 @@ class ColorizedTheme(BaseTheme):
 					"foreground": self.error,
 				}
 			}),
+			ovr("critical.Console.RichText", {
+				"configure": {
+					"background": self.console.bg,
+					"foreground": self.error,
+				}
+			}),
 			ovr("TButton", {
 				"configure": {
 					"background": self.inside.bg,
