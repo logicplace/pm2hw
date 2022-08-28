@@ -87,7 +87,7 @@ class Library(ttk.Frame):
 		self.tree.tag_configure("LibraryListEntryFont", font=f)
 		f = font.nametofont("LibraryListCategoryFont")
 		self.tree.tag_configure("LibraryListCategoryFont", font=f)
-	
+
 		scroll_x = ttk.Scrollbar(self, orient=tk.HORIZONTAL, command=self.tree.xview)
 		scroll_y = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tree.yview)
 		self.tree.configure(xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)

@@ -4,6 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+from functools import wraps
 import time
 import logging
 import configparser
@@ -41,13 +42,39 @@ def get_level_from_name(name: str):
 view = "cli"
 logger = logging.getLogger(logger_name)
 
-class SubtypedMessage(str):
-	_subtype: str
+class strlike(type):
+	_copy_private_from_str = frozenset([
+		"__add__", "__contains__", "__eq__", "__format__",
+		"__ge__", "__getitem__", "__gt__", "__hash__",
+		"__iter__", "__le__", "__len__", "__lt__", "__mod__",
+		"__mul__", "__ne__", "__reduce__", "__reduce_ex__",
+		"__rmod__", "__rmul__", "__str__"
+	])
 
-	def __new__(cls, msg: str, subtype: str):
-		ret = super().__new__(cls, msg)
-		ret._subtype = subtype.upper()
-		return ret
+	@staticmethod
+	def proxy(method):
+		@wraps(getattr(str, method))
+		def passer(self: "SubtypedMessage", *args, **kwargs):
+			return getattr(str(self._msg), method)(*args, **kwargs)
+		return passer
+
+	def __new__(cls, name, bases, namespace):
+		for x in dir(str):
+			if (
+				x not in namespace
+				and (
+					not x.startswith("_")
+					or x in cls._copy_private_from_str
+				)
+			):
+				namespace[x] = cls.proxy(x)
+
+		return super().__new__(cls, name, bases, namespace)
+
+class SubtypedMessage(metaclass=strlike):
+	def __init__(self, msg: str, subtype: str):
+		self._msg = msg
+		self._subtype = subtype.upper()
 
 	@property
 	def subtype(self):
@@ -232,7 +259,7 @@ class ProgressConfig(configparser.ConfigParser):
 		return ProgressMessage(self[mode])
 
 class ProgressMessage:
-	def __init__(self, section):
+	def __init__(self, section: configparser.SectionProxy):
 		self.section = section
 
 	def format_as(self, progress: "progress", view: str):

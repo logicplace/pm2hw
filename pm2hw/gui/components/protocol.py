@@ -52,12 +52,23 @@ class ProtocolDialog(Dialog):
 		self.window = ttk.PanedWindow(master, orient=tk.HORIZONTAL)
 		self.window.pack(fill=tk.BOTH, expand=True)
 		
-		self.log_pane = ttk.Treeview(self.window,
+		frm = ttk.Frame(self.window)
+		self.log_pane = ttk.Treeview(frm,
 			show="tree",
 			selectmode="browse",
 			takefocus=True,
 		)
 		self.log_pane.bind("<<TreeviewSelect>>", self.show_info)
+
+		scroll_x = ttk.Scrollbar(frm, orient=tk.HORIZONTAL, command=self.log_pane.xview)
+		scroll_y = ttk.Scrollbar(frm, orient=tk.VERTICAL, command=self.log_pane.yview)
+		self.log_pane.configure(xscrollcommand=scroll_x.set, yscrollcommand=scroll_y.set)
+
+		self.log_pane.grid(column=0, row=0, sticky=tk.NSEW)
+		scroll_y.grid(column=1, row=0, sticky="nes")
+		scroll_x.grid(column=0, row=1, sticky="esw")
+		frm.columnconfigure(0, weight=1)
+		frm.rowconfigure(0, weight=1)
 
 		self.hex_pane = RichText(self.window,
 			style="HexView.RichText",
@@ -67,8 +78,8 @@ class ProtocolDialog(Dialog):
 			spacing3=1,
 		)
 
-		self.window.add(self.log_pane)
-		self.window.add(self.hex_pane.top, weight=1)
+		self.window.add(frm, weight=3)
+		self.window.add(self.hex_pane.top, weight=2)
 
 		# Set up logger
 		self.records = {}
