@@ -1,19 +1,19 @@
 # pm2hw GUI messages
-# Copyright (C) 2021
-# Sapphire Becker (logicplace.com), 2021.
+# Copyright (C) 2021, 2022
+# Sapphire Becker (logicplace.com), 2021, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2021-11-25 16:11-0800\n"
-"PO-Revision-Date: 2021-12-18 17:54-0800\n"
+"PO-Revision-Date: 2022-08-31 06:07-0700\n"
 "Last-Translator: Sapphire Becker (logicplace.com)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: pygettext.py 1.5\n"
 "Last-Translator: Sapphire Becker (logicplace.com)\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
 "Language: ja\n"
 
 
@@ -28,17 +28,17 @@ msgstr "デバイスをオープンできませんでした"
 msgid "cli.config.setting.unknown"
 msgstr "その設定は存在しません"
 
-#  msgid "cli.config.setting.help.language"
-#  msgstr ""
+msgid "cli.config.setting.help.language"
+msgstr "ソフトに使用している言語についての優先順位リスト"
 
-#  msgid "cli.config.setting.help.box-languages"
-#  msgstr ""
+msgid "cli.config.setting.help.box-languages"
+msgstr "ゲーム箱や説明書についてどの言語がいいかという優先順位リスト"
 
 msgid "cli.config.setting.set.bad-format"
 msgstr "設定の代入文は間違いました。name=valueとシンタックスを使ってください"
 
-#  msgid "cli.config.setting.set.bad-value"
-#  msgstr ""
+msgid "cli.config.setting.set.bad-value"
+msgstr "値の型が間違いました。渡すべきな型は：{expected}"
 
 msgid "cli.connect.connected"
 msgstr "接続成功！{name}を見つかりました"
@@ -67,111 +67,147 @@ msgstr "お選びは…"
 msgid "cli.description"
 msgstr "ポケモンミニについてのハードウェアに読み書きます"
 
-#  msgid "cli.dump.intro"
-#  msgstr ""
+msgid "cli.dump.intro"
+msgstr "吸出し始めた…"
 
-#  msgid "cli.dump.complete"
-#  msgstr ""
+msgid "cli.dump.complete"
+msgstr "{secs:.3f}秒で吸出しを完成しました"
 
-#  msgid "cli.erase.intro"
-#  msgstr ""
+msgid "cli.erase.intro"
+msgstr "カートを消し始めた…"
 
-#  msgid "cli.erase.complete"
-#  msgstr ""
+msgid "cli.erase.complete"
+msgstr "{secs:.3f}秒で消しを完成しました"
 
-#  msgid "cli.error.device"
-#  msgstr ""
+msgid "cli.error.device"
+msgstr "デバイスのエラーを起こした：{errmsg}"
 
-#  msgid "cli.error.exception"
-#  msgstr ""
+msgid "cli.error.exception"
+msgstr "エラーが起こした"
 
-#  msgid "cli.flash.intro"
-#  msgstr ""
+msgid "cli.flash.intro"
+msgstr "書き込み始めた…"
 
-#  msgid "cli.flash.verify.intro"
-#  msgstr ""
+msgid "cli.flash.verify.intro"
+msgstr "書いたデータの確認を始めた…"
 
-#  msgid "cli.flash.verify.success"
-#  msgstr ""
+msgid "cli.flash.verify.success"
+msgstr "…確認成功"
 
-#  msgid "cli.flash.verify.failure"
-#  msgstr ""
+msgid "cli.flash.verify.failure"
+msgstr "…確認失敗"
 
-#  msgid "cli.flash.complete"
-#  msgstr ""
+msgid "cli.flash.complete"
+msgstr "{secs:.3f}秒で書き込みを完成しました"
 
-#  msgid "cli.help.command.config"
-#  msgstr ""
+msgid "cli.help.command.config"
+msgstr "設定を変更したり、表示したりできるコマンド"
 
-#  msgid "cli.help.command.dump"
-#  msgstr ""
+msgid "cli.help.command.dump"
+msgstr "カートリッジから吸い出す"
 
-#  msgid "cli.help.command.erase"
-#  msgstr ""
+msgid "cli.help.command.erase"
+msgstr "フラッシュカートリッジのデータを消し去る"
 
-#  msgid "cli.help.command.flash"
-#  msgstr ""
+msgid "cli.help.command.flash"
+msgstr "フラッシュカートリッジに書き込む"
 
-#  msgid "cli.help.command.info"
-#  msgstr ""
+msgid "cli.help.command.info"
+msgstr "ROMか接続したカートリッジの情報を表示"
 
-#  msgid "cli.help.param.all"
-#  msgstr ""
+msgid "cli.help.command.test"
+msgstr "ちゃんと作動できろことを試すコマンド。試し中でデータを消される"
 
-#  msgid "cli.help.param.config.get"
-#  msgstr ""
+msgid "cli.help.param.all"
+msgstr "各リンカーに選択したコマンドを行う"
 
-#  msgid "cli.help.param.config.help"
-#  msgstr ""
+msgid "cli.help.param.config.get"
+msgstr "設定名で設定の値を表示"
 
-#  msgid "cli.help.param.config.list"
-#  msgstr ""
+msgid "cli.help.param.config.help"
+msgstr "設定名の説明を表示かこの説明を表示すると終了"
 
-#  msgid "cli.help.param.config.set"
-#  msgstr ""
+msgid "cli.help.param.config.list"
+msgstr "全設定の名と値を表示"
 
-#  msgid "cli.help.param.config.settings"
-#  msgstr ""
+msgid "cli.help.param.config.set"
+msgstr "数設定の値を変更"
 
-#  msgid "cli.help.param.info.rom"
-#  msgstr ""
+msgid "cli.help.param.config.settings"
+msgstr "フラグによって、設定名か「名=値」と言うシンタックス"
 
-#  msgid "cli.help.param.linker"
-#  msgstr ""
+msgid "cli.help.param.info.rom"
+msgstr "ROMファイルの絶対パス"
 
-#  msgid "cli.help.param.verbose"
-#  msgstr ""
+msgid "cli.help.param.linker"
+msgstr "リンカーの名前を指定して、そのリンカーは接続されなければ、失敗敵に終了"
 
-#  msgid "cli.help.param.dump.dest"
-#  msgstr ""
+msgid "cli.help.param.verbose"
+msgstr "verbose情報を表示"
 
-#  msgid "cli.help.param.dump.partial"
-#  msgstr ""
+msgid "cli.help.param.dump.dest"
+msgstr "指定したファイル名にカートリッジのデータを吸出す。代わりに -（ハイフン）指定したら、"
+"標準出力に吸出す。\n"
+"このファイル名はPythonのフォーマット済み文字列を指定できる。その場合、この変数がある：\n"
+"　● i　→　リンカーのインデックス（整数）"
+"　● linker　→　リンカー名"
+"　● code　→　ROMの4字の識別名（ASCII）"
+"　● name　→　ROMの内部名（SJIS）"
+"何も指定しない場合は、このフォーマットにする：{i:02d}-{code}-{name}.min\n"
+"例えば、出力はこのようになる：00-MPZE-Puzzle.min"
 
-#  msgid "cli.help.param.dump.split"
-#  msgstr ""
+msgid "cli.help.param.dump.partial"
+msgstr "ROMの部分だけを吸出す。バイト数だけを指定し、あるいは位置とバイト数を指定。"
 
-#  msgid "cli.help.param.dump.split-all"
-#  msgstr ""
+msgid "cli.help.param.dump.split"
+msgstr "マルチカートから展開するROMを選ぶフラグ。"
+"この以下の形の一つで："
+"　● menu　→　対話型メニューから選ぶ。\n"
+"　● all　→　各ROMを全部書き出す。\n"
+"　● 1　→　1番目のROMだけを書き出す。\n"
+"　● 1,2　→　1番目と2番目のROMを書き出す。\n"
+"　● 1-3　→　1番目から3番目までのROMを書き出す。\n"
+"　● HW　→　ROMの4字の識別名で「Hello World」のデモを書き出す。"
 
-#  msgid "cli.help.param.erase.partial"
-#  msgstr ""
+msgid "cli.help.param.dump.split-all"
+msgstr "マルチカートの各ROMを全部展開して書き出す。"
 
-#  msgid "cli.help.param.flash.multicart"
-#  msgstr ""
+msgid "cli.help.param.erase.partial"
+msgstr "ROMの部分だけを消す。バイト数だけを指定し、あるいは位置とバイト数を指定。"
 
-#  msgid "cli.help.param.flash.no-erase"
-#  msgstr ""
+msgid "cli.help.param.flash.multicart"
+msgstr "多重のROMを書き込む場合、このフラグでマルチカートのシステムを選んで"
 
-#  msgid "cli.help.param.flash.no-verify"
-#  msgstr ""
+msgid "cli.help.param.flash.no-erase"
+msgstr "書き込む前の消しをスキップ"
 
-#  msgid "cli.help.param.flash.roms"
-#  msgstr ""
+msgid "cli.help.param.flash.no-verify"
+msgstr "書き込んだ後の確認をスキップ"
+
+msgid "cli.help.param.flash.roms"
+msgstr "書き込むファイル名か標準出力に吸出すハイフン（-）"
+
+msgid "cli.info.bad-rom"
+msgstr "そのファイルはポケモンミニのROMではない"
+
+msgid "cli.info.empty-cart"
+msgstr "有効ROMはリンカーにない"
+
+msgid "cli.linker.device.not-found"
+msgstr "そのリンカーは見つからなかった"
+
+msgid "cli.linker.intro"
+msgstr "対応リンカー："
+
+msgid "cli.test.intro"
+msgstr "テストを始めた…"
+
+msgid "cli.test.complete"
+msgstr "{secs:.3f}秒でテストを完了"
 
 #: pm2hw\base.py:
-#  msgid "log.blocks.over"
-#  msgstr ""
+msgid "log.blocks.over"
+msgstr "フラッシュカートリッジの大きさは足りなくて、リクエストを省略。"
 
 msgid "log.progress"
 msgstr "[DEFAULT]\n"
@@ -195,36 +231,42 @@ msgstr "[DEFAULT]\n"
 "[verify]\n"
 "message.0={card.name}に書いたデータを確認中\n"
 
-# TODO http://tokiwa-west.co.jp/twadmin/wp-content/uploads/2015/04/FTD2XX.pdf
-# http://suz-avr.sblo.jp/category/1142172-1.html
-#  msgid "log.ftdi.characters.disable"
-#  msgstr ""
+msgid "log.ftdi.characters.disable"
+msgstr "＊　EventChar＝発生禁止　ErrorChar＝発生禁止　を設定"
 
-#  msgid "log.ftdi.controller.reset"
-#  msgstr ""
+msgid "log.ftdi.controller.reset"
+msgstr "＊　BitMode Mask=0 Mode=0　を設定　（リセット）"
 
-#  msgid "log.ftdi.latency.set"
-#  msgstr ""
+msgid "log.ftdi.latency.set"
+msgstr "＊　LatencyTimer {ms} (ミリ秒)　を設定"
 
-#  msgid "log.ftdi.mpsse.enable"
-#  msgstr ""
+msgid "log.ftdi.mpsse.enable"
+msgstr "＊　BitMode Mask=0 Mode=2　を設定　（MPSSE）"
 
-#  msgid "log.ftdi.reset"
-#  msgstr ""
+msgid "log.ftdi.reset"
+msgstr "＊　デバイスをリセット"
 
-#  msgid "log.ftdi.title"
-#  msgstr ""
+msgid "log.ftdi.title"
+msgstr "＊　====　FTDIデバイス　===="
 
-#  msgid "log.ftdi.transfer.size.set"
-#  msgstr ""
+msgid "log.ftdi.transfer.size.set"
+msgstr "＊　RequestTransferSize In={in} Out={out} (バイト)　を設定"
 
-#  msgid "log.ftdi.transfer.timeout.set"
-#  msgstr ""
+msgid "log.ftdi.transfer.timeout.set"
+msgstr "＊　TransferTimeout Read={read} Write={write} (ミリ秒)　を設定"
+
+msgid "log.test.success"
+msgstr "  ...テスト成功"
+
+msgid "log.test.read.start"
+msgstr "吸出すテストを始めた..."
+
+msgid "log.test.write.start"
+msgstr "書き込むテストを始めた..."
 
 msgid "log.verify.failed"
 msgstr "確認失敗"
 
-# TODO: what's "block"?
 msgid "log.verify-failed.report.title"
 msgstr "……ブロックの間違ったバイト数は"
 
@@ -234,48 +276,69 @@ msgstr "　ブロック{block}: {count}"
 msgid "log.verify.success"
 msgstr "確認成功"
 
-#  msgid "exception.flash.too-large"
-#  msgstr ""
+msgid "exception.flash.too-large"
+msgstr "入力ファイルは大きすぎる！最大数は{size}！"
 
-#  msgid "exception.ftdi.characters.disable.failed"
-#  msgstr ""
+msgid "exception.ftdi.characters.disable.failed"
+msgstr "イベント文字とエラー文字を設定できなかった"
 
-#  msgid "exception.ftdi.controller.reset.failed"
-#  msgstr ""
+msgid "exception.ftdi.controller.reset.failed"
+msgstr "デバイスをリセットできなかった"
 
-#  msgid "exception.ftdi.latency.set.failed"
-#  msgstr ""
+msgid "exception.ftdi.latency.set.failed"
+msgstr "USBデバイスのレイテンシーを設定できなかった"
 
-#  msgid "exception.ftdi.mpsse.enable.failed"
-#  msgstr ""
+msgid "exception.ftdi.mpsse.enable.failed"
+msgstr "MPSSEモードを使おうとできなかった"
 
-#  msgid "exception.ftdi.mpsse.spi.failed"
-#  msgstr ""
+msgid "exception.ftdi.mpsse.spi.failed"
+msgstr "MPSSEのSPIに設定できなかった"
 
-#  msgid "exception.ftdi.mpsse.sync.failed"
-#  msgstr ""
+msgid "exception.ftdi.mpsse.sync.failed"
+msgstr "MPSSEの入出力サイクルとシンクロできなかった"
 
-#  msgid "exception.ftdi.mpsse.sync.failed-check"
-#  msgstr ""
+msgid "exception.ftdi.mpsse.sync.failed-check"
+msgstr "MPSSEとシンクロできなかった"
 
-#  msgid "exception.ftdi.reset.failed"
-#  msgstr ""
+msgid "exception.ftdi.reset.failed"
+msgstr "デバイスをリセットできなかった"
 
-#  msgid "exception.ftdi.transfer.size.set.failed"
-#  msgstr ""
+msgid "exception.ftdi.transfer.size.set.failed"
+msgstr "リクエストの入出力サイズを設定できなかった"
 
-#  msgid "exception.read.wait.too-large"
-#  msgstr ""
+msgid "exception.read.wait.too-large"
+msgstr "デバイスの入力キューは以外に大きい。"
+"{size}が予想されるけど{queued}はある"
 
-#  msgid "exception.read.wait.timeout"
-#  msgstr ""
+msgid "exception.read.wait.timeout"
+msgstr "デバイスの入力キューの時間すごした。"
+"{size}が予想されるけど{queued}はある"
 
 #: pm2hw\exceptions.py:
-#  msgid "exception.device.unsupported"
-#  msgstr ""
+msgid "exception.device.test.read.failed"
+msgstr "吸出すテストの失敗！"
 
-#  msgid "exception.device.unsupported.details"
-#  msgstr ""
+msgid "exception.device.test.read.failed.details"
+msgstr "吸出すテストの失敗：\n"
+"2つの吸出しの違っているバイト数： {completely_wrong}\n"
+"1つだけの吸出しの違っているバイト数： {partially_wrong}\n"
+"バイトを多分書き込み間違えるバイト数： {consistently_wrong}\n"
+"全エラー： {errors} ({percent:.2f}%)"
+
+msgid "exception.device.test.write.failed"
+msgstr "書き込むテストの失敗！"
+
+msgid "exception.device.test.write.failed.details"
+msgstr "書き込むテストの失敗。バイトを書き込み間違えるバイト数は{errors} ({percent:.2f}%)"
+
+msgid "exception.device.unsupported"
+msgstr "デバイスは不対応"
+
+msgid "exception.device.unsupported.details"
+msgstr "{err}：\n"
+"製造者コード： {manufacturer:02X}\n"
+"デバイスコード： {device:02X}\n"
+"リザーブコード: {extended:02X}"
 
 #: pm2hw\gui\__init__.py:
 msgid "window.help.title"
@@ -296,18 +359,41 @@ msgstr "終了(_X)"
 msgid "window.menu.view"
 msgstr "表示(_V)"
 
-# TODO ?
 msgid "window.menu.view.multicart"
 msgstr "マルチカート(_M)"
 
 msgid "window.menu.view.log"
 msgstr "ログ(_L)"
 
+msgid "window.menu.view.log.show"
+msgstr "パネルを開く(_S)"
+
+msgid "window.menu.view.log.info"
+msgstr "情報出力(_I)"
+
+msgid "window.menu.view.log.verbose"
+msgstr "冗長出力(_V)"
+
+msgid "window.menu.view.log.debug"
+msgstr "デバッグ出力(_D)"
+
+msgid "window.menu.view.log.warn"
+msgstr "警報出力(_W)"
+
+msgid "window.menu.view.log.error"
+msgstr "エラー出力(_E)"
+
+msgid "window.menu.view.log.protocol"
+msgstr "プロトコルのビューアーを開く(_P)"
+
 msgid "window.menu.help"
 msgstr "ヘルプ(_H)"
 
 msgid "window.menu.help.howto"
-msgstr "使い方(_U)"
+msgstr "使い方(_D)"
+
+msgid "window.menu.help.check-for-updates"
+msgstr "アップデートをチェックする(_U)"
 
 msgid "window.menu.help.about"
 msgstr "バージョン情報(_A)"
@@ -315,8 +401,11 @@ msgstr "バージョン情報(_A)"
 msgid "window.preferences.title"
 msgstr "pm2hw - 設定"
 
+msgid "window.protocol.title"
+msgstr "pm2hw - プロトコルのビューアー"
+
 msgid "window.title"
-msgstr "pm2hw - ポケモンミニに読み書くアプリ"
+msgstr "pm2hw - ポケモンミニに読み書くソフト"
 
 #: pm2hw\gui\components\gamelist.py:
 msgid "info.rom.name.unknown"
@@ -339,7 +428,7 @@ msgid "help.about.title"
 msgstr "pm2hwについて"
 
 msgid "help.about.message"
-msgstr "pm2hw - ポケモンミニに読み書くアプリ\n"
+msgstr "pm2hw - ポケモンミニに読み書くソフト\n"
 "プログラマー: {authors}\n"
 "ライセンス: {license}\n"
 "バージョン: {version}\n"
@@ -436,11 +525,11 @@ msgstr "MINLIB"
 msgid "info.rom.details.crc32"
 msgstr "CRC32"
 
-#  msgid "library.list.add.file"
-#  msgstr ""
+msgid "library.list.add.file"
+msgstr "ファイルをライブラリに組み入れる"
 
-#  msgid "library.list.add.folder"
-#  msgstr ""
+msgid "library.list.add.folder"
+msgstr "フォルダをライブラリに組み入れる"
 
 #: pm2hw\gui\components\linker.py:
 msgid "info.button.bios"
@@ -520,7 +609,7 @@ msgstr "{name}は書き込むのはできません"
 
 #: pm2hw\gui\components\preferences.py:
 msgid "preferences.language.title"
-msgstr "言語の選び"
+msgstr "言語の優先順位"
 
 msgid "preferences.language.interface"
 msgstr "インタフェースの言語"
@@ -562,7 +651,7 @@ msgid "library.list.rom.MRCJ.ﾎﾟｹﾓﾝﾚｰｽ.4433B736"
 msgstr "ポケモンレースミニ"
 
 msgid "library.list.rom.MLTE.LUNCH TIME.B93E34A5"
-msgstr "カビゴンのランチタイム (EU)"
+msgstr "カビゴンのランチタイム (欧)"
 
 msgid "library.list.rom.MLTE.LUNCH TIME.05C9BAB3"
 msgstr "カビゴンのランチタイム (英)"
@@ -678,6 +767,60 @@ msgstr "トゲピーのだいぼうけん"
 #  msgid "library.list.rom.MZ2J.ﾊﾟｽﾞﾙｺﾚｸｼｮﾝ2.CA5A4E7B"
 #  msgstr ""
 
+#: pm2hw\gui\resources.py:
+msgid "help.update.resourcePack.title"
+msgstr "アイコンパックのアップデート"
+
+msgid "help.update.resourcePack.message"
+msgstr "アイコンパックのアップデートはダウンロードできる。\n"
+"現行バージョン： {current}\n"
+"最新バージョン： {latest}\n"
+"アップデートする？"
+
+msgid "help.update.core.title"
+msgstr "ソフトのアップデート"
+
+msgid "help.update.core.message.ask"
+msgstr "ソフトのアップデートはダウンロードできる。\n"
+"現行バージョン： {current}\n"
+"最新バージョン： {latest}\n"
+"アップデートする？"
+
+msgid "help.update.core.message.show"
+msgstr "ソフトのアップデートはダウンロードできる。\n"
+"現行バージョン： {current}\n"
+"最新バージョン： {latest}"
+
+msgid "help.update.no-update.title"
+msgstr "最終バージョンあてる"
+
+msgid "help.update.no-update.message"
+msgstr "アップデートは見つかりなった."
+
+msgid "log.update.intro"
+msgstr "アップデートをチェックし中..."
+
+msgid "log.update.resourcePack.found"
+msgstr "アイコンパックのアップデートは見つかった"
+
+msgid "log.update.resourcePack.success"
+msgstr "アイコンパックのアップデートは安全にできた"
+
+msgid "log.update.resourcePack.failed"
+msgstr "アイコンパックのアップデートは失敗した"
+
+msgid "log.update.core.found"
+msgstr "ソフトのアップデートは見つかった"
+
+msgid "log.update.core.success"
+msgstr "ソフトのアップデートを安全にダウンロードできた"
+
+msgid "log.update.core.failed"
+msgstr "ソフトのアップデートは失敗した"
+
+msgid "log.update.no-update.found"
+msgstr "アップデートは見つかりなった"
+
 #: pm2hw\gui\util.py:
 msgid "misc.filetypes.all"
 msgstr "All files"
@@ -686,19 +829,19 @@ msgid "misc.filetypes.min"
 msgstr "ポケモンミニのロム"
 
 #: pm2hw\linkers\*.py:
-#  msgid "opt.clock.name"
-#  msgstr ""
+msgid "opt.clock.name"
+msgstr "クロックの除数"
 
 #: pm2hw\linkers\base.py:
-#  msgid "log.wait.cannot.buffer"
-#  msgstr ""
+msgid "log.wait.cannot.buffer"
+msgstr "このデバイスは遅いコマンドを緩衝できないから、遅延を避けないかもしれない"
 
 #: pm2hw\linkers\dittomini.py:
 msgid "opt.clock.help.dittomini"
 msgstr "クロックに対して分周する値を設定する。1以上100以下の値でOK."
 
-#  msgid "opt.wait-after-write.name"
-#  msgstr ""
+msgid "opt.wait-after-write.name"
+msgstr "部分を書いた後のウエート"
 
 msgid "opt.wait-after-write.help"
 msgstr "カードに書き込むデータの分を送信した後でリンカーに待たせる。"

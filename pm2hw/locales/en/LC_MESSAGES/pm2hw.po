@@ -1,12 +1,12 @@
 # pm2hw GUI messages
-# Copyright (C) 2021
-# Sapphire Becker (logicplace.com), 2021.
+# Copyright (C) 2021, 2022
+# Sapphire Becker (logicplace.com), 2021, 2022.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: 2021-11-25 16:11-0800\n"
-"PO-Revision-Date: 2021-11-25 18:24-0800\n"
+"PO-Revision-Date: 2022-08-29 23:43-0700\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -71,19 +71,16 @@ msgid "cli.dump.intro"
 msgstr "Dumping..."
 
 msgid "cli.dump.complete"
-msgstr "Dumping complete! Completed in {secs:.3f}"
+msgstr "Dumping complete! Completed in {secs:.3f}s"
 
 msgid "cli.erase.intro"
 msgstr "Erasing..."
 
 msgid "cli.erase.complete"
-msgstr "Erasing complete! Completed in {secs:.3f}"
+msgstr "Erasing complete! Completed in {secs:.3f}s"
 
 msgid "cli.error.device"
 msgstr "A device error occurred: {errmsg}"
-
-msgid "cli.linker.device.not-found"
-msgstr "specified linker not found"
 
 msgid "cli.error.exception"
 msgstr "An error occurred"
@@ -164,7 +161,7 @@ msgstr "Extract only part of the ROM. Specify either just the size in bytes or"
 
 msgid "cli.help.param.dump.split"
 msgstr "Select which ROMs to split out of a multicart."
-" May be one of:\n"
+"May be one of:\n"
 " * menu - Pick from an interactive menu.\n"
 " * all - Split out all the ROMs.\n"
 " * 1 - Pick the first only.\n"
@@ -196,6 +193,9 @@ msgstr "Not a valid Pokémon mini ROM file."
 
 msgid "cli.info.empty-cart"
 msgstr "No valid ROM detected."
+
+msgid "cli.linker.device.not-found"
+msgstr "specified linker not found"
 
 msgid "cli.linker.intro"
 msgstr "Supported linkers:"
