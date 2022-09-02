@@ -14,14 +14,13 @@ from threading import Lock
 import tkinter as tk
 from tkinter import ttk, font, filedialog
 
-from ..i18n import _, TStringVar
-from ..util import WeakMethod, filetypes_min
-from ...info import games
-from ...config import config
-from ...logger import warn
-from ...locales import natural_size
-
-from ..resources import graphic
+from pm2hw.gui.i18n import delayed_gettext as _, TStringVar
+from pm2hw.gui.util import WeakMethod, filetypes_min
+from pm2hw.gui.resources import graphic
+from pm2hw.info import games
+from pm2hw.config import config
+from pm2hw.logger import warn
+from pm2hw.locales import natural_size
 
 def item_updater(library: "Library", iid: str):
 	library = weakref.ref(library)
@@ -259,12 +258,12 @@ class BaseRomEntry(Entry):
 		frame = DetailPane(target, textvariable=var)
 
 		def lhs(name):
-			return (_)(name, key=f"info.rom.details.{name}")
+			return (_)(f"info.rom.details.{name}", fallback=name)
 
 		def rhs(value, pfx):
 			if isinstance(value, Enum):
-				return (_)(value.value, key=f"{pfx}.{value.name}")
-			return (_)(value, key=f"{pfx}.{value}")
+				return (_)(f"{pfx}.{value.name}", fallback=value.value)
+			return (_)(f"{pfx}.{value}", fallback=value)
 
 		if info.game:
 			if info.game.developer:

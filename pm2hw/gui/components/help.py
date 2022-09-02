@@ -8,36 +8,33 @@ import tkinter as tk
 from sys import version
 from typing import Dict, Union
 from urllib.parse import urlparse
-from tkinter import ttk, messagebox, simpledialog
-from tkinter.font import Font
+from tkinter import ttk, messagebox
 
-from .linker import DittoFlash
-from .status import _make_status
-from .gamelist import GameList, ROM
-from ..widgets import Dialog, RichText, ScrollFrame
-from ..i18n import _
-from ... import __version__ as main_version
-from ...linkers import BaseLinker
+from pm2hw import __version__ as main_version
+from pm2hw.gui.widgets import Dialog, RichText, ScrollFrame
+from pm2hw.gui.resources import get_current_resource_version
+from pm2hw.gui.components.linker import DittoFlash
+from pm2hw.gui.components.status import _make_status
+from pm2hw.gui.components.gamelist import GameList, ROM
+from pm2hw.linkers import BaseLinker
+from pm2hw.locales import delayed_gettext as _
 
-try:
-	from ..resources import get_current_resource_version
-	icons_version = str(get_current_resource_version())
-except ImportError:
-	icons_version = _("help.plugin.not-installed")
+icons_version = str(get_current_resource_version())
 
 def open_about(root: tk.Tk):
 	messagebox.showinfo(
-		str(_("help.about.title")), 
-		str(_("help.about.message").format(
-		authors="Sapphire Becker",
-		license="Mozilla Public License, version 2.0",
-		version=main_version,
-		icons_version=icons_version,
-		py_version=version,
-		tcl_version=tk.TclVersion,
-		tk_version=tk.TkVersion,
-		tk_windowing=root._windowingsystem,
-	)))
+		_("help.about.title"), 
+		_("help.about.message").format(
+			authors="Sapphire Becker",
+			license="Mozilla Public License, version 2.0",
+			version=main_version,
+			icons_version=icons_version,
+			py_version=version,
+			tcl_version=tk.TclVersion,
+			tk_version=tk.TkVersion,
+			tk_windowing=root._windowingsystem,
+		)
+	)
 
 
 class DummyLinker(BaseLinker):
@@ -58,6 +55,7 @@ class DummyLinker(BaseLinker):
 	def read(self, size: int):
 		return b"\xff" * size
 
+
 class DummyROM(ROM):
 	def get_info(self, code, name, crc):
 		from ...info import games
@@ -66,6 +64,7 @@ class DummyROM(ROM):
 			if info.crc32 == crc:
 				return info
 		return games.ROM(games.Status.unidentified, code, name, crc)
+
 
 class HelpDialog(Dialog):
 	def body(self, master: tk.Frame):
@@ -158,7 +157,7 @@ class HelpDialog(Dialog):
 
 	def translation_handler(self, renderer, attrs):
 		if "name" in attrs:
-			s = str((_)(attrs["name"]))
+			s = (_)(attrs["name"])
 			if "del" in attrs:
 				s = s.replace(attrs["del"], "")
 			return renderer.text(s)
@@ -174,7 +173,7 @@ class HelpDialog(Dialog):
 			for x in ["main", "view", "help"]:
 				mb = tk.Menubutton(
 					menu,
-					text=str((_)(f"window.menu.{x}")).replace("_", ""),
+					text=(_)(f"window.menu.{x}").replace("_", ""),
 					state=tk.DISABLED
 				)
 				mb.pack(side=tk.LEFT)

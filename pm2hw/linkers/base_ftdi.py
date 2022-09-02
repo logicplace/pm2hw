@@ -9,12 +9,12 @@ from typing import ClassVar, Optional, cast
 
 from ftd2xx import FTD2XX
 
-from .base import BaseLinker
-from ..base import chunked, Transform, BytesOrSequence, BaseReader
-from ..config import config
-from ..logger import protocol
-from ..locales import _
-from ..exceptions import clarify, DeviceError
+from pm2hw.base import chunked, Transform, BytesOrSequence, BaseReader
+from pm2hw.config import config
+from pm2hw.logger import protocol
+from pm2hw.locales import delayed_gettext as _
+from pm2hw.linkers.base import BaseLinker
+from pm2hw.exceptions import clarify, DeviceError
 
 class BaseFtdiLinker(BaseLinker):
 	handle: FTD2XX

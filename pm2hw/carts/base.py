@@ -8,13 +8,13 @@ from io import BytesIO
 from os import SEEK_SET, SEEK_CUR, SEEK_END
 from typing import TYPE_CHECKING, BinaryIO, ClassVar, Iterator, Optional, Tuple
 
-from ..logger import error, log, progress, verbose, warn
-from ..locales import _, natural_size
-from ..exceptions import DeviceError, DeviceTestReadingError, DeviceTestWritingError
-from ..base import BaseFlashable
+from pm2hw.base import BaseFlashable
+from pm2hw.logger import error, log, progress, verbose, warn
+from pm2hw.locales import delayed_gettext as _, natural_size
+from pm2hw.exceptions import DeviceError, DeviceTestReadingError, DeviceTestWritingError
 
 if TYPE_CHECKING:
-	from ..linkers.base import BaseLinker
+	from pm2hw.linkers.base import BaseLinker
 
 class DummyProgress(progress):
 	for x in progress.__dict__.keys():

@@ -5,11 +5,10 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 from contextlib import contextmanager
-from typing import ClassVar
 
 import ftd2xx
 
-from .locales import _
+from pm2hw.locales import gettext as _
 
 class DeviceError(Exception): pass
 
@@ -21,12 +20,12 @@ class DeviceNotSupportedError(DeviceError):
 		self.extended = extended
 
 	def __str__(self):
-		return str(_("exception.device.unsupported.details").format(
+		return _("exception.device.unsupported.details").format(
 			err=self.args[0],
 			manufacturer=self.manufacturer,
 			device=self.device,
 			extended=self.extended,
-		))
+		)
 
 	def __repr__(self):
 		name = type(self).__name__
@@ -60,13 +59,13 @@ class DeviceTestReadingError(DeviceTestError):
 		self.consistently_wrong = consistently_wrong
 
 	def __str__(self):
-		return str(_("exception.device.test.read.failed.details").format(
+		return _("exception.device.test.read.failed.details").format(
 			errors=self.errors,
 			percent=self.percent,
 			completely_wrong=self.completely_wrong,
 			partially_wrong=self.partially_wrong,
 			consistently_wrong=self.consistently_wrong,
-		))
+		)
 
 	def __repr__(self):
 		name = type(self).__name__
@@ -87,10 +86,10 @@ class DeviceTestWritingError(DeviceTestError):
 		self.percent = errors * 100 / device_size
 
 	def __str__(self):
-		return str(_("exception.device.test.write.failed.details").format(
+		return _("exception.device.test.write.failed.details").format(
 			errors=self.errors,
 			percent=self.percent,
-		))
+		)
 
 	def __repr__(self):
 		name = type(self).__name__

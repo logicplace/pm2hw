@@ -11,11 +11,11 @@ from math import ceil
 from time import sleep
 from typing import Optional
 
-from .base import linkers
-from .base_ftdi import BaseFtdiLinker
-from ..base import BytesOrTransformer, Transform
-from ..locales import _
-from ..exceptions import DeviceError
+from pm2hw.base import BytesOrTransformer, Transform
+from pm2hw.locales import delayed_gettext as _
+from pm2hw.linkers.base import linkers
+from pm2hw.linkers.base_ftdi import BaseFtdiLinker
+from pm2hw.exceptions import DeviceError
 
 DEV_DESC = b"Dual RS232-HS B"  # "FT2232H MiniModule A"
 

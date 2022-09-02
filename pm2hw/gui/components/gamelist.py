@@ -4,19 +4,19 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-from typing import List, Optional, cast
+from typing import List, cast
 from functools import partial
 
 import tkinter as tk
 from tkinter import ttk
 import weakref
 
-from ..i18n import _, localized_game_name
-from .linker import Linker
-from .library import Entry, Library, BaseRomEntry
-from ..resources import graphic
-from ...info import games
-from ...config import config
+from pm2hw.gui.i18n import delayed_gettext as _, localized_game_name
+from pm2hw.gui.components.linker import Linker
+from pm2hw.gui.components.library import Entry, Library, BaseRomEntry
+from pm2hw.gui.resources import graphic
+from pm2hw.info import games
+from pm2hw.config import config
 
 
 class ROM(BaseRomEntry):

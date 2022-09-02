@@ -9,11 +9,11 @@
 
 from typing import Optional
 
-from .base import linkers
-from .base_ftdi import BaseFtdiLinker
-from ..base import BytesOrTransformer, Transform
-from ..config import config
-from ..locales import _
+from pm2hw.base import BytesOrTransformer, Transform
+from pm2hw.config import config
+from pm2hw.locales import delayed_gettext as _
+from pm2hw.linkers.base import linkers
+from pm2hw.linkers.base_ftdi import BaseFtdiLinker
 
 DEV_DESC = b"Dual RS232 A"
 # DEV_DESC = b"USB SerialConverter A"
