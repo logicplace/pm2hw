@@ -15,7 +15,7 @@ from pm2hw.logger import protocol, warn
 from pm2hw.locales import delayed_gettext as _
 
 if TYPE_CHECKING:
-	from ..carts.base import BaseCard
+	from pm2hw.carts.base import BaseCard
 
 
 LinkerID = Union[str, Tuple[int, int]]

@@ -256,13 +256,13 @@ msgid "log.ftdi.transfer.timeout.set"
 msgstr "＊　TransferTimeout Read={read} Write={write} (ミリ秒)　を設定"
 
 msgid "log.test.success"
-msgstr "  ...テスト成功"
+msgstr "  …テスト成功"
 
 msgid "log.test.read.start"
-msgstr "吸出すテストを始めた..."
+msgstr "吸出すテストを始めた…"
 
 msgid "log.test.write.start"
-msgstr "書き込むテストを始めた..."
+msgstr "書き込むテストを始めた…"
 
 msgid "log.verify.failed"
 msgstr "確認失敗"
@@ -795,10 +795,10 @@ msgid "help.update.no-update.title"
 msgstr "最終バージョンあてる"
 
 msgid "help.update.no-update.message"
-msgstr "アップデートは見つかりなった."
+msgstr "アップデートは見つかりなった。"
 
 msgid "log.update.intro"
-msgstr "アップデートをチェックし中..."
+msgstr "アップデートをチェックし中…"
 
 msgid "log.update.resourcePack.found"
 msgstr "アイコンパックのアップデートは見つかった"
@@ -838,7 +838,7 @@ msgstr "このデバイスは遅いコマンドを緩衝できないから、遅
 
 #: pm2hw\linkers\dittomini.py:
 msgid "opt.clock.help.dittomini"
-msgstr "クロックに対して分周する値を設定する。1以上100以下の値でOK."
+msgstr "クロックに対して分周する値を設定する。1以上100以下の値でOK。"
 
 msgid "opt.wait-after-write.name"
 msgstr "部分を書いた後のウエート"
@@ -848,4 +848,4 @@ msgstr "カードに書き込むデータの分を送信した後でリンカー
 
 #: pm2hw\linkers\pokecard.py:
 msgid "opt.clock.help.pokecard2.1"
-msgstr "クロックに対して分周する値を設定する。0以上64以下の値でOK."
+msgstr "クロックに対して分周する値を設定する。0以上64以下の値でOK。"

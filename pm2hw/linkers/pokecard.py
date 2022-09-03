@@ -54,7 +54,7 @@ class PokeFlash(BaseFtdiLinker):
 
 	def detect_card(self):
 		""" Detect which card is connected """
-		from ..carts.pokecard import PokeCard512
+		from pm2hw.carts.pokecard import PokeCard512
 		self.card = card = PokeCard512(self)
 		card.get_device_info()
 		return card

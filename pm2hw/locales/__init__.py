@@ -16,7 +16,6 @@ _base = os.path.dirname(__file__)
 _domains: Dict[str, Tuple[m_gettext.NullTranslations, str]] = {}
 available_languages = {"en", "ja"}
 
-# TODO: consider making this not delayed, and moving that to gui.i18n
 
 def translation(domain: str, localedir: str = _base):
 	lang_pref = config["general"]["language"]
@@ -68,6 +67,23 @@ def delayed_dgettext(domain: str, message: str, *, fallback: str = ""):
 
 def delayed_gettext(message: str, *, fallback: str = ""):
 	return delayed_dgettext("pm2hw", message, fallback=fallback)
+
+	
+def delayed_join(joiner, arr):
+	if not arr:
+		return ""
+
+	start: DelayedLocalization
+	start, *args = arr
+
+	if not isinstance(start, DelayedLocalization):
+		start = DelayedLocalization("", fallback=start, domain="pm2hw", fn="gettext")
+
+	for arg in args:
+		start += joiner
+		start += arg
+
+	return start
 
 
 class bind_domain:
@@ -135,6 +151,9 @@ class DelayedLocalization:
 
 	def _process(self, s: str) -> str:
 		for fn, args in self.post_process:
+			for i, arg in enumerate(args):
+				if isinstance(arg, DelayedLocalization):
+					args[i] = str(arg)
 			s = getattr(s, fn)(*args)
 		return s
 
@@ -144,16 +163,48 @@ class DelayedLocalization:
 		res: str = getattr(t, self._fn)(*self.args)
 		return self._process(res)
 
+	def __repr__(self) -> str:
+		kwargs = ", ".join([f"{k}={v!r}" for k, v in [
+			("fallback", self.fallback_text),
+			("domain", self.domain),
+			("fn", self._fn),
+		]])
+		return f"{type(self).__name__}({self.args!r}, {kwargs})"
+
 	def gettext(self, message: str) -> str:
-		return self._process(self.fallback_text)
+		return self.fallback_text
 
 	# Can add ngettext if needed
 
+	# Immediate methods
+	def __len__(self):
+		return len(str(self))
+
+	def __bool__(self):
+		return True
+
+	# Delayed methods
 	def format(self, **kwargs):
 		self.post_process.append(("format_map", [FailInPlace(kwargs)]))
+		return self
 
 	def replace(self, old: str, new: str, count=-1):
 		self.post_process.append(("replace", [old, new, count]))
+		return self
+
+	def __add__(self, o):
+		from copy import copy
+		if isinstance(o, (str, DelayedLocalization)):
+			ret = copy(self)
+			ret.post_process.append(("__add__", [o]))
+			return ret
+		return NotImplemented
+
+	def __iadd__(self, o):
+		if isinstance(o, (str, DelayedLocalization)):
+			self.post_process.append(("__add__", [o]))
+			return self
+		return NotImplemented
 
 
 ## Utility functions

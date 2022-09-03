@@ -24,7 +24,7 @@ from pm2hw.linkers import BaseLinker
 from pm2hw.exceptions import DeviceError, DeviceNotSupportedError
 
 if TYPE_CHECKING:
-	from .gamelist import GameList
+	from pm2hw.gui.components.gamelist import GameList
 
 
 class Linker(BaseRomEntry):

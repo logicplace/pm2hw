@@ -109,7 +109,7 @@ def prompt_update(show_none=True):
 				# Find PowerShell exe
 				powershell = shutil.which("powershell")
 
-				from . import root
+				from pm2hw import root
 				root.destroy()
 				save_config()
 

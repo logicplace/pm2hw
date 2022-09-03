@@ -254,8 +254,8 @@ if getattr(sys, "frozen", False):
 else:
 	resources.prompt_update(False)
 
-# from .linker import DittoFlash
-# from .. import BaseLinker
+# from pm2hw.base import BaseLinker
+# from pm2hw.linker import DittoFlash
 
 # class DittoTest(BaseLinker):
 # 	name = "Ditto tester"

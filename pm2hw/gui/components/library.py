@@ -14,13 +14,13 @@ from threading import Lock
 import tkinter as tk
 from tkinter import ttk, font, filedialog
 
-from pm2hw.gui.i18n import delayed_gettext as _, TStringVar
+from pm2hw.gui.i18n import TStringVar
 from pm2hw.gui.util import WeakMethod, filetypes_min
 from pm2hw.gui.resources import graphic
 from pm2hw.info import games
 from pm2hw.config import config
 from pm2hw.logger import warn
-from pm2hw.locales import natural_size
+from pm2hw.locales import delayed_gettext as _, delayed_join, natural_size
 
 def item_updater(library: "Library", iid: str):
 	library = weakref.ref(library)
@@ -277,10 +277,10 @@ class BaseRomEntry(Entry):
 			# TODO: collapsible detailed play mode info
 		if info.features:
 			# TODO: localized lists
-			frame.add(lhs("features"), ", ".join(
+			frame.add(lhs("features"), delayed_join(", ", (
 				rhs(x, "info.rom.details.features")
 				for x in info.features
-			))
+			)))
 		if info.save_slots:
 			frame.add(lhs("save slots"), str(info.save_slots))
 		for version in info.versions:

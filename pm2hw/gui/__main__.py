@@ -7,8 +7,8 @@
 import sys
 
 def main():
-	from . import root, game_list
-	from ..config import config_file, save as save_config
+	from pm2hw.gui import root, game_list
+	from pm2hw.config import config_file, save as save_config
 
 	root.mainloop()
 	print("Saving config to", config_file)

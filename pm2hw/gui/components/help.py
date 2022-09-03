@@ -17,7 +17,7 @@ from pm2hw.gui.components.linker import DittoFlash
 from pm2hw.gui.components.status import _make_status
 from pm2hw.gui.components.gamelist import GameList, ROM
 from pm2hw.linkers import BaseLinker
-from pm2hw.locales import delayed_gettext as _
+from pm2hw.locales import gettext as _
 
 icons_version = str(get_current_resource_version())
 
@@ -58,7 +58,7 @@ class DummyLinker(BaseLinker):
 
 class DummyROM(ROM):
 	def get_info(self, code, name, crc):
-		from ...info import games
+		from pm2hw.info import games
 
 		for info in games.games_by_rom.get((code, name), []):
 			if info.crc32 == crc:

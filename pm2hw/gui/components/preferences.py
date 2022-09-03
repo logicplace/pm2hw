@@ -25,7 +25,7 @@ class PreferencesDialog(Dialog):
 		frm = ttk.Frame(master)
 		frm.grid(column=0, row=0, sticky=tk.NSEW)
 
-		var = TStringVar(_("preferences.language.title"))
+		var = self.lg_title_var = TStringVar(_("preferences.language.title"))
 		lg_frm = ttk.LabelFrame(frm, text=var.get())
 		var.on_update(WeakMethod(lg_frm.configure), as_text_kwarg=True)
 		for i, (label, fn) in enumerate([
@@ -157,6 +157,7 @@ class PreferencesDialog(Dialog):
 		save_config()
 
 	def cancel(self, event=None):
+		del self.lg_title_var
 		super().cancel(event)
 		if not self._applied:
 			change_language(*self.initial_lgs)

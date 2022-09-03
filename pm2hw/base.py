@@ -9,7 +9,7 @@ from os import SEEK_SET
 from typing import TYPE_CHECKING, Any, BinaryIO, Callable, ClassVar, Iterable, Optional, Protocol, Union
 
 if TYPE_CHECKING:
-	from .linkers.base import BaseLinker
+	from pm2hw.linkers.base import BaseLinker
 
 Transform = Callable[[int], int]
 
