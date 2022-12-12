@@ -1,4 +1,4 @@
-# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+# Copyright (C) 2021-2022 Sapphire Becker (logicplace.com)
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -9,6 +9,7 @@ import re
 import gettext as m_gettext
 from types import ModuleType
 from typing import Any, Dict, List, Literal, Tuple
+from pathlib import Path, PurePosixPath
 
 from pm2hw.config import config
 
@@ -37,6 +38,8 @@ def translation(domain: str, localedir: str = _base):
 	
 	try:
 		ret = m_gettext.translation(domain, localedir=localedir, languages=languages)
+		ret._languages = languages
+		ret._localedir = localedir
 	except OSError:
 		ret = m_gettext.NullTranslations()
 	_domains[domain] = (ret, lang_pref)
@@ -85,6 +88,20 @@ def delayed_join(joiner, arr):
 
 	return start
 
+
+def dgetfile(domain: str, filename: str):
+	t = translation(domain)
+	for lang in t._languages:
+		p = Path(t._localedir, lang, PurePosixPath(filename))
+		try:
+			return p.read_text("utf8")
+		except FileNotFoundError:
+			pass
+	return filename
+
+
+def getfile(filename: str):
+	return dgetfile("pm2hw", filename)
 
 class bind_domain:
 	def __init__(self, domain: str, localedir: str = _base):
@@ -237,7 +254,7 @@ def natural_size(size: int, out: Literal["bits", "bytes"] = "bytes"):
 	elif out == "bytes" and sx1 == isx1:
 		if sx2 == isx2:
 			return f"{isx2} MB"
-		return f"{isx1} MB"
+		return f"{isx1} KB"
 	
 	if si2 >= 3:
 		return f"~{isi2} M{suffix}"

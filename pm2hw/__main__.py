@@ -21,7 +21,7 @@ from pm2hw.linkers import extra_options
 from pm2hw.locales import gettext as _, natural_size, parse_natural_size, bind_domain
 from pm2hw.exceptions import DeviceError
 
-bind_domain("argparse").install_to_module(argparse)
+bind_domain("argparse", None).install_to_module(argparse, "ngettext", _="gettext")
 
 logger.view = "cli"
 last_progress = time()

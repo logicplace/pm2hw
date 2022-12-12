@@ -73,13 +73,25 @@ def init(r: tk.Tk):
 	root = r
 
 def change_language(*langs: str):
-	s_langs = set(langs)
-	diff = s_langs - available_languages
-	if diff:
-		missing = ", ".join(diff)
+	langs_used = []
+	missing = set()
+	for lang in langs:
+		parts = lang.split("_")
+		used_lang = lang
+		while used_lang and used_lang not in available_languages:
+			parts.pop()
+			used_lang = "_".join(parts)
+		if used_lang:
+			if used_lang not in langs_used:
+				langs_used.append(used_lang)
+		else:
+			missing.add(lang)
+
+	if missing:
+		missing = ", ".join(missing)
 		raise ValueError(f"language(s) {missing} don't exist")
 
-	config["general"]["language"] = ",".join(langs)
+	config["general"]["language"] = ",".join(langs_used)
 	for s in string_vars.values():
 		s.update()
 

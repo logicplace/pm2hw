@@ -443,50 +443,26 @@ msgstr "ありません"
 msgid "help.topic.welcome.title"
 msgstr "はじめに"
 
-#  msgid "help.topic.welcome.content"
-#  msgstr ""
-
 msgid "help.topic.basics.title"
 msgstr "概要"
-
-#  msgid "help.topic.basics.content"
-#  msgstr ""
 
 msgid "help.topic.gui.title"
 msgstr "グラフィカルユーザインタフェース (GUI)"
 
-#  msgid "help.topic.gui.content"
-#  msgstr ""
-
 msgid "help.topic.linker.title"
 msgstr "リンカーの領域"
-
-#  msgid "help.topic.linker.content"
-#  msgstr ""
 
 msgid "help.topic.game.title"
 msgstr "ゲームの領域"
 
-#  msgid "help.topic.game.content"
-#  msgstr ""
-
 msgid "help.topic.flashing.title"
 msgstr "フラッシュカートの書き込む方法"
-
-#  msgid "help.topic.flashing.content"
-#  msgstr ""
 
 msgid "help.topic.dumping.title"
 msgstr "フラッシュカートの吸出す方法"
 
-#  msgid "help.topic.dumping.content"
-#  msgstr ""
-
 msgid "help.topic.reference.title"
 msgstr "CLIの概要"
-
-#  msgid "help.topic.reference.content"
-#  msgstr ""
 
 #: pm2hw\gui\components\library.py:
 msgid "info.rom.details.code"

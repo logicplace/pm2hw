@@ -17,7 +17,7 @@ from pm2hw.gui.components.linker import DittoFlash
 from pm2hw.gui.components.status import _make_status
 from pm2hw.gui.components.gamelist import GameList, ROM
 from pm2hw.linkers import BaseLinker
-from pm2hw.locales import gettext as _
+from pm2hw.locales import gettext as _, getfile
 
 icons_version = str(get_current_resource_version())
 
@@ -106,7 +106,7 @@ class HelpDialog(Dialog):
 			self.add_topic(
 				topic,
 				(_)(f"help.topic.{topic}.title"),
-				(_)(f"help.topic.{topic}.content"),
+				getfile(f"help/{topic}.md"),
 				parent=parent
 			)
 
