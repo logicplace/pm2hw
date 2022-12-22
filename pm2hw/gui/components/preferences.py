@@ -5,16 +5,16 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 import tkinter as tk
-from tkinter import ttk, simpledialog
+from tkinter import ttk
 from typing import Dict, List, Tuple
 
-from ..i18n import TStringVar, change_language
-from ..util import WeakMethod
-from ..themes import themes, select_theme
-from ..widgets import Dialog
-from ...config import config, save as save_config
-from ...locales import _, available_languages
-from ...linkers import extra_options, linkers_by_classname
+from pm2hw.gui.i18n import TStringVar, change_language
+from pm2hw.gui.util import WeakMethod
+from pm2hw.gui.themes import themes, select_theme
+from pm2hw.gui.widgets import Dialog
+from pm2hw.config import config, save as save_config
+from pm2hw.locales import delayed_gettext as _, available_languages
+from pm2hw.linkers import extra_options, linkers_by_classname
 
 class PreferencesDialog(Dialog):
 	opt_vars: Dict[Tuple[str, dict], tk.Variable]
@@ -25,7 +25,7 @@ class PreferencesDialog(Dialog):
 		frm = ttk.Frame(master)
 		frm.grid(column=0, row=0, sticky=tk.NSEW)
 
-		var = TStringVar(_("preferences.language.title"))
+		var = self.lg_title_var = TStringVar(_("preferences.language.title"))
 		lg_frm = ttk.LabelFrame(frm, text=var.get())
 		var.on_update(WeakMethod(lg_frm.configure), as_text_kwarg=True)
 		for i, (label, fn) in enumerate([
@@ -157,6 +157,7 @@ class PreferencesDialog(Dialog):
 		save_config()
 
 	def cancel(self, event=None):
+		del self.lg_title_var
 		super().cancel(event)
 		if not self._applied:
 			change_language(*self.initial_lgs)

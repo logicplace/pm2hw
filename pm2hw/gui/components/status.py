@@ -9,9 +9,9 @@ from typing import Dict, Optional
 from tkinter import ttk
 from collections import OrderedDict
 
-from ...base import BaseFlashable
-from ...logger import progress
-from ...locales import _
+from pm2hw.base import BaseFlashable
+from pm2hw.logger import progress
+from pm2hw.locales import gettext as _
 
 root: tk.Tk
 status: ttk.Label
@@ -52,19 +52,19 @@ def set_status(value: str = ""):
 
 		if bar.is_complete():
 			msgs.append(
-				str((_)(f"status.{action}.complete").format(
+				(_)(f"status.{action}.complete").format(
 					name=flashable.name,
 					secs=bar.time_taken()
-				))
+				)
 			)
 			if bar is acts[-1][1]:
 				deactivate(flashable)
 		else:
 			msgs.append(
-				str((_)(f"status.{action}.in-progress").format(
+				(_)(f"status.{action}.in-progress").format(
 					name=flashable.name,
 					pc=bar.percent
-				))
+				)
 			)
 
 	if value:

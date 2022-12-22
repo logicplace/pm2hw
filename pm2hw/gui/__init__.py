@@ -12,15 +12,15 @@ from tkinter import ttk
 from functools import partial
 from typing import  Dict, List, Tuple
 
-from . import themes, resources
-from .i18n import _, TStringVar
-from .widgets import Menu, RichText, ScrollFrame
-from .components import (
+from pm2hw import logger
+from pm2hw.gui import themes, resources
+from pm2hw.gui.i18n import delayed_gettext as _, TStringVar
+from pm2hw.gui.widgets import Menu, RichText, ScrollFrame
+from pm2hw.gui.components import (
 	add_progress, make_status, open_about, refresh_linkers, set_status,
 	GameList, HelpDialog, PreferencesDialog, ProtocolDialog
 )
-from .. import logger
-from ..config import config, log_dir as error_log_dir
+from pm2hw.config import config, log_dir as error_log_dir
 
 
 logger.view = "gui"
@@ -167,7 +167,7 @@ with Menu(root) as m:
 			labelvar=TStringVar(_("window.menu.main.preferences")),
 			command=lambda: PreferencesDialog(
 				root,
-				title=str(_("window.preferences.title"))
+				title=_("window.preferences.title")
 			)
 		)
 		main.add_separator()
@@ -209,7 +209,7 @@ with Menu(root) as m:
 				labelvar=TStringVar(_("window.menu.view.log.protocol")),
 				command=lambda: ProtocolDialog(
 					root,
-					title=str(_("window.protocol.title"))
+					title=_("window.protocol.title")
 				)
 			)
 			# log.add_separator()
@@ -228,7 +228,7 @@ with Menu(root) as m:
 			labelvar=TStringVar(_("window.menu.help.howto")),
 			command=lambda: HelpDialog(
 				root,
-				title=str(_("window.help.title"))
+				title=_("window.help.title")
 			)
 		)
 		help.add_command(
@@ -254,8 +254,8 @@ if getattr(sys, "frozen", False):
 else:
 	resources.prompt_update(False)
 
-# from .linker import DittoFlash
-# from .. import BaseLinker
+# from pm2hw.base import BaseLinker
+# from pm2hw.linker import DittoFlash
 
 # class DittoTest(BaseLinker):
 # 	name = "Ditto tester"

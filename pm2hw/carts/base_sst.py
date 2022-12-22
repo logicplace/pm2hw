@@ -7,10 +7,10 @@
 from time import sleep, time
 from typing import Callable, ClassVar, Sequence, Tuple
 
-from .base import dummy_progress, BaseCard
-from ..base import chunked
-from ..logger import progress
-from ..locales import _
+from pm2hw.base import chunked
+from pm2hw.carts.base import dummy_progress, BaseCard
+from pm2hw.logger import progress
+from pm2hw.locales import delayed_gettext as _
 
 class BaseSstCard(BaseCard):
 	packet_size = 4

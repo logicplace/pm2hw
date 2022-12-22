@@ -11,15 +11,17 @@ from enum import Enum
 from time import time
 from typing import List
 
-from . import get_connected_linkers, logger, linkers
-from .base import BaseFlashable
-from .info import games
-from .info.games.base import ROM
-from .config import config, save as save_config
-from .logger import log, error, exception, progress, verbose, LogRecord
-from .linkers import extra_options
-from .locales import __ as _, natural_size, parse_natural_size
-from .exceptions import DeviceError
+from pm2hw import get_connected_linkers, logger, linkers
+from pm2hw.base import BaseFlashable
+from pm2hw.info import games
+from pm2hw.info.games.base import ROM
+from pm2hw.config import config, save as save_config
+from pm2hw.logger import log, error, exception, progress, verbose, LogRecord
+from pm2hw.linkers import extra_options
+from pm2hw.locales import gettext as _, natural_size, parse_natural_size, bind_domain
+from pm2hw.exceptions import DeviceError
+
+bind_domain("argparse", None).install_to_module(argparse, "ngettext", _="gettext")
 
 logger.view = "cli"
 last_progress = time()
@@ -135,7 +137,6 @@ config_cmd.add_argument("settings", nargs="*",
 test_cmd = subparsers.add_parser("test",
 	help=_("cli.help.command.test"), **common)
 
-from .locales import _
 
 def parse_partial(x):
 	if ":" in x:

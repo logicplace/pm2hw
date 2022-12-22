@@ -4,6 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+# TODO: remove need to import
 from .base import BaseLinker, linkers
 from .pokecard import PokeFlash
 from .dittomini import DittoFlash
@@ -19,7 +20,7 @@ linkers_by_classname = {
 }
 
 
-from ..config import config
+from pm2hw.config import config
 from configparser import DuplicateSectionError
 
 for x in linkers.values():

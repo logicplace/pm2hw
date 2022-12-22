@@ -9,11 +9,11 @@
 
 from typing import Optional
 
-from .base import linkers
-from .base_ftdi import BaseFtdiLinker
-from ..base import BytesOrTransformer, Transform
-from ..config import config
-from ..locales import _
+from pm2hw.base import BytesOrTransformer, Transform
+from pm2hw.config import config
+from pm2hw.locales import delayed_gettext as _
+from pm2hw.linkers.base import linkers
+from pm2hw.linkers.base_ftdi import BaseFtdiLinker
 
 DEV_DESC = b"Dual RS232 A"
 # DEV_DESC = b"USB SerialConverter A"
@@ -56,7 +56,7 @@ class DittoFlash(BaseFtdiLinker):
 
 	def detect_card(self):
 		""" Detect which card is connected """
-		from ..carts.dittomini import DittoMiniRev3
+		from pm2hw.carts.dittomini import DittoMiniRev3
 		self.card = card = DittoMiniRev3(self)
 		card.get_device_info()
 		return card
@@ -87,7 +87,7 @@ class DittoFlash(BaseFtdiLinker):
 			# No idea how long it takes but the other code writes
 			# four 0x80 commands for a program byte command.
 			# TODO: Make this acceptable
-			from ..carts.dittomini import DittoMiniRev3
+			from pm2hw.carts.dittomini import DittoMiniRev3
 			if secs == DittoMiniRev3.T_BP:
 				cmd = bytes([0x80, self.ftdi_port_state, self.ftdi_port_direction])
 				return cmd * 4

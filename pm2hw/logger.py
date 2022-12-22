@@ -11,8 +11,7 @@ import configparser
 from typing import Sequence, Set
 from logging import NOTSET, DEBUG, INFO, WARN, WARNING, ERROR, CRITICAL, LogRecord, _levelToName, _nameToLevel
 
-from . import __name__ as logger_name
-from .locales import _
+from pm2hw import __name__ as logger_name
 
 PROTOCOL = 5
 VERBOSE = INFO - 1
@@ -255,6 +254,7 @@ class ProgressConfig(configparser.ConfigParser):
 			self.is_loaded = True
 
 	def get_message(self, mode: str):
+		from pm2hw.locales import gettext as _
 		self.load(_("log.progress"))
 		return ProgressMessage(self[mode])
 

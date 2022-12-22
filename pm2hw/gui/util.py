@@ -9,7 +9,7 @@ import weakref
 from threading import Thread
 
 def filetypes_min():
-	from .i18n import __ as _
+	from pm2hw.locales import gettext as _
 	return (
 		(_("misc.filetypes.min"), "*.min"),
 		(_("misc.filetypes.all"), "*"),

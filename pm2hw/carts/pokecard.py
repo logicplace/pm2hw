@@ -10,14 +10,13 @@
 from typing import TYPE_CHECKING, Tuple
 from functools import lru_cache
 
+from pm2hw.carts.base import dummy_progress
+from pm2hw.carts.base_sst import BaseSstCard
 from pm2hw.logger import progress
-
-from .base import dummy_progress
-from .base_sst import BaseSstCard
-from ..exceptions import DeviceNotSupportedError
+from pm2hw.exceptions import DeviceNotSupportedError
 
 if TYPE_CHECKING:
-	from ..linkers.base import BaseLinker
+	from pm2hw.linkers.base import BaseLinker
 
 # TODO: implement separate Rev 1 and Rev 2.0
 class PokeCard512(BaseSstCard):

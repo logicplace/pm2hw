@@ -7,15 +7,15 @@
 from time import sleep
 from typing import TYPE_CHECKING, Any, ClassVar, Dict, Optional, Tuple, Type, Union
 
-from ..base import (
+from pm2hw.base import (
 	Transform, BytesOrSequence, BytesOrTransformer, BytesishOrSequence,
 	BaseFlashable, BaseReader, Handle,
 )
-from ..logger import protocol, warn
-from ..locales import _
+from pm2hw.logger import protocol, warn
+from pm2hw.locales import delayed_gettext as _
 
 if TYPE_CHECKING:
-	from ..carts.base import BaseCard
+	from pm2hw.carts.base import BaseCard
 
 
 LinkerID = Union[str, Tuple[int, int]]

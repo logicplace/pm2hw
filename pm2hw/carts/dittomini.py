@@ -11,15 +11,15 @@ import time
 import struct
 from typing import TYPE_CHECKING, NamedTuple
 
-from .base import dummy_progress
-from .base_sst import BaseSstCard
-from ..base import BaseReader
-from ..logger import debug, progress, verbose
-from ..locales import natural_size
-from ..exceptions import DeviceNotSupportedError
+from pm2hw.base import BaseReader
+from pm2hw.carts.base import dummy_progress
+from pm2hw.carts.base_sst import BaseSstCard
+from pm2hw.logger import debug, progress, verbose
+from pm2hw.locales import natural_size
+from pm2hw.exceptions import DeviceNotSupportedError
 
 if TYPE_CHECKING:
-	from ..linkers.base import BaseLinker
+	from pm2hw.linkers.base import BaseLinker
 
 class CFIBlockRegion(NamedTuple):
 	n_blocks: int

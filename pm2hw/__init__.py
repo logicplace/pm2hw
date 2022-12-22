@@ -12,9 +12,9 @@ def get_connected_linkers():
 
 	import ftd2xx
 
-	from .linkers import BaseLinker, linkers
-	from .locales import _
-	from .exceptions import clarify
+	from pm2hw.linkers import BaseLinker, linkers
+	from pm2hw.locales import delayed_gettext as _
+	from pm2hw.exceptions import clarify
 
 	num_devices = ftd2xx.createDeviceInfoList()
 	devices: List[BaseLinker] = []

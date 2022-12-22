@@ -1,4 +1,4 @@
-# Copyright (C) 2021 Sapphire Becker (logicplace.com)
+# Copyright (C) 2021-2022 Sapphire Becker (logicplace.com)
 #
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -6,35 +6,135 @@
 
 import os
 import re
-import gettext
-from typing import Literal, Optional
+import gettext as m_gettext
+from types import ModuleType
+from typing import Any, Dict, List, Literal, Tuple
+from pathlib import Path, PurePosixPath
 
-from ..config import config
+from pm2hw.config import config
 
-base = os.path.dirname(__file__)
-def split_ietf_tag(*langs: str):
-	ret = []
-	for x in langs:
-		while x:
-			ret.append(x)
-			x = f"-{x}".rsplit("-", 1)[0]
-	ret.append("en")
-	return ret
-
-default_lang = gettext.translation(
-	"pm2hw",
-	localedir=base,
-	languages=split_ietf_tag(*config["general"]["language"].split(","))
-)
-current_lang = default_lang
+_base = os.path.dirname(__file__)
+_domains: Dict[str, Tuple[m_gettext.NullTranslations, str]] = {}
 available_languages = {"en", "ja"}
 
 
+def translation(domain: str, localedir: str = _base):
+	lang_pref = config["general"]["language"]
+	if domain in _domains:
+		ret, lang = _domains[domain]
+		if lang == lang_pref:
+			ret._fallback = None  # Remove fallback for consistency
+			return ret
+		# Reload if the language preference changed
+
+	languages: List[str] = []
+	for x in lang_pref.split(","):
+		while x:
+			languages.append(x)
+			x = f"-{x}".rsplit("-", 1)[0]
+	
+	if "en" not in languages:
+		languages.append("en")
+	
+	try:
+		ret = m_gettext.translation(domain, localedir=localedir, languages=languages)
+		ret._languages = languages
+		ret._localedir = localedir
+	except OSError:
+		ret = m_gettext.NullTranslations()
+	_domains[domain] = (ret, lang_pref)
+	return ret
+
+
+def dgettext(domain: str, message: str):
+	t = translation(domain)
+	current = t.gettext(message)
+	return SafeFormatString(current)
+
+
+def dngettext(domain: str, msgid1: str, msgid2: str, n: int):
+	t = translation(domain)
+	current = t.ngettext(msgid1, msgid2, n)
+	return SafeFormatString(current)
+
+
+def gettext(message: str):
+	return dgettext("pm2hw", message)
+
+
+def delayed_dgettext(domain: str, message: str, *, fallback: str = ""):
+	if not fallback:
+		fallback = translation(domain).gettext(message)
+	return DelayedLocalization(message, fallback=fallback, domain=domain, fn="gettext")
+
+
+def delayed_gettext(message: str, *, fallback: str = ""):
+	return delayed_dgettext("pm2hw", message, fallback=fallback)
+
+	
+def delayed_join(joiner, arr):
+	if not arr:
+		return ""
+
+	start: DelayedLocalization
+	start, *args = arr
+
+	if not isinstance(start, DelayedLocalization):
+		start = DelayedLocalization("", fallback=start, domain="pm2hw", fn="gettext")
+
+	for arg in args:
+		start += joiner
+		start += arg
+
+	return start
+
+
+def dgetfile(domain: str, filename: str):
+	t = translation(domain)
+	for lang in t._languages:
+		p = Path(t._localedir, lang, PurePosixPath(filename))
+		try:
+			return p.read_text("utf8")
+		except FileNotFoundError:
+			pass
+	return filename
+
+
+def getfile(filename: str):
+	return dgetfile("pm2hw", filename)
+
+class bind_domain:
+	def __init__(self, domain: str, localedir: str = _base):
+		self.domain = domain
+		self.localedir = localedir
+
+	def gettext(self, message: str):
+		t = translation(self.domain, self.localedir)
+		current = t.gettext(message)
+		return SafeFormatString(current)
+
+	def ngettext(self, msgid1: str, msgid2: str, n: int):
+		t = translation(self.domain, self.localedir)
+		current = t.ngettext(msgid1, msgid2, n)
+		return SafeFormatString(current)
+
+	def install_to_module(self, module: ModuleType, *args, **kwargs):
+		for x in args:
+			setattr(module, x, getattr(self, x))
+
+		for x, y in kwargs.items():
+			setattr(module, x, getattr(self, y))
+
+
 class FailInPlace(dict):
+	"""
+	Class to return a formatting request as-is if the key doesn't exist.
+	Example: "{foo} {bar}!".format_map(FailInPlace({"foo": "Hello"}))
+	         == "Hello {bar}!"
+	"""
 	def __init__(self, d={}, *, pfx: str = ""):
 		super().__init__(d)
 		self._pfx = pfx
-		self._fmt = ""
 
 	def __missing__(self, key): 
 		return FailInPlace(pfx=f"{self._pfx}.{key}" if self._pfx else key)
@@ -42,55 +142,89 @@ class FailInPlace(dict):
 	def __getattr__(self, attr):
 		return self[attr]
 
-	def __str__(self):
-		if self._fmt:
-			return f"{{{self._pfx}:{self._fmt}}}"
-		return self._pfx.join("{}")
+	def __format__(self, format_spec: str = ""):
+		if format_spec:
+			return f"{{{self._pfx}:{format_spec}}}"
+		# Surround with braces
+		return self._pfx.join("{}") if self._pfx else ""
 
-	def __format__(self, format_spec: str):
-		# TODO: half-asleep and not sure how correct this is; works tho
-		self._fmt = format_spec
-		return super().__format__("")
+	__str__ = __format__
+	__repr__ = __format__
 
 
-class tstr(str):
-	key: str
-	value: str
-	args: list
-	data: Optional[dict]
-
-	def __new__(self, value: str, **kw):
-		return str.__new__(self, value)
-
-	def __init__(self, value: str, *, key: str = ""):
-		self.key = key or value
-		self.value = value
-		self.data = None
-
-	# TODO: why isn't this enough for tk? C strings?
-	def __str__(self):
-		res = current_lang.gettext(self.key)
-		if res == self.key:
-			return str(self.value)
-		if self.data is None:
-			return res
-		return res.format_map(self.data)
-
-	def __add__(self, __s: str) -> str:
-		return __s + str(self)
-
+class SafeFormatString(str):
 	def format(self, **kwargs):
-		self.data = FailInPlace(kwargs)
-		if isinstance(self.value, tstr):
-			self.value.data.update(kwargs)
+		return self.format_map(FailInPlace(kwargs))
+
+
+class DelayedLocalization:
+	def __init__(self, *args, fallback: str, domain: str, fn: str):
+		self.args = args
+		self.fallback_text = fallback
+		self.domain = domain
+		self._fn = fn
+
+		self.post_process: List[Tuple[str, List[Any]]] = []
+
+	def _process(self, s: str) -> str:
+		for fn, args in self.post_process:
+			for i, arg in enumerate(args):
+				if isinstance(arg, DelayedLocalization):
+					args[i] = str(arg)
+			s = getattr(s, fn)(*args)
+		return s
+
+	def __str__(self) -> str:
+		t = translation(self.domain)
+		t.add_fallback(self)
+		res: str = getattr(t, self._fn)(*self.args)
+		return self._process(res)
+
+	def __repr__(self) -> str:
+		kwargs = ", ".join([f"{k}={v!r}" for k, v in [
+			("fallback", self.fallback_text),
+			("domain", self.domain),
+			("fn", self._fn),
+		]])
+		return f"{type(self).__name__}({self.args!r}, {kwargs})"
+
+	def gettext(self, message: str) -> str:
+		return self.fallback_text
+
+	# Can add ngettext if needed
+
+	# Immediate methods
+	def __len__(self):
+		return len(str(self))
+
+	def __bool__(self):
+		return True
+
+	# Delayed methods
+	def format(self, **kwargs):
+		self.post_process.append(("format_map", [FailInPlace(kwargs)]))
 		return self
 
-_ = tstr
+	def replace(self, old: str, new: str, count=-1):
+		self.post_process.append(("replace", [old, new, count]))
+		return self
 
-def __(s):
-	return tstr(str(_(s)), key=s)
+	def __add__(self, o):
+		from copy import copy
+		if isinstance(o, (str, DelayedLocalization)):
+			ret = copy(self)
+			ret.post_process.append(("__add__", [o]))
+			return ret
+		return NotImplemented
+
+	def __iadd__(self, o):
+		if isinstance(o, (str, DelayedLocalization)):
+			self.post_process.append(("__add__", [o]))
+			return self
+		return NotImplemented
 
 
+## Utility functions
 def natural_size(size: int, out: Literal["bits", "bytes"] = "bytes"):
 	""" Convert size in bytes to a more human-readable number. """
 	# TODO: lozalized, for any languages that prefer it.
@@ -120,7 +254,7 @@ def natural_size(size: int, out: Literal["bits", "bytes"] = "bytes"):
 	elif out == "bytes" and sx1 == isx1:
 		if sx2 == isx2:
 			return f"{isx2} MB"
-		return f"{isx1} MB"
+		return f"{isx1} KB"
 	
 	if si2 >= 3:
 		return f"~{isi2} M{suffix}"

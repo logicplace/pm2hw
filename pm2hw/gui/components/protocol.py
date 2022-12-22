@@ -6,11 +6,11 @@
 
 import tkinter as tk
 from tkinter import ttk
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
-from ..widgets import Dialog, RichText
-from ... import logger
-from ...locales import natural_size
+from pm2hw import logger
+from pm2hw.gui.widgets import Dialog, RichText
+from pm2hw.locales import natural_size
 
 # TODO: localization
 

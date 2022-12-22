@@ -12,19 +12,19 @@ from tkinter import ttk, filedialog
 
 from pm2hw.locales import natural_size
 
-from .status import prepare_progress, set_status
-from .library import BaseRomEntry
-from ..i18n import _, localized_game_name
-from ..util import filetypes_min, threaded
-from ... import get_connected_linkers
-from ...base import BaseFlashable
-from ...info import games
-from ...logger import error, exception, log, verbose
-from ...linkers import BaseLinker
-from ...exceptions import DeviceError, DeviceNotSupportedError
+from pm2hw import get_connected_linkers
+from pm2hw.gui.components.status import prepare_progress, set_status
+from pm2hw.gui.components.library import BaseRomEntry
+from pm2hw.gui.i18n import delayed_gettext as _, localized_game_name
+from pm2hw.gui.util import filetypes_min, threaded
+from pm2hw.base import BaseFlashable
+from pm2hw.info import games
+from pm2hw.logger import error, exception, log, verbose
+from pm2hw.linkers import BaseLinker
+from pm2hw.exceptions import DeviceError, DeviceNotSupportedError
 
 if TYPE_CHECKING:
-	from .gamelist import GameList
+	from pm2hw.gui.components.gamelist import GameList
 
 
 class Linker(BaseRomEntry):

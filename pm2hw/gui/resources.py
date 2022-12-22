@@ -2,8 +2,8 @@ import json
 import urllib.request
 from pathlib import Path
 
-from .util import Semver
-from ..config import resource_dir, save as save_config
+from pm2hw.gui.util import Semver
+from pm2hw.config import resource_dir, save as save_config
 
 VERSION_URL = "https://raw.githubusercontent.com/logicplace/pm2hw/master/latest.json"
 
@@ -24,7 +24,7 @@ def get_current_resource_version():
 
 def check_for_updates():
 	global latest_result
-	from .. import __version__ as pm2hw_version
+	from pm2hw import __version__ as pm2hw_version
 	pm2hw_semver = Semver(pm2hw_version)
  
 	rsc_semver = get_current_resource_version()
@@ -58,17 +58,16 @@ def prompt_update(show_none=True):
 	import sys
 	from tkinter import messagebox
 	
-	from .i18n import _
-	from ..logger import log, exception
+	from pm2hw.logger import log, exception
+	from pm2hw.locales import delayed_gettext as _
 
 	log(_("log.update.intro"))
 	res = check_for_updates()
 	if "resourcePack" in res:
 		log(_("log.update.resourcePack.found"))
 		if messagebox.askyesno(
-			str(_("help.update.resourcePack.title")),
-			str(_("help.update.resourcePack.message").format(
-				**res["resourcePack"])),
+			_("help.update.resourcePack.title"),
+			_("help.update.resourcePack.message").format(**res["resourcePack"]),
 		):
 			try:
 				install_resource_update()
@@ -83,8 +82,8 @@ def prompt_update(show_none=True):
 		if getattr(sys, "frozen", False):
 			base = Path(sys.executable).parent
 			if messagebox.askyesno(
-				str(_("help.update.core.title")),
-				str(_("help.update.core.message.ask").format(**res["core"])),
+				_("help.update.core.title"),
+				_("help.update.core.message.ask").format(**res["core"]),
 			):
 				import os, shutil
 
@@ -110,7 +109,7 @@ def prompt_update(show_none=True):
 				# Find PowerShell exe
 				powershell = shutil.which("powershell")
 
-				from . import root
+				from pm2hw import root
 				root.destroy()
 				save_config()
 
@@ -118,14 +117,14 @@ def prompt_update(show_none=True):
 				os.execl(powershell, '-File', str(update_script))
 		else:
 			messagebox.showinfo(
-				str(_("help.update.core.title")),
-				str(_("help.update.core.message.show").format(**res["core"]))
+				_("help.update.core.title"),
+				_("help.update.core.message.show").format(**res["core"])
 			)
 
 	if not res:
 		log(_("log.update.no-update.found"))
 		if show_none:
 			messagebox.showinfo(
-				str(_("help.update.no-update.title")),
-				str(_("help.update.no-update.message"))
+				_("help.update.no-update.title"),
+				_("help.update.no-update.message")
 			)

@@ -36,7 +36,7 @@ whey -b
 
 No real style restrictions yet, might set up yapf rules later.
 
-I prefer imports ordered by length over alphabet because it's more aesthetically pleasing to me. Standard internal, third-party, this-lib blocks for imports first. Then within those essentially `import x` types first then `from x import y` types where we sort by number of .s first (in from type) then the length of x (rather than the whole line) second, then alphabetical order of x if there's a length tie. This may change.
+I prefer imports ordered by length over alphabet because it's more aesthetically pleasing to me. Standard internal, third-party, this-lib blocks for imports first. Then within those essentially `import x` types first then `from x import y` types where we sort by the length of of each dot-separate part of x (rather than the whole line) second, then alphabetical order of x if there's a length tie. This may change.
 
 ## Design
 
