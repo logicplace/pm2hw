@@ -265,7 +265,7 @@ def _m(m, *args):
 	return {a: m for a in args}
 
 
-natural_size_format = re.compile(r"(\d+) *(\S+)")
+natural_size_format = re.compile(r"(\d+) *([^\d\s]+)")
 units_to_multiplier = {
 	**_m(1, "bit", "bits"),
 	**_m(8, "byte", "bytes"),
@@ -281,6 +281,11 @@ units_to_multiplier = {
 
 
 def parse_natural_size(s):
+	try:
+		return int(s)
+	except ValueError:
+		pass
+
 	n, units = natural_size_format.match(s).groups()
 	units = units.lower()
 	if units in units_to_multiplier:
